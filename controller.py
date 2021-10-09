@@ -7,7 +7,7 @@ class Controller:
         """
         self.strips = {}
         for i, size in enumerate(strip_sizes):
-            self.strips[i] = self.LightStrip(self, size)
+            self.strips[i] = LightStrip(self, size)
 
     def get_strip(self, strip):
         """
