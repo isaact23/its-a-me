@@ -20,8 +20,8 @@ class Controller:
         """
         # Send all pixel data to LED strips.
         """
-        for strip in self.strips:
-            strip.write()
+        for i in self.strips:
+            self.strips[i].write()
 
 
 # An LED strip.
@@ -34,6 +34,7 @@ class LightStrip:
         self.controller = controller
         self.size = size
         self.pixels = [(0, 0, 0)] * size
+        self.func = None  # Color generation anonymous function
         # self.neopixel = neopixel.NeoPixel(board.D18, 150, auto_write=False)
 
     def get_segment(self, start, end):
@@ -50,7 +51,7 @@ class LightStrip:
 
         return self.Segment(self, start, end)
 
-    def func(self, f, start, end):
+    def apply_func(self, f, start, end):
         """
         Apply an anonymous function to generate colors for LEDs on this LightStrip between start and end.
         :param f: The anonymous function to use.
@@ -58,7 +59,13 @@ class LightStrip:
         :param end: The final pixel (exclusive) to modify.
         """
         for i in range(start, end):
-            self.pixels[i] = f(pixel=i)
+            self.pixels[i] = f(pixel=i, strip_size=self.size)
+
+    def get_pixels(self):
+        """
+        :return: An array of colors for each pixel on this LightStrip.
+        """
+        return self.pixels
 
     def write(self):
         """
@@ -77,6 +84,7 @@ class LightStrip:
             self.strip = strip
             self.start = start
             self.end = end
+            self.func = None
 
         def func(self, f):
             """
@@ -84,3 +92,29 @@ class LightStrip:
             :param f: The anonymous function to use.
             """
             self.strip.func(f, self.start, self.end)
+
+        def set_func(self, f):
+            """
+            Set a function for LED color generation to be used on every use_func() call.
+            :param f: The anonymous function.
+            """
+            self.func = f
+
+        def use_func(self):
+            """
+            Apply the function set by set_func() to generate LED strip colors on this Segment.
+            """
+            if self.func is not None:
+                self.strip.use_func(self.func, self.start, self.end)
+
+        def get_pixels(self):
+            """
+            :return: An array of colors for each pixel on this Segment.
+            """
+            return self.strip.get_pixels()[self.start:self.end]
+
+        def size(self):
+            """
+            :return: The number of LEDs this Segment controls.
+            """
+            return self.end - self.start
