@@ -49,7 +49,6 @@ class Emulator:
         self.canvas.pack()
 
         self.update()
-        self.root.mainloop()
 
     def update(self):
         """
@@ -58,7 +57,7 @@ class Emulator:
         # Columns
         for y in range(5):
             for x in range(3):
-                seg = self.grid.get_segment(12 + x + y * 3)
+                seg = self.grid.get_seg(12 + x + y * 3)
                 led_count = seg.size()
                 seg_length = WIDTH - (CIRCLE_MARGIN * 2)
                 led_space = seg_length / led_count
@@ -71,7 +70,7 @@ class Emulator:
         # Rows
         for y in range(6):
             for x in range(2):
-                seg = self.grid.get_segment(x + y * 2)
+                seg = self.grid.get_seg(x + y * 2)
                 led_count = seg.size()
                 seg_length = WIDTH - (CIRCLE_MARGIN * 2)
                 led_space = seg_length / led_count
@@ -85,7 +84,7 @@ class Emulator:
         # Railings
         seg_length = (WIDTH * 5) - (CIRCLE_MARGIN * 2)
         for x in range(2):
-            seg = self.grid.get_segment(27 + x)
+            seg = self.grid.get_seg(27 + x)
             led_count = seg.size()
             led_space = seg_length / led_count
             pixels = seg.get_pixels()

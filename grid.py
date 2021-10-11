@@ -11,7 +11,7 @@ class Grid:
         for i in range(27):
             self.segments.append(controller.get_strip(2).get_segment(i * 20, (i + 1) * 20))
 
-    def get_segment(self, segment):
+    def get_seg(self, segment):
         """
         Get one of the segments from this grid.
         :param segment: The segment index to get.
