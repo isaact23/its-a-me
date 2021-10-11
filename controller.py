@@ -1,3 +1,5 @@
+import functions
+
 # A controller for all of the LED strips.
 class Controller:
     def __init__(self, strip_sizes):
@@ -43,13 +45,27 @@ class LightStrip:
         :param start: The first pixel to control (inclusive).
         :param end: The last pixel to control (exclusive).
         :return: A Segment object with control over the specified pixels.
-        :raises RuntimeError: If start or end are outside the bounds of this LightStrip.
+        :raises IndexError: If start or end are outside the bounds of this LightStrip.
         """
         # Assert start/end are within the bounds of this strip.
         if start < 0 or end > self.size:
-            raise RuntimeError("Attempted to create a Segment outside the bounds of a LightStrip")
+            raise IndexError("Attempted to create a Segment outside the bounds of a LightStrip")
 
         return self.Segment(self, start, end)
+
+    def set_func(self, f):
+        """
+        Set a function for LED color generation to be used on every use_func() call.
+        :param f: The anonymous function.
+        """
+        self.func = f
+
+    def use_func(self):
+        """
+        Apply the function set by set_func() to generate LED strip colors on this LightStrip.
+        """
+        if self.func is not None:
+            self.apply_func(self.func, 0, self.size)
 
     def apply_func(self, f, start, end):
         """
@@ -77,6 +93,7 @@ class LightStrip:
     class Segment:
         def __init__(self, strip, start, end):
             """
+            Initialize a new segment. If end is less than start, flip the Segment.
             :param strip: The strip object this array lies on.
             :param start: The first pixel to activate
             :param end: The last pixel to activate
@@ -84,6 +101,13 @@ class LightStrip:
             self.strip = strip
             self.start = start
             self.end = end
+            if self.end < self.start:
+                temp = self.end
+                self.end = self.start
+                self.start = temp
+                self.flip = True
+            else:
+                self.flip = False
             self.func = None
 
         def func(self, f):
@@ -98,14 +122,17 @@ class LightStrip:
             Set a function for LED color generation to be used on every use_func() call.
             :param f: The anonymous function.
             """
-            self.func = f
+            if self.flip:
+                self.func = functions.flip(f)
+            else:
+                self.func = f
 
         def use_func(self):
             """
             Apply the function set by set_func() to generate LED strip colors on this Segment.
             """
             if self.func is not None:
-                self.strip.use_func(self.func, self.start, self.end)
+                self.strip.apply_func(self.func, self.start, self.end)
 
         def get_pixels(self):
             """

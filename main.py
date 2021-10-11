@@ -4,16 +4,19 @@
 # import neopixel, board
 import colorsys, random, time, math
 import colors
+import functions
 from controller import Controller, LightStrip
 from grid import Grid
 from emulator import Emulator
 
+
 def main():
-    controller = Controller((150, 150, 50))
+    controller = Controller((20, 20, 1000))
     grid = Grid(controller)
+    seg = grid.get_segment(7)
+    seg.set_func(functions.fill(colors.RED))
+    seg.use_func()
     emulator = Emulator(grid)
-    seg1 = controller.get_strip(0).get_segment(20, 70)
-    print(seg1.start)
 
 
 if __name__ == "__main__":
