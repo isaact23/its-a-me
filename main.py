@@ -20,7 +20,11 @@ def main():
     emulator = Emulator(grid)
     timer = fpstimer.FPSTimer(30)
     while True:
+        start_time = time.perf_counter()
+        grid.use_func()
         emulator.update()
+        end_time = time.perf_counter()
+        print("FPS " + str(1 / (end_time - start_time)))
         timer.sleep()
 
 
