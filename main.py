@@ -15,17 +15,16 @@ def main():
     controller = Controller((20, 20, 1000))
     grid = Grid(controller)
     grid.get_seg(7).set_func(functions.fill(colors.RED))
-    grid.get_seg(4).set_func(functions.animate(functions.stripes((colors.RED, colors.BLUE), 3), 5))
+    grid.get_seg(4).set_func(functions.animate(functions.stripes((colors.RED, colors.BLUE), 3), 15))
+    grid.get_seg(2).set_func(functions.flip(functions.animate(functions.stripes((colors.RED, colors.BLUE), 3), 15)))
 
     # Begin emulation
     emulator = Emulator(grid)
-    timer = fpstimer.FPSTimer(30)
+    timer = fpstimer.FPSTimer(60)
+    i = 0
     while True:
-        start_time = perf_counter()
         grid.use_func()
         emulator.update()
-        end_time = perf_counter()
-        print(end_time - start_time)
         timer.sleep()
 
 

@@ -36,7 +36,18 @@ def stripes(colors, width):
 # Function modifiers - pass a function, return a modified version of the original.
 
 def flip(f):
-    pass
+    """
+    Flip the original function, so the last pixel is in the place of the first pixel, etc.
+    :param f: The function to flip.
+    :return: The flipped function.
+    """
+
+    def f2(**kwargs):
+        new_args = kwargs
+        new_args['pixel'] = new_args['seg_size'] - new_args['pixel']
+        return f(**new_args)
+
+    return f2
 
 
 def animate(f, speed):
@@ -50,8 +61,6 @@ def animate(f, speed):
     start_time = time.time()
 
     def f2(**kwargs):
-        if kwargs['pixel'] is None:
-            raise RuntimeError("pixel argument missing")
         new_args = kwargs
         new_args['pixel'] += round((time.time() - start_time) * speed)
         return f(**new_args)

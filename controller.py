@@ -1,5 +1,6 @@
 import functions
 
+
 # A controller for all of the LED strips.
 class Controller:
     def __init__(self, strip_sizes):
@@ -75,7 +76,7 @@ class LightStrip:
         :param end: The final pixel (exclusive) to modify.
         """
         for i in range(start, end):
-            self.pixels[i] = f(pixel=i, strip_size=self.size)
+            self.pixels[i] = f(pixel=i, seg_size=end - start)
 
     def get_pixels(self):
         """
