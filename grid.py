@@ -1,5 +1,6 @@
 SEG_COUNT = 29
 
+
 # A container class for all Segments that are part of the game. This class also has an emulator.
 class Grid:
     def __init__(self, controller):

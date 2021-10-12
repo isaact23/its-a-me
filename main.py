@@ -18,13 +18,8 @@ def main():
 
     # Begin emulation
     emulator = Emulator(grid)
-    start_time = time.perf_counter()
-    emulator.update()
-    end_time = time.perf_counter()
-    print(end_time - start_time)
     timer = fpstimer.FPSTimer(30)
     while True:
-        print("Yes")
         emulator.update()
         timer.sleep()
 

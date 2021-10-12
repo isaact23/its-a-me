@@ -54,7 +54,7 @@ def animate(f, speed):
             raise RuntimeError("pixel argument missing")
         new_args = kwargs
         new_args['pixel'] += round((time.time() - start_time) * speed)
-        return f(new_args)
+        return f(**new_args)
 
     return f2
 
