@@ -1,4 +1,4 @@
-import functions
+import rule
 
 
 # A controller for all of the LED strips.
@@ -37,7 +37,7 @@ class LightStrip:
         self.controller = controller
         self.size = size
         self.pixels = [(0, 0, 0)] * size
-        self.func = None  # Color generation anonymous function
+        self.rule = None  # Color generation rule
         # self.neopixel = neopixel.NeoPixel(board.D18, 150, auto_write=False)
 
     def get_segment(self, start, end):
@@ -54,29 +54,29 @@ class LightStrip:
 
         return self.Segment(self, start, end)
 
-    def set_func(self, f):
+    def set_rule(self, r):
         """
-        Set a function for LED color generation to be used on every use_func() call.
-        :param f: The anonymous function.
+        Set a Rule for LED color generation to be used on every use_rule() call.
+        :param r: The Rule object.
         """
-        self.func = f
+        self.rule = rule
 
-    def use_func(self):
+    def use_rule(self):
         """
-        Apply the function set by set_func() to generate LED strip colors on this LightStrip.
+        Apply the Rule set by set_rule() to generate LED strip colors on this LightStrip.
         """
-        if self.func is not None:
-            self.apply_func(self.func, 0, self.size)
+        if self.rule is not None:
+            self.apply_rule(self.rule, 0, self.size)
 
-    def apply_func(self, f, start, end):
+    def apply_rule(self, r, start, end):
         """
         Apply an anonymous function to generate colors for LEDs on this LightStrip between start and end.
-        :param f: The anonymous function to use.
+        :param r: The anonymous function to use.
         :param start: The first pixel (inclusive) to modify.
         :param end: The final pixel (exclusive) to modify.
         """
         for i in range(start, end):
-            self.pixels[i] = f(pixel=i, seg_size=end - start)
+            self.pixels[i] = r(pixel=i, seg_size=end - start)
 
     def get_pixels(self):
         """
@@ -109,31 +109,24 @@ class LightStrip:
                 self.flip = True
             else:
                 self.flip = False
-            self.func = None
+            self.rule = None
 
-        def func(self, f):
-            """
-            Apply an anonymous function to generate colors for LEDs on this Segment.
-            :param f: The anonymous function to use.
-            """
-            self.strip.func(f, self.start, self.end)
-
-        def set_func(self, f):
+        def set_rule(self, r):
             """
             Set a function for LED color generation to be used on every use_func() call.
-            :param f: The anonymous function.
+            :param r: The anonymous function.
             """
             if self.flip:
-                self.func = functions.flip(f)
+                self.rule = r.flip()
             else:
-                self.func = f
+                self.rule = r
 
-        def use_func(self):
+        def use_rule(self):
             """
             Apply the function set by set_func() to generate LED strip colors on this Segment.
             """
-            if self.func is not None:
-                self.strip.apply_func(self.func, self.start, self.end)
+            if self.rule is not None:
+                self.strip.apply_rule(self.rule, self.start, self.end)
 
         def get_pixels(self):
             """

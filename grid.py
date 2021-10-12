@@ -24,10 +24,10 @@ class Grid:
 
         return self.segments[segment]
 
-    def use_func(self):
+    def use_rule(self):
         """
         Tell all segments to update LEDs as per their functions.
         """
         for segment in self.segments:
-            segment.use_func()
+            segment.use_rule()
         self.controller.write()

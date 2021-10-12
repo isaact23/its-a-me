@@ -1,5 +1,3 @@
-#
-
 import time
 
 
@@ -9,15 +7,17 @@ class Rule:
     """
 
     def __init__(self):
-        self.f = None
+        self.func_chain = []  # Every time a new function is generated, append it here.
 
-    def f(self, **kwargs):
+    def __call__(self, **kwargs):
         """
         Evaluate this rule based on kwargs.
         :param kwargs: Properties needed to determine color, e.g. led index, segment size, etc.
         :return: The generated color.
         """
-        return self.f(**kwargs)
+        if len(self.func_chain) == 0:
+            return 0, 0, 0
+        return self.func_chain[-1](**kwargs)
 
     # Primary rules - these generate colors and don't modify any functions.
 
@@ -31,7 +31,7 @@ class Rule:
         def f(**kwargs):
             return color
 
-        self.f = f
+        self.func_chain.append(f)
         return self
 
     def stripes(self, colors, width):
@@ -47,7 +47,7 @@ class Rule:
                 raise RuntimeError("pixel argument missing")
             return colors[(kwargs['pixel'] // width) % len(colors)]
 
-        self.f = f
+        self.func_chain.append(f)
         return self
 
     # Secondary rules - modify the existing Rule.
@@ -55,34 +55,35 @@ class Rule:
     def flip(self):
         """
         Flip the original function, so the last pixel is in the place of the first pixel, etc.
-        :param f: The function to flip.
         :return: The flipped function.
         """
+
+        last_func = len(self.func_chain) - 1
 
         def f2(**kwargs):
             new_args = kwargs
             new_args['pixel'] = new_args['seg_size'] - new_args['pixel']
-            return self.f(**new_args)
+            return self.func_chain[last_func](**new_args)
 
-        self.f = f2
+        self.func_chain.append(f2)
         return self
 
     def animate(self, speed):
         """
         Animate the original function, causing it to move over time.
-        :param f: The function to modify.
         :param speed: The speed at which the function should move.
         :return: The modified function.
         """
 
         start_time = time.time()
+        last_func = len(self.func_chain) - 1
 
         def f2(**kwargs):
             new_args = kwargs
             new_args['pixel'] += round((time.time() - start_time) * speed)
-            return self.f(**new_args)
+            return self.func_chain[last_func](**new_args)
 
-        self.f = f2
+        self.func_chain.append(f2)
         return self
 
     # Others - fade, ripple, etc.
