@@ -1,5 +1,6 @@
 import tkinter as tk
 import sys
+from time import perf_counter
 
 # Set constants
 WIDTH = 100  # Width of each of the squares
@@ -29,6 +30,7 @@ for y in range(6):
 class Emulator:
     def __init__(self, grid):
         self.grid = grid
+        self.circles = {}  # LED circle objects, indexed by segments
 
         # Initialize window/canvas
         self.root = tk.Tk()
@@ -47,69 +49,90 @@ class Emulator:
             self.canvas.create_line(*coords[i], *coords[i + 15], width=LINE_WIDTH)
 
         self.canvas.pack()
-
+        self.gen_circles()
         self.update()
 
-    def update(self):
+    def gen_circles(self):
         """
-        Update the grid on-screen based on the Grid.
+        Create all circle objects representative of individual LEDs.
         """
         # Columns
         for y in range(5):
             for x in range(3):
-                seg = self.grid.get_seg(12 + x + y * 3)
+                seg_id = 12 + x + y * 3
+                seg = self.grid.get_seg(seg_id)
                 led_count = seg.size()
                 seg_length = WIDTH - (CIRCLE_MARGIN * 2)
                 led_space = seg_length / led_count
-                pixels = seg.get_pixels()
                 origin = coords[x + y * 3]
                 pixel_x = origin[0] - round(CIRCLE_SIZE / 2)
+                circles = []
                 for i in range(led_count):
                     pixel_y = origin[1] - CIRCLE_MARGIN - round(led_space * i) - CIRCLE_SIZE
-                    self.draw_circle(pixel_x, pixel_y, pixels[i])
+                    circles.append(self.draw_circle(pixel_x, pixel_y))
+                self.circles[seg_id] = circles
+
         # Rows
         for y in range(6):
             for x in range(2):
-                seg = self.grid.get_seg(x + y * 2)
+                seg_id = x + y * 2
+                seg = self.grid.get_seg(seg_id)
                 led_count = seg.size()
                 seg_length = WIDTH - (CIRCLE_MARGIN * 2)
                 led_space = seg_length / led_count
-                pixels = seg.get_pixels()
                 origin = coords[x + y * 3]
                 pixel_y = origin[1] - round(CIRCLE_SIZE / 2)
+                circles = []
                 for i in range(led_count):
                     pixel_x = origin[0] + CIRCLE_MARGIN + round(led_space * i)
-                    self.draw_circle(pixel_x, pixel_y, pixels[i])
+                    circles.append(self.draw_circle(pixel_x, pixel_y))
+                self.circles[seg_id] = circles
 
         # Railings
         seg_length = (WIDTH * 5) - (CIRCLE_MARGIN * 2)
         for x in range(2):
-            seg = self.grid.get_seg(27 + x)
+            seg_id = 27 + x
+            seg = self.grid.get_seg(seg_id)
             led_count = seg.size()
             led_space = seg_length / led_count
-            pixels = seg.get_pixels()
             if x == 0:
                 origin = (MARGIN, MARGIN + WIDTH * 5)
             else:
                 origin = (MARGIN + DIST * 2 + WIDTH * 2, MARGIN + WIDTH * 5)
             pixel_x = origin[0]
+            circles = []
             for i in range(led_count):
                 pixel_y = origin[1] - round(led_space * i) - CIRCLE_MARGIN - CIRCLE_SIZE
-                self.draw_circle(pixel_x, pixel_y, pixels[i])
+                circles.append(self.draw_circle(pixel_x, pixel_y))
+            self.circles[seg_id] = circles
+
+    def update(self):
+        """
+        Update the grid on-screen based on the Grid object.
+        """
+        for s in range(29):
+            circle_array = self.circles[s]
+            color_array = self.grid.get_seg(s).get_pixels()
+            for l in range(len(color_array)):
+                color = color_array[l]
+                r, g, b = color[0], color[1], color[2]
+                hex_color = f'#{r:02x}{g:02x}{b:02x}'
+                self.canvas.itemconfig(circle_array[l], fill=hex_color)
 
         self.root.update()
 
-    def draw_circle(self, x, y, color):
+    def draw_circle(self, x, y):
         """
         :param x: Left x coordinate of circle.
         :param y: Top y coordinate of circle.
         :param color: RGB circle color.
+        :return: The circle ID.
         """
         # Convert RGB color to tkinter format
-        r, g, b = color[0], color[1], color[2]
-        hex_color = f'#{r:02x}{g:02x}{b:02x}'
+        # r, g, b = color[0], color[1], color[2]
+        # hex_color = f'#{r:02x}{g:02x}{b:02x}'
 
-        self.canvas.create_oval(x, y, x + CIRCLE_SIZE, y + CIRCLE_SIZE, fill=hex_color)#, outline="")
+        return self.canvas.create_oval(x, y, x + CIRCLE_SIZE, y + CIRCLE_SIZE)
 
     def exit(self):
         """
