@@ -25,7 +25,6 @@ class Rule:
         """
         Set all LEDs to the same color.
         :param color: The color to set all pixels to.
-        :return: This Rule object.
         """
 
         def f(**kwargs):
@@ -39,7 +38,6 @@ class Rule:
         Generate stripes with alternating colors.
         :param colors: The colors to choose from.
         :param width: The width of each stripe.
-        :return: A lambda stripe function.
         """
 
         def f(**kwargs):
@@ -52,36 +50,80 @@ class Rule:
 
     # Secondary rules - modify the existing Rule.
 
-    def flip(self):
-        """
-        Flip the original function, so the last pixel is in the place of the first pixel, etc.
-        :return: The flipped function.
-        """
-
-        last_func = len(self.func_chain) - 1
-
-        def f2(**kwargs):
-            new_args = kwargs
-            new_args['pixel'] = new_args['seg_size'] - new_args['pixel']
-            return self.func_chain[last_func](**new_args)
-
-        self.func_chain.append(f2)
-        return self
-
     def animate(self, speed):
         """
         Animate the original function, causing it to move over time.
         :param speed: The speed at which the function should move.
-        :return: The modified function.
         """
 
         start_time = time.time()
         last_func = len(self.func_chain) - 1
 
         def f2(**kwargs):
-            new_args = kwargs
-            new_args['pixel'] -= round((time.time() - start_time) * speed)
-            return self.func_chain[last_func](**new_args)
+            kwargs['pixel'] -= round((time.time() - start_time) * speed)
+            return self.func_chain[last_func](**kwargs)
+
+        self.func_chain.append(f2)
+        return self
+
+    def fade_in(self, fade_time, delay):
+        """
+        Fade from black to the function color.
+        :param fade_time: How long the fade effect should take.
+        :param delay: Time in seconds to wait to fade in.
+        """
+
+        start_time = time.time()
+        last_func = len(self.func_chain) - 1
+
+        def f2(**kwargs):
+            time_elapsed = time.time() - start_time
+            if time_elapsed < delay:
+                return 0, 0, 0
+            full_color = self.func_chain[last_func](**kwargs)
+            if time_elapsed > fade_time + delay:
+                return full_color
+            percent = (time.time() - delay - start_time) / fade_time
+            new_color = round(full_color[0] * percent), round(full_color[1] * percent), round(full_color[2] * percent)
+            return new_color
+
+        self.func_chain.append(f2)
+        return self
+
+    def fade_out(self, fade_time, delay):
+        """
+        Fade from the function color to black.
+        :param fade_time: How long the fade effect should take.
+        :param delay: Time in seconds to wait to fade out.
+        """
+
+        start_time = time.time()
+        last_func = len(self.func_chain) - 1
+
+        def f2(**kwargs):
+            time_elapsed = time.time() - start_time
+            if time_elapsed > fade_time + delay:
+                return 0, 0, 0
+            full_color = self.func_chain[last_func](**kwargs)
+            if time_elapsed < delay:
+                return full_color
+            percent = 1 - ((time.time() - delay - start_time) / fade_time)
+            new_color = round(full_color[0] * percent), round(full_color[1] * percent), round(full_color[2] * percent)
+            return new_color
+
+        self.func_chain.append(f2)
+        return self
+
+    def flip(self):
+        """
+        Flip the original function, so the last pixel is in the place of the first pixel, etc.
+        """
+
+        last_func = len(self.func_chain) - 1
+
+        def f2(**kwargs):
+            kwargs['pixel'] = kwargs['seg_size'] - kwargs['pixel']
+            return self.func_chain[last_func](**kwargs)
 
         self.func_chain.append(f2)
         return self

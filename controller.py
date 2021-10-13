@@ -1,3 +1,4 @@
+#import neopixel, board
 from copy import deepcopy
 
 class Controller:
@@ -82,7 +83,7 @@ class LightStrip:
         :param first_pixel: Override index for first pixel to shift Rule.
         """
         if first_pixel is None:
-            first_pixel = start
+            first_pixel = 0
         for i in range(start, end):
             self.pixels[i] = r(pixel=first_pixel + i - start, seg_size=end - start)
 
