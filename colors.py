@@ -3,7 +3,7 @@
 # Colors
 DARK_RED = (80, 0, 0)
 RED = (255, 0, 0)
-ORANGE = (255, 50, 0)
+ORANGE = (255, 150, 0)
 YELLOW = (255, 255, 0)
 DARK_GREEN = (0, 80, 0)
 GREEN = (0, 255, 0)
@@ -24,7 +24,7 @@ RAINBOW = (RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK)
 VT = ((50, 10, 0), (255, 80, 0))
 
 # Countries
-USA = (RED, WHITE, BLUE, OFF)
+USA = (RED, WHITE, BLUE)
 GERMANY = (OFF, RED, YELLOW)
 MEXICO = (DARK_GREEN, WHITE, RED)  # Also Italy
 SPAIN = (RED, (100, 100, 0), RED)

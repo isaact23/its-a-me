@@ -6,7 +6,7 @@ from time import perf_counter
 WIDTH = 100  # Width of each of the squares
 MARGIN = 50  # Distance between outside of game and edge of window
 DIST = 75  # Distance between railing and tiles
-CIRCLE_MARGIN = 10  # Distance between coordinates and first circle of each Segment
+CIRCLE_MARGIN = 0  # Distance between coordinates and first circle of each Segment
 CIRCLE_SIZE = 5
 LINE_WIDTH = 2
 

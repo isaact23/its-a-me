@@ -1,8 +1,8 @@
-import rule
-
-
-# A controller for all of the LED strips.
 class Controller:
+    """
+    A controller for all of the LED strips.
+    """
+
     def __init__(self, strip_sizes):
         """
         Create a controller with LED strips turned off.
@@ -27,8 +27,11 @@ class Controller:
             self.strips[i].write()
 
 
-# An LED strip.
 class LightStrip:
+    """
+    An LED strip.
+    """
+
     def __init__(self, controller, size):
         """
         :param controller: The Controller object this LED strip is assigned to.
@@ -59,7 +62,7 @@ class LightStrip:
         Set a Rule for LED color generation to be used on every use_rule() call.
         :param r: The Rule object.
         """
-        self.rule = rule
+        self.rule = r
 
     def use_rule(self):
         """
@@ -68,15 +71,18 @@ class LightStrip:
         if self.rule is not None:
             self.apply_rule(self.rule, 0, self.size)
 
-    def apply_rule(self, r, start, end):
+    def apply_rule(self, r, start, end, first_pixel=None):
         """
         Apply an anonymous function to generate colors for LEDs on this LightStrip between start and end.
         :param r: The anonymous function to use.
         :param start: The first pixel (inclusive) to modify.
         :param end: The final pixel (exclusive) to modify.
+        :param first_pixel: Override index for first pixel to shift Rule.
         """
+        if first_pixel is None:
+            first_pixel = start
         for i in range(start, end):
-            self.pixels[i] = r(pixel=i, seg_size=end - start)
+            self.pixels[i] = r(pixel=first_pixel + i, seg_size=end - start)
 
     def get_pixels(self):
         """
@@ -90,8 +96,11 @@ class LightStrip:
         """
         pass
 
-    # A segment of pixels, defined by the start and end pixels of one of the light strips.
     class Segment:
+        """
+        A segment of pixels, defined by the start and end pixels of one of the light strips.
+        """
+
         def __init__(self, strip, start, end):
             """
             Initialize a new segment. If end is less than start, flip the Segment.
@@ -139,3 +148,34 @@ class LightStrip:
             :return: The number of LEDs this Segment controls.
             """
             return self.end - self.start
+
+
+class MultiSegment:
+    """
+    Manage multiple segments jointly such that LED animations move smoothly between segments.
+    """
+
+    def __init__(self, grid, *segs):
+        self.grid = grid
+        self.segments = []
+        # Get Segment objects by ID from grid
+        for seg in segs:
+            self.segments.append(grid.get_seg(seg))
+        self.rule = None
+
+    def set_rule(self, r):
+        """
+        Set a function for LED color generation to be used on every use_func() call.
+        :param r: The anonymous function.
+        """
+        self.rule = r
+
+    def use_rule(self):
+        """
+        Apply the function set by set_func() to generate LED strip colors on this MultiSegment.
+        """
+        if self.rule is not None:
+            cumulative_size = 0
+            for segment in self.segments:
+                segment.strip.apply_rule(self.rule, segment.start, segment.end, first_pixel=cumulative_size)
+                cumulative_size += segment.size()
