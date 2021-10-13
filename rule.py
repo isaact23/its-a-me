@@ -80,7 +80,7 @@ class Rule:
 
         def f2(**kwargs):
             new_args = kwargs
-            new_args['pixel'] += round((time.time() - start_time) * speed)
+            new_args['pixel'] -= round((time.time() - start_time) * speed)
             return self.func_chain[last_func](**new_args)
 
         self.func_chain.append(f2)

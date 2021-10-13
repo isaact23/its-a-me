@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 class Controller:
     """
     A controller for all of the LED strips.
@@ -82,7 +84,7 @@ class LightStrip:
         if first_pixel is None:
             first_pixel = start
         for i in range(start, end):
-            self.pixels[i] = r(pixel=first_pixel + i, seg_size=end - start)
+            self.pixels[i] = r(pixel=first_pixel + i - start, seg_size=end - start)
 
     def get_pixels(self):
         """
@@ -155,13 +157,25 @@ class MultiSegment:
     Manage multiple segments jointly such that LED animations move smoothly between segments.
     """
 
-    def __init__(self, grid, *segs):
+    def __init__(self, grid, *segs, flipped_segs=None):
+        """
+        :param grid: A Grid containing all segments in the game.
+        :param segs: A tuple of integers representing all segment indices.
+        :param flipped_segs: A tuple of integers representing segments from before that should be flipped.
+        """
+
         self.grid = grid
         self.segments = []
+        self.flipped_segments = []
         # Get Segment objects by ID from grid
         for seg in segs:
             self.segments.append(grid.get_seg(seg))
+        if flipped_segs is not None:
+            for seg in flipped_segs:
+                self.flipped_segments.append(grid.get_seg(seg))
+
         self.rule = None
+        self.flipped_rule = None
 
     def set_rule(self, r):
         """
@@ -169,6 +183,7 @@ class MultiSegment:
         :param r: The anonymous function.
         """
         self.rule = r
+        self.flipped_rule = deepcopy(r).flip()
 
     def use_rule(self):
         """
@@ -177,5 +192,8 @@ class MultiSegment:
         if self.rule is not None:
             cumulative_size = 0
             for segment in self.segments:
-                segment.strip.apply_rule(self.rule, segment.start, segment.end, first_pixel=cumulative_size)
+                if segment in self.flipped_segments:
+                    segment.strip.apply_rule(self.flipped_rule, segment.start, segment.end, first_pixel=cumulative_size)
+                else:
+                    segment.strip.apply_rule(self.rule, segment.start, segment.end, first_pixel=cumulative_size)
                 cumulative_size += segment.size()

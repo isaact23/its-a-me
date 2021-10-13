@@ -8,6 +8,7 @@ MARGIN = 50  # Distance between outside of game and edge of window
 DIST = 75  # Distance between railing and tiles
 CIRCLE_MARGIN = 0  # Distance between coordinates and first circle of each Segment
 CIRCLE_SIZE = 5
+RAIL_CIRCLE_SIZE = 10
 LINE_WIDTH = 2
 
 # Determine window size
@@ -69,7 +70,7 @@ class Emulator:
                 circles = []
                 for i in range(led_count):
                     pixel_y = origin[1] - CIRCLE_MARGIN - round(led_space * i) - CIRCLE_SIZE
-                    circles.append(self.draw_circle(pixel_x, pixel_y))
+                    circles.append(self.draw_circle(pixel_x, pixel_y, size=CIRCLE_SIZE))
                 self.circles[seg_id] = circles
 
         # Rows
@@ -85,7 +86,7 @@ class Emulator:
                 circles = []
                 for i in range(led_count):
                     pixel_x = origin[0] + CIRCLE_MARGIN + round(led_space * i)
-                    circles.append(self.draw_circle(pixel_x, pixel_y))
+                    circles.append(self.draw_circle(pixel_x, pixel_y, size=CIRCLE_SIZE))
                 self.circles[seg_id] = circles
 
         # Railings
@@ -102,8 +103,8 @@ class Emulator:
             pixel_x = origin[0]
             circles = []
             for i in range(led_count):
-                pixel_y = origin[1] - round(led_space * i) - CIRCLE_MARGIN - CIRCLE_SIZE
-                circles.append(self.draw_circle(pixel_x, pixel_y))
+                pixel_y = origin[1] - round(led_space * i)
+                circles.append(self.draw_circle(pixel_x, pixel_y, size=RAIL_CIRCLE_SIZE))
             self.circles[seg_id] = circles
 
     def update(self):
@@ -121,7 +122,7 @@ class Emulator:
 
         self.root.update()
 
-    def draw_circle(self, x, y):
+    def draw_circle(self, x, y, size):
         """
         :param x: Left x coordinate of circle.
         :param y: Top y coordinate of circle.
@@ -132,7 +133,7 @@ class Emulator:
         # r, g, b = color[0], color[1], color[2]
         # hex_color = f'#{r:02x}{g:02x}{b:02x}'
 
-        return self.canvas.create_oval(x, y, x + CIRCLE_SIZE, y + CIRCLE_SIZE)
+        return self.canvas.create_oval(x, y, x + size, y + size)
 
     def exit(self):
         """
