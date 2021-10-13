@@ -57,11 +57,11 @@ class Rule:
         """
 
         start_time = time.time()
-        last_func = len(self.func_chain) - 1  # TODO: Store the function here, not the index
+        last_func = self.get_last_func()
 
         def f2(**kwargs):
             kwargs['pixel'] -= round((time.time() - start_time) * speed)
-            return self.func_chain[last_func](**kwargs)
+            return last_func(**kwargs)
 
         self.func_chain.append(f2)
         return self
@@ -74,13 +74,13 @@ class Rule:
         """
 
         start_time = time.time()
-        last_func = len(self.func_chain) - 1
+        last_func = self.get_last_func()
 
         def f2(**kwargs):
             time_elapsed = time.time() - start_time
             if time_elapsed < delay:
                 return 0, 0, 0
-            full_color = self.func_chain[last_func](**kwargs)
+            full_color = last_func(**kwargs)
             if time_elapsed > fade_time + delay:
                 return full_color
             percent = (time.time() - delay - start_time) / fade_time
@@ -98,13 +98,13 @@ class Rule:
         """
 
         start_time = time.time()
-        last_func = len(self.func_chain) - 1
+        last_func = self.get_last_func()
 
         def f2(**kwargs):
             time_elapsed = time.time() - start_time
             if time_elapsed > fade_time + delay:
                 return 0, 0, 0
-            full_color = self.func_chain[last_func](**kwargs)
+            full_color = last_func(**kwargs)
             if time_elapsed < delay:
                 return full_color
             percent = 1 - ((time.time() - delay - start_time) / fade_time)
@@ -119,11 +119,11 @@ class Rule:
         Flip the original function, so the last pixel is in the place of the first pixel, etc.
         """
 
-        last_func = len(self.func_chain) - 1
+        last_func = self.get_last_func()
 
         def f2(**kwargs):
             kwargs['pixel'] = kwargs['seg_size'] - kwargs['pixel']
-            return self.func_chain[last_func](**kwargs)
+            return last_func(**kwargs)
 
         self.func_chain.append(f2)
         return self
@@ -134,13 +134,21 @@ class Rule:
         :param pixels: The number of pixels to shift.
         """
 
-        last_func = len(self.func_chain) - 1
+        last_func = self.get_last_func()
 
         def f2(**kwargs):
             kwargs['pixel'] += pixels
-            return self.func_chain[last_func](**kwargs)
+            return last_func(**kwargs)
 
         self.func_chain.append(f2)
         return self
 
     # Others - fade, ripple, etc.
+
+    # Miscellaneous functions
+
+    def get_last_func(self):
+        """
+        :return: The last function in the function chain.
+        """
+        return self.func_chain[-1]
