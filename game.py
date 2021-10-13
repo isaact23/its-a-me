@@ -1,3 +1,4 @@
+import controller
 from rule import Rule
 from colors import *
 
@@ -47,6 +48,7 @@ class Game:
                 self.grid.get_seg(28).set_rule(Rule().stripes((RED, ORANGE), width=8).animate(10).fade_in(2, 1))
 
                 # Have 5 boxes fade in and out in an orange color
+                """
                 box_rules = []
                 for i in range(5):
                     box_rules.append(Rule().fill(ORANGE).fade_in(0.25, 4 + 0.75 * i).fade_out(0.25, 4.5 + 0.75 * i))
@@ -54,5 +56,16 @@ class Game:
                 for i, box in enumerate(boxes):
                     for seg in box:
                         self.grid.get_seg(seg).set_rule(box_rules[i])
+                """
+                """self.grid.get_seg(12).set_rule(Rule().stripes(RAINBOW, width=5).fade_in(2, 1).offset(3))
+                self.grid.get_seg(15).set_rule(Rule().stripes(RAINBOW, width=5).fade_in(2, 1).offset(18))
+                self.grid.get_seg(18).set_rule(Rule().stripes(RAINBOW, width=5).animate(10).fade_in(2, 1))
+                self.grid.get_seg(21).set_rule(Rule().stripes(RAINBOW, width=5).animate(10).fade_in(2, 1))
+                self.grid.get_seg(24).set_rule(Rule().stripes(RAINBOW, width=5).animate(10).fade_in(2, 1))"""
+
+                right = controller.MultiSegment(self.grid, 12, 2, 16, 4, 18, 21, 24, 10, 11, 26,
+                                                9, 22, 7, 20, 17, 14, 1, 0,
+                                                flipped_segs=(4, 26, 9, 22, 20, 17, 14, 1, 0))
+                right.set_rule(Rule().stripes(RAINBOW, width=27).animate(20))
 
                 self.mode_initialized = True

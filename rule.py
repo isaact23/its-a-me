@@ -57,7 +57,7 @@ class Rule:
         """
 
         start_time = time.time()
-        last_func = len(self.func_chain) - 1
+        last_func = len(self.func_chain) - 1  # TODO: Store the function here, not the index
 
         def f2(**kwargs):
             kwargs['pixel'] -= round((time.time() - start_time) * speed)
@@ -123,6 +123,21 @@ class Rule:
 
         def f2(**kwargs):
             kwargs['pixel'] = kwargs['seg_size'] - kwargs['pixel']
+            return self.func_chain[last_func](**kwargs)
+
+        self.func_chain.append(f2)
+        return self
+
+    def offset(self, pixels):
+        """
+        Shift this Rule by a certain number of pixels.
+        :param pixels: The number of pixels to shift.
+        """
+
+        last_func = len(self.func_chain) - 1
+
+        def f2(**kwargs):
+            kwargs['pixel'] += pixels
             return self.func_chain[last_func](**kwargs)
 
         self.func_chain.append(f2)

@@ -72,20 +72,11 @@ class LightStrip:
         Apply the Rule set by set_rule() to generate LED strip colors on this LightStrip.
         """
         if self.rule is not None:
-            self.apply_rule(self.rule, 0, self.size)
+            for i in range(self.size):
+                self.set_pixel(i, self.rule(pixel=i, seg_size=self.size()))
 
-    def apply_rule(self, r, start, end, first_pixel=None):
-        """
-        Apply an anonymous function to generate colors for LEDs on this LightStrip between start and end.
-        :param r: The anonymous function to use.
-        :param start: The first pixel (inclusive) to modify.
-        :param end: The final pixel (exclusive) to modify.
-        :param first_pixel: Override index for first pixel to shift Rule.
-        """
-        if first_pixel is None:
-            first_pixel = 0
-        for i in range(start, end):
-            self.pixels[i] = r(pixel=first_pixel + i - start, seg_size=end - start)
+    def set_pixel(self, pixel, color):
+        self.pixels[pixel] = color
 
     def get_pixels(self):
         """
@@ -138,7 +129,8 @@ class LightStrip:
             Apply the function set by set_func() to generate LED strip colors on this Segment.
             """
             if self.rule is not None:
-                self.strip.apply_rule(self.rule, self.start, self.end)
+                for i in range(self.start, self.end):
+                    self.strip.set_pixel(i, self.rule(pixel=i - self.start, seg_size=self.size()))
 
         def get_pixels(self):
             """
@@ -186,15 +178,10 @@ class MultiSegment:
         self.rule = r
         self.flipped_rule = deepcopy(r).flip()
 
-    def use_rule(self):
-        """
-        Apply the function set by set_func() to generate LED strip colors on this MultiSegment.
-        """
-        if self.rule is not None:
-            cumulative_size = 0
-            for segment in self.segments:
-                if segment in self.flipped_segments:
-                    segment.strip.apply_rule(self.flipped_rule, segment.start, segment.end, first_pixel=cumulative_size)
-                else:
-                    segment.strip.apply_rule(self.rule, segment.start, segment.end, first_pixel=cumulative_size)
-                cumulative_size += segment.size()
+        cumulative_size = 0
+        for segment in self.segments:
+            if segment in self.flipped_segments:
+                segment.set_rule(deepcopy(self.rule).offset(cumulative_size).flip())
+            else:
+                segment.set_rule(deepcopy(self.rule).offset(cumulative_size))
+            cumulative_size += segment.size()
