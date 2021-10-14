@@ -32,3 +32,14 @@ class Grid:
         for segment in self.segments:
             segment.use_rule()
         self.controller.write()
+
+    def clear_rules(self, clear_grid=True, clear_railings=True):
+        """
+        Erase rules for some Segments.
+        :param clear_grid: Whether to clear the grid.
+        :param clear_railings: Whether to clear railings.
+        """
+        if clear_grid or clear_railings:
+            for i, segment in enumerate(self.segments):
+                if clear_grid and i < 27 or clear_railings and i > 26:
+                    segment.rule = None

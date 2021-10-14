@@ -17,11 +17,11 @@ def main():
     emulator = Emulator(grid)
     timer = fpstimer.FPSTimer(60)
     while True:
-        game.update()
-        grid.use_rule()
-        control.write()
-        emulator.update()
-        timer.sleep()
+        game.update()  # Update game logic
+        grid.use_rule()  # Update colors
+        control.write()  # Update LED strips
+        emulator.update()  # Update GUI
+        timer.sleep()  # 60 FPS
 
 
 if __name__ == "__main__":

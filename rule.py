@@ -21,14 +21,18 @@ class Rule:
 
     # Primary rules - these generate colors and don't modify any functions.
 
-    def fill(self, color):
+    def fill(self, color, start=None, end=None):
         """
-        Set all LEDs to the same color.
+        Set LEDs in a range to the same color.
         :param color: The color to set all pixels to.
+        :param start: The first pixel to modify (inclusive, optional).
+        :param end: The last pixel to modify (exclusive, optional).
         """
 
         def f(**kwargs):
-            return color
+            if start is None or end is None or start <= kwargs['pixel'] < end:
+                return color
+            return 0, 0, 0
 
         self.func_chain.append(f)
         return self
@@ -81,7 +85,7 @@ class Rule:
             if time_elapsed < delay:
                 return 0, 0, 0
             full_color = last_func(**kwargs)
-            if time_elapsed > fade_time + delay:
+            if fade_time == 0 or time_elapsed > fade_time + delay:
                 return full_color
             percent = (time.time() - delay - start_time) / fade_time
             new_color = round(full_color[0] * percent), round(full_color[1] * percent), round(full_color[2] * percent)
