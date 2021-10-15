@@ -5,6 +5,9 @@ from rule import Rule
 from colors import *
 
 # TODO: Review iosoft.blog
+# https://iosoft.blog/2020/09/29/raspberry-pi-multi-channel-ws2812/
+
+CASCADE_TIME = 0.8
 
 BOX0 = 0, 12, 2, 13
 BOX1 = 1, 13, 3, 14
@@ -38,7 +41,7 @@ class Game:
         """
         self.controller = control
         self.grid = grid
-        self.mode = 100
+        self.mode = 200
         self.mode_initialized = False
         self.start_time = 0
         self.sound_player = sounds.SoundPlayer()
@@ -89,13 +92,16 @@ class Game:
 
         elif self.mode == 200:
             row1 = MultiSegment(self.grid, 10, 11, 24, 25, 26, 8, 9).set_rule(Rule().fill(WHITE).fade_in(0, 0).fade_out(1, 2))
-            row2 = MultiSegment(self.grid, 21, 6, 22, 7, 23).set_rule(Rule().fill(WHITE).fade_in(0, 0.8).fade_out(1, 2.8))
-            row2 = MultiSegment(self.grid, 18, 4, 19, 5, 20).set_rule(Rule().fill(WHITE).fade_in(0, 1.6).fade_out(1, 3.6))
-            row2 = MultiSegment(self.grid, 15, 2, 16, 3, 17).set_rule(Rule().fill(WHITE).fade_in(0, 2.4).fade_out(1, 4.4))
-            row2 = MultiSegment(self.grid, 12, 0, 13, 1, 14).set_rule(Rule().fill(WHITE).fade_in(0, 3.2).fade_out(1, 5.2))
+            row2 = MultiSegment(self.grid, 21, 6, 22, 7, 23).set_rule(Rule().fill(WHITE).fade_in(0, CASCADE_TIME).fade_out(1, 2 + CASCADE_TIME))
+            row2 = MultiSegment(self.grid, 18, 4, 19, 5, 20).set_rule(Rule().fill(WHITE).fade_in(0, CASCADE_TIME * 2).fade_out(1, 2 + CASCADE_TIME * 2))
+            row2 = MultiSegment(self.grid, 15, 2, 16, 3, 17).set_rule(Rule().fill(WHITE).fade_in(0, CASCADE_TIME * 3).fade_out(1, 2 + CASCADE_TIME * 3))
+            row2 = MultiSegment(self.grid, 12, 0, 13, 1, 14).set_rule(Rule().fill(WHITE).fade_in(0, CASCADE_TIME * 4).fade_out(1, 2 + CASCADE_TIME * 4))
 
         elif self.mode == 300:
-            pass
+            left = MultiSegment(self.grid, 0, 12, 2).set_rule(Rule().fill(WHITE).blink(0.5, 1.5))
+            right = MultiSegment(self.grid, 1, 14, 3).set_rule(Rule().fill(WHITE).blink(0.5, 1.5))
+            mid = self.grid.get_seg(13).set_rule(Rule().fill(WHITE).blink(0.5, 0.5))
+
 
     def update_mode(self):
         """
@@ -116,14 +122,10 @@ class Game:
                 if time_elapsed > 10:
                     self.set_mode(100)
         elif self.mode <= 299:
-            if self.undertale_count < 1 or \
-                    self.undertale_count < 2 and time_elapsed > 0.8 or \
-                    self.undertale_count < 3 and time_elapsed > 1.6 or \
-                    self.undertale_count < 4 and time_elapsed > 2.4 or \
-                    self.undertale_count < 5 and time_elapsed > 3.2:
+            if self.undertale_count < 5 and time_elapsed > self.undertale_count * CASCADE_TIME:
                 self.sound_player.play(sounds.UNDERTALE)
                 self.undertale_count += 1
-            if time_elapsed > 10:
+            if time_elapsed > 7:
                 self.set_mode(300)
 
     def set_mode(self, mode, clear_grid=False, clear_railings=False):
