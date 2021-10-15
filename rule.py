@@ -70,6 +70,34 @@ class Rule:
         self.func_chain.append(f2)
         return self
 
+    def blink(self, time_on, time_off, start_on=False):
+        """
+        Spend time_on with function enabled and time_off black, alternating.
+        :param time_on: Time (s) with function enabled.
+        :param time_off: Time (s) with lights off.
+        :param start_on: Whether to start enabled.
+        """
+
+        start_time = time.time()
+        last_func = self.get_last_func()
+
+        def f2(**kwargs):
+            time_elapsed = time.time() - start_time
+            time_since_blink = time_elapsed % (time_on + time_off)
+            if time_since_blink < time_on:
+                return last_func(**kwargs)
+            else:
+                return 0, 0, 0
+
+        self.func_chain.append(f2)
+        return self
+
+    def delay(self, delay_time):
+        """
+        Delay a function.
+        :param delay_time: Seconds to delay by.
+        """
+
     def fade_in(self, fade_time, delay):
         """
         Fade from black to the function color.
