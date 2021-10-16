@@ -70,15 +70,16 @@ class Rule:
         self.func_chain.append(f2)
         return self
 
-    def blink(self, time_on, time_off, start_on=False):
+    def blink(self, time_on, time_off, start_time=None):
         """
         Spend time_on with function enabled and time_off black, alternating.
         :param time_on: Time (s) with function enabled.
         :param time_off: Time (s) with lights off.
-        :param start_on: Whether to start enabled.
+        :param start_time: Start time override (s).
         """
 
-        start_time = time.time()
+        if start_time is None:
+            start_time = time.time()
         last_func = self.get_last_func()
 
         def f2(**kwargs):

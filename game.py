@@ -1,14 +1,24 @@
-import time, keyboard
+import keyboard
+import random
+import time
+
 import sounds
+from colors import *
 from controller import MultiSegment
 from rule import Rule
-from colors import *
 
 # TODO: Review iosoft.blog
 # https://iosoft.blog/2020/09/29/raspberry-pi-multi-channel-ws2812/
 
-CASCADE_TIME = 0.8
+# Key definitions
+KEY_START = 'space'
+KEY_BOXES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
 
+# Game constants
+CASCADE_TIME = 0.8
+BLINK_TIMES = [0.5, 0]
+
+# Box definitions
 BOX0 = 0, 12, 2, 13
 BOX1 = 1, 13, 3, 14
 BOX2 = 2, 15, 4, 16
@@ -19,6 +29,13 @@ BOX6 = 6, 21, 8, 22
 BOX7 = 7, 22, 9, 23
 BOX8 = 8, 24, 10, 25
 BOX9 = 9, 25, 11, 26
+
+
+def gen_correct_tiles():
+    """
+    Generate a 5 element array of bits, 0 representing left tile is correct, 1 means right is correct, for each row.
+    """
+    return [random.randint(0, 1) for i in range(5)]
 
 
 class Game:
@@ -41,10 +58,11 @@ class Game:
         """
         self.controller = control
         self.grid = grid
-        self.mode = 200
+        self.mode = 300
         self.mode_initialized = False
         self.start_time = 0
         self.sound_player = sounds.SoundPlayer()
+        self.correct_tiles = gen_correct_tiles()
 
         # Variables used by update_mode()
         self.undertale_count = 0
@@ -85,23 +103,32 @@ class Game:
         elif self.mode == 102:
             # Have a white light zoom around the strip
             multi_seg = MultiSegment(self.grid, 12, 2, 16, 4, 18, 21, 24, 10, 11, 26,
-                                                9, 22, 7, 20, 17, 14, 1, 0,
-                                                flipped_segs=(4, 26, 9, 22, 20, 17, 14, 1, 0))
+                                     9, 22, 7, 20, 17, 14, 1, 0,
+                                     flipped_segs=(4, 26, 9, 22, 20, 17, 14, 1, 0))
             multi_seg.set_rule(Rule().fill(WHITE, -15, 0).animate(100))
             # multi_seg.set_rule(Rule().stripes(RAINBOW, width=27).animate(20).fade_in(1, 2))
 
         elif self.mode == 200:
-            row1 = MultiSegment(self.grid, 10, 11, 24, 25, 26, 8, 9).set_rule(Rule().fill(WHITE).fade_in(0, 0).fade_out(1, 2))
-            row2 = MultiSegment(self.grid, 21, 6, 22, 7, 23).set_rule(Rule().fill(WHITE).fade_in(0, CASCADE_TIME).fade_out(1, 2 + CASCADE_TIME))
-            row2 = MultiSegment(self.grid, 18, 4, 19, 5, 20).set_rule(Rule().fill(WHITE).fade_in(0, CASCADE_TIME * 2).fade_out(1, 2 + CASCADE_TIME * 2))
-            row2 = MultiSegment(self.grid, 15, 2, 16, 3, 17).set_rule(Rule().fill(WHITE).fade_in(0, CASCADE_TIME * 3).fade_out(1, 2 + CASCADE_TIME * 3))
-            row2 = MultiSegment(self.grid, 12, 0, 13, 1, 14).set_rule(Rule().fill(WHITE).fade_in(0, CASCADE_TIME * 4).fade_out(1, 2 + CASCADE_TIME * 4))
+            row1 = MultiSegment(self.grid, 10, 11, 24, 25, 26, 8, 9).set_rule(
+                Rule().fill(WHITE).fade_in(0, 0).fade_out(1, 2))
+            row2 = MultiSegment(self.grid, 21, 6, 22, 7, 23).set_rule(
+                Rule().fill(WHITE).fade_in(0, CASCADE_TIME).fade_out(1, 2 + CASCADE_TIME))
+            row2 = MultiSegment(self.grid, 18, 4, 19, 5, 20).set_rule(
+                Rule().fill(WHITE).fade_in(0, CASCADE_TIME * 2).fade_out(1, 2 + CASCADE_TIME * 2))
+            row2 = MultiSegment(self.grid, 15, 2, 16, 3, 17).set_rule(
+                Rule().fill(WHITE).fade_in(0, CASCADE_TIME * 3).fade_out(1, 2 + CASCADE_TIME * 3))
+            row2 = MultiSegment(self.grid, 12, 0, 13, 1, 14).set_rule(
+                Rule().fill(WHITE).fade_in(0, CASCADE_TIME * 4).fade_out(1, 2 + CASCADE_TIME * 4))
 
         elif self.mode == 300:
-            left = MultiSegment(self.grid, 0, 12, 2).set_rule(Rule().fill(WHITE).blink(0.5, 1.5))
-            right = MultiSegment(self.grid, 1, 14, 3).set_rule(Rule().fill(WHITE).blink(0.5, 1.5))
-            mid = self.grid.get_seg(13).set_rule(Rule().fill(WHITE).blink(0.5, 0.5))
-
+            left = MultiSegment(self.grid, 0, 12, 2).set_rule(
+                Rule().fill(WHITE).blink(
+                    BLINK_TIMES[0], BLINK_TIMES[0] + BLINK_TIMES[1] * 2))
+            right = MultiSegment(self.grid, 1, 14, 3).set_rule(
+                Rule().fill(WHITE).blink(
+                    BLINK_TIMES[0], BLINK_TIMES[0] + BLINK_TIMES[1] * 2,
+                    start_time=time.time() - BLINK_TIMES[0] - BLINK_TIMES[1]))
+            mid = self.grid.get_seg(13).set_rule(Rule().fill(WHITE).blink(BLINK_TIMES[0], BLINK_TIMES[1]))
 
     def update_mode(self):
         """
@@ -110,7 +137,7 @@ class Game:
         time_elapsed = time.time() - self.start_time
         if self.mode <= 199:
             # On space press, move to stage 2 - start the game.
-            if keyboard.is_pressed('space'):
+            if keyboard.is_pressed(KEY_START):
                 self.set_mode(200, clear_grid=True, clear_railings=True)
                 self.undertale_count = 0
             elif self.mode == 100:
@@ -127,6 +154,11 @@ class Game:
                 self.undertale_count += 1
             if time_elapsed > 7:
                 self.set_mode(300)
+        elif self.mode <= 399:
+            # Wait for user input on first row
+            if self.mode == 300:
+                if keyboard.is_pressed(KEY_BOXES[0]):
+                    se
 
     def set_mode(self, mode, clear_grid=False, clear_railings=False):
         """
