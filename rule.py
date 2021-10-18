@@ -37,6 +37,14 @@ class Rule:
         self.func_chain.append(f)
         return self
 
+    def hue(self, low_hue, high_hue):
+        """
+        Generate a rainbow sine wave ranging from low_hue to high_hue.
+        :param low_hue: The low hue value (0 thru 255)
+        :param high_hue: The high hue value (0 thru 255)
+        """
+        pass
+
     def stripes(self, colors, width):
         """
         Generate stripes with alternating colors.
@@ -92,12 +100,6 @@ class Rule:
 
         self.func_chain.append(f2)
         return self
-
-    def delay(self, delay_time):
-        """
-        Delay a function.
-        :param delay_time: Seconds to delay by.
-        """
 
     def fade_in(self, fade_time, delay):
         """
