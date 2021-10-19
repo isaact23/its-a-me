@@ -156,7 +156,7 @@ class MultiSegment:
     Manage multiple segments jointly such that LED animations move smoothly between segments.
     """
 
-    def __init__(self, grid, *segs, flipped_segs=None):
+    def __init__(self, grid, *segs, continuous=True, flipped_segs=None):
         """
         :param grid: A Grid containing all segments in the game.
         :param segs: A tuple of integers representing all segment indices.
@@ -164,6 +164,7 @@ class MultiSegment:
         """
 
         self.grid = grid
+        self.continuous = continuous
         self.segments = []
         self.flipped_segments = []
         # Get Segment objects by ID from grid
@@ -190,4 +191,5 @@ class MultiSegment:
                 segment.set_rule(deepcopy(self.rule).offset(cumulative_size).flip())
             else:
                 segment.set_rule(deepcopy(self.rule).offset(cumulative_size))
-            cumulative_size += segment.size()
+            if self.continuous:
+                cumulative_size += segment.size()

@@ -9,7 +9,7 @@ from game import Game
 
 
 def main():
-    control = Controller((20, 20, 2000, 20, 20, 20, 20, 20, 20, 20, 20))
+    control = Controller((20, 20, 2000, 20, 1000))
     grid = Grid(control)
     game = Game(control, grid)
 

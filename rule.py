@@ -1,4 +1,4 @@
-import time
+import time, math, colorsys
 
 
 class Rule:
@@ -37,13 +37,28 @@ class Rule:
         self.func_chain.append(f)
         return self
 
-    def hue(self, low_hue, high_hue):
+    def hue(self, low_hue, high_hue, frequency=1):
         """
         Generate a rainbow sine wave ranging from low_hue to high_hue.
-        :param low_hue: The low hue value (0 thru 255)
-        :param high_hue: The high hue value (0 thru 255)
+        :param low_hue: The low hue value (0 thru 360)
+        :param high_hue: The high hue value (0 thru 360)
+        :param frequency: How often waves should appear (inverse of wavelength).
         """
-        pass
+
+        def f(**kwargs):
+            mid = ((high_hue + low_hue) / 2) / 360
+            amplitude = (high_hue - low_hue) / 720
+            hue = mid + amplitude * math.sin(kwargs['pixel'] * frequency)
+            # Ensure hue is between 0 and 1
+            while hue > 1:
+                hue -= 1
+            while hue < 0:
+                hue += 1
+            rgb = colorsys.hsv_to_rgb(hue, 1, 1)
+            return tuple(round(c * 255) for c in rgb)
+
+        self.func_chain.append(f)
+        return self
 
     def stripes(self, colors, width):
         """
@@ -53,8 +68,6 @@ class Rule:
         """
 
         def f(**kwargs):
-            if kwargs['pixel'] is None:
-                raise RuntimeError("pixel argument missing")
             return colors[(kwargs['pixel'] // width) % len(colors)]
 
         self.func_chain.append(f)
@@ -101,6 +114,24 @@ class Rule:
         self.func_chain.append(f2)
         return self
 
+    def crop(self, first=None, last=None):
+        """
+        Only show the pixels within a specified range.
+        :param first: First pixel in the range (inclusive, optional)
+        :param last: Last pixel in the range (exclusive, optional)
+        """
+        last_func = self.get_last_func()
+
+        def f2(**kwargs):
+            if first is not None and kwargs['pixel'] < first:
+                return 0, 0, 0
+            if last is not None and kwargs['pixel'] >= last:
+                return 0, 0, 0
+            return last_func(**kwargs)
+
+        self.func_chain.append(f2)
+        return self
+
     def fade_in(self, fade_time, delay):
         """
         Fade from black to the function color.
@@ -119,7 +150,7 @@ class Rule:
             if fade_time == 0 or time_elapsed > fade_time + delay:
                 return full_color
             percent = (time.time() - delay - start_time) / fade_time
-            new_color = round(full_color[0] * percent), round(full_color[1] * percent), round(full_color[2] * percent)
+            new_color = tuple(round(c * percent) for c in full_color)
             return new_color
 
         self.func_chain.append(f2)
@@ -186,4 +217,6 @@ class Rule:
         """
         :return: The last function in the function chain.
         """
+        if len(self.func_chain) == 0:
+            raise RuntimeError("Tried to call modifier function on Rule without defining the rule first.")
         return self.func_chain[-1]

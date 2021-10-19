@@ -117,12 +117,11 @@ class Emulator:
             for l in range(len(color_array)):
                 color = color_array[l]
                 r, g, b = color[0], color[1], color[2]
-                hex_color = f'#{r:02x}{g:02x}{b:02x}'
-                # TODO: Determine source of color error
                 try:
-                    self.canvas.itemconfig(circle_array[l], fill=hex_color)
-                except:
-                    print("Error with color:", color, hex_color)
+                    hex_color = f'#{r:02x}{g:02x}{b:02x}'
+                except ValueError:
+                    raise RuntimeError("LED strip updated with float color value", r, g, b)
+                self.canvas.itemconfig(circle_array[l], fill=hex_color)
 
         self.root.update()
 

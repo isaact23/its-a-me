@@ -16,7 +16,7 @@ KEY_BOXES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
 
 # Game constants
 CASCADE_TIME = 0.8
-DECIDE_BLINK_TIMES = (0.5, 0, 0.4, 0, 0.3, 0, 0.25, 0, 0.2, 0)
+DECIDE_BLINK_TIMES = (0.25, 0.25, 0.4, 0, 0.3, 0, 0.25, 0, 0.2, 0)
 REVEAL_BLINK_TIMES = (0.2, 0.18, 0.16, 0.14, 0.12)
 
 # Box definitions
@@ -30,9 +30,9 @@ BOXES = ((0, 12, 2, 13),
          (7, 22, 9, 23),
          (8, 24, 10, 25),
          (9, 25, 11, 26))
-GRID = (i for i in range(27))
+GRID = tuple(i for i in range(27))
 RAILS = (27, 28)
-ALL_SEGS = (i for i in range(29))
+ALL_SEGS = tuple(i for i in range(29))
 
 
 def gen_correct_tiles():
@@ -57,12 +57,12 @@ class Game:
     def __init__(self, control, grid):
         """
         Initialize Game.
-        :param controller: LED controller.
+        :param control: LED controller.
         :param grid: Segment container class.
         """
         self.controller = control
         self.grid = grid
-        self.mode = 300
+        self.mode = 100
         self.mode_initialized = False
         self.start_time = 0
         self.sound_player = sounds.SoundPlayer()
@@ -86,8 +86,13 @@ class Game:
 
     def init_mode(self):
         """
-        Initialize Rules for Segments for mode specified in self.mode.
+        Initialize mode specified by self.mode.
         """
+        # Mode 0 - testing purposes only
+        if self.mode == 0:
+            # MultiSegment(self.grid, 12, 15, 18, 21, 24, 10, 11).set_rule(Rule().hue(60, 310, 0.1))
+            MultiSegment(self.grid, 12, 15, 18, 21, 24, 10, 11).set_rule(Rule().fill(RED).crop(40, 990))
+
         # Mode 100 - attract sequence 1
         if self.mode == 100:
             # Railings are moving red/orange stripes
@@ -122,6 +127,7 @@ class Game:
                 Rule().fill(WHITE).fade_in(0, CASCADE_TIME * 4).fade_out(1, 2 + CASCADE_TIME * 4))
 
         elif self.mode == 300:
+            self.sound_player.play(sounds.FINAL_FANTASY)
             MultiSegment(self.grid, 0, 12, 2).set_rule(
                 Rule().fill(WHITE).blink(
                     DECIDE_BLINK_TIMES[0], DECIDE_BLINK_TIMES[0] + DECIDE_BLINK_TIMES[1] * 2))
@@ -133,20 +139,24 @@ class Game:
 
         # Blink box 0
         elif self.mode == 301:
+            self.sound_player.stop()
             MultiSegment(self.grid, *BOXES[0]).set_rule(
                 Rule().fill(BLUE).blink(REVEAL_BLINK_TIMES[0], REVEAL_BLINK_TIMES[0]))
         # Blink box 1
         elif self.mode == 302:
+            self.sound_player.stop()
             MultiSegment(self.grid, *BOXES[1]).set_rule(
                 Rule().fill(BLUE).blink(REVEAL_BLINK_TIMES[0], REVEAL_BLINK_TIMES[0]))
         # Win box 0
         elif self.mode == 303:
             MultiSegment(self.grid, *ALL_SEGS).set_rule(Rule().stripes((GREEN, WHITE), 3).animate(12))
             MultiSegment(self.grid, *BOXES[0]).set_rule(Rule().fill(GREEN))
+        # Lose box 0
         elif self.mode == 304:
-            MultiSegment(self.grid, *ALL_SEGS).set_rule(Rule().stripes((RED, OFF), 10).animate(12))
-            MultiSegment(self.grid, *BOXES[0], flipped_segs=(BOXES[0][0], BOXES[0][3])).set_rule(Rule().stripes((RED, OFF), 3).animate(10))
-
+            MultiSegment(self.grid, *ALL_SEGS, continuous=False).set_rule(
+                Rule().stripes((RED, OFF), 10).crop(-30, 200).animate(12))
+            MultiSegment(self.grid, *BOXES[0], flipped_segs=(BOXES[0][0], BOXES[0][3])).set_rule(
+                Rule().stripes((RED, OFF), 3).animate(10).fade_out(1.2, 2.5))
 
     def update_mode(self):
         """
@@ -199,7 +209,7 @@ class Game:
                     self.set_mode(self.mode + 7)  # Next round
             # If losing,
             elif str(self.mode)[2] == "4":
-                if time_elapsed > 10:
+                if time_elapsed > 5:
                     self.set_mode(100, clear_grid=True, clear_railings=True)
                     self.reset_game()
 
