@@ -16,8 +16,10 @@ KEY_BOXES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
 
 # Game constants
 CASCADE_TIME = 0.8
-DECIDE_BLINK_TIMES = (0.25, 0.25, 0.4, 0, 0.3, 0, 0.25, 0, 0.2, 0)
+DECIDE_BLINK_TIMES = (0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25)
 REVEAL_BLINK_TIMES = (0.2, 0.18, 0.16, 0.14, 0.12)
+WIN_TIME = 3.5
+LOSE_TIME = 5
 
 # Box definitions
 BOXES = ((0, 12, 2, 13),
@@ -39,7 +41,9 @@ def gen_correct_tiles():
     """
     Generate a 5 element array of bits, 0 representing left tile is correct, 1 means right is correct, for each row.
     """
-    return [random.randint(0, 1) for i in range(5)]
+    correct_tiles = [random.randint(0, 1) for i in range(5)]
+    print(correct_tiles)
+    return correct_tiles
 
 
 class Game:
@@ -48,10 +52,7 @@ class Game:
     govern how rules are generated for lights and how input is handled.
     Mode 100 - attract
     Mode 200 - startup
-    Mode 300 - step
-    Mode 400 - correct
-    Mode 500 - fail
-    Mode 600 - win
+    Mode 300 - gameplay
     """
 
     def __init__(self, control, grid):
@@ -60,9 +61,10 @@ class Game:
         :param control: LED controller.
         :param grid: Segment container class.
         """
+        self.box = -1
         self.controller = control
         self.grid = grid
-        self.mode = 100
+        self.mode = 300
         self.mode_initialized = False
         self.new_mode = False
         self.start_time = 0
@@ -70,6 +72,7 @@ class Game:
         self.correct_tiles = gen_correct_tiles()
 
         # Variables used by update()
+        self.row = 0
         self.undertale_count = 0
         self.started_scream = False
 
@@ -148,76 +151,104 @@ class Game:
             if digits[2] == 0:
                 if not self.mode_initialized:
                     self.sound_player.play(sounds.FINAL_FANTASY)
-                    MultiSegment(self.grid, 0, 12, 2).set_rule(
+                    left_box = self.row * 2
+                    right_box = left_box + 1
+                    blink_on = DECIDE_BLINK_TIMES[left_box]
+                    blink_off = DECIDE_BLINK_TIMES[right_box]
+                    left_segs = [box for i, box in enumerate(BOXES[left_box]) if i != 3]
+                    right_segs = [box for i, box in enumerate(BOXES[right_box]) if i != 1]
+                    MultiSegment(self.grid, *left_segs).set_rule(
                         Rule().fill(WHITE).blink(
-                            DECIDE_BLINK_TIMES[0], DECIDE_BLINK_TIMES[0] + DECIDE_BLINK_TIMES[1] * 2))
-                    MultiSegment(self.grid, 1, 14, 3).set_rule(
+                            blink_on, blink_on + blink_off * 2))
+                    MultiSegment(self.grid, *right_segs).set_rule(
                         Rule().fill(WHITE).blink(
-                            DECIDE_BLINK_TIMES[0], DECIDE_BLINK_TIMES[0] + DECIDE_BLINK_TIMES[1] * 2,
-                            start_time=time.time() - DECIDE_BLINK_TIMES[0] - DECIDE_BLINK_TIMES[1]))
-                    self.grid.get_seg(13).set_rule(
-                        Rule().fill(WHITE).blink(DECIDE_BLINK_TIMES[0], DECIDE_BLINK_TIMES[1]))
+                            blink_on, blink_on + blink_off * 2,
+                            start_time=time.time() - blink_on - blink_off))
+                    self.grid.get_seg(self.row * 3 + 13).set_rule(
+                        Rule().fill(WHITE).blink(blink_on, blink_off))
 
-                if keyboard.is_pressed(KEY_BOXES[0]):
-                    self.set_mode(301, clear_grid=True)  # Blink left box
-                elif keyboard.is_pressed(KEY_BOXES[1]):
-                    self.set_mode(302, clear_grid=True)  # Blink right box
+                # Left box
+                if keyboard.is_pressed(KEY_BOXES[self.row * 2]):
+                    self.set_mode(301, clear_grid=True)
+                    self.box = self.row * 2
+                # Right box
+                elif keyboard.is_pressed(KEY_BOXES[self.row * 2 + 1]):
+                    self.set_mode(301, clear_grid=True)
+                    self.box = self.row * 2 + 1
 
-            # If blinking on the left,
+            # If blinking,
             elif digits[2] == 1:
                 if not self.mode_initialized:
                     self.sound_player.stop()
-                    MultiSegment(self.grid, *BOXES[0]).set_rule(
-                        Rule().fill(BLUE).blink(REVEAL_BLINK_TIMES[0], REVEAL_BLINK_TIMES[0]))
+                    MultiSegment(self.grid, *BOXES[self.box]).set_rule(
+                        Rule().fill(BLUE).blink(REVEAL_BLINK_TIMES[self.row], REVEAL_BLINK_TIMES[self.row]))
 
                 if time_elapsed > 2:
-                    if self.correct_tiles[0] == 0:
-                        self.set_mode(303)  # Win left box
+                    if self.correct_tiles[self.row] == self.box % 2:
+                        self.set_mode(302)  # Win
                     else:
-                        self.set_mode(304)  # Lose left box
+                        self.set_mode(303)  # Lose
 
-            # If blinking on the right,
+            # If winning,
             elif digits[2] == 2:
                 if not self.mode_initialized:
-                    self.sound_player.stop()
-                    MultiSegment(self.grid, *BOXES[1]).set_rule(
-                        Rule().fill(BLUE).blink(REVEAL_BLINK_TIMES[0], REVEAL_BLINK_TIMES[0]))
+                    self.sound_player.correct()
+                    self.correct_lights(self.box)
 
-                if time_elapsed > 2:
-                    if self.correct_tiles[0] == 0:
-                        self.set_mode(305)  # Win right box
-                    else:
-                        self.set_mode(306)  # Lose right box
+                if time_elapsed > WIN_TIME:
+                    self.set_mode(self.mode + 8, clear_grid=True, clear_railings=True)  # Next round
+                    self.row += 1
 
-            # If winning on left,
+            # If losing,
             elif digits[2] == 3:
                 if not self.mode_initialized:
-                    self.sound_player.correct()
-                    MultiSegment(self.grid, *ALL_SEGS).set_rule(Rule().stripes((GREEN, WHITE), 3).animate(12))
-                    MultiSegment(self.grid, *BOXES[0]).set_rule(Rule().fill(GREEN))
-
-                if time_elapsed > 3.5:
-                    self.set_mode(self.mode + 7)  # Next round
-
-            # If losing on left,
-            elif digits[2] == 4:
-                if not self.mode_initialized:
                     self.sound_player.shatter()
-                    MultiSegment(self.grid, *ALL_SEGS, continuous=False).set_rule(
-                        Rule().stripes((RED, OFF), 10).crop(-30, 200).animate(12))
-                    MultiSegment(self.grid, *BOXES[0], flipped_segs=(BOXES[0][0], BOXES[0][3])).set_rule(
-                        Rule().stripes((RED, OFF), 3).animate(10).fade_out(1.2, 2.5))
+                    self.wrong_lights(self.box)
 
                 if time_elapsed > 0.5 and not self.started_scream:
                     self.sound_player.scream()
                     self.started_scream = True
-                if time_elapsed > 5:
+                if time_elapsed > LOSE_TIME:
                     self.set_mode(100, clear_grid=True, clear_railings=True)
                     self.reset_game()
 
         # If we just initialized, prevent re-initialization on next update cycles.
         if not self.mode_initialized and not self.new_mode:
             self.mode_initialized = True
+
+    def correct_lights(self, box):
+        """
+        Set up light display if a player lands on a correct box.
+        :param box: The ID of the correct box.
+        """
+        self.correct_lights1(box)
+
+    def correct_lights1(self, box):
+        """
+        Correct light show 1.
+        :param box: Correct box ID.
+        """
+        MultiSegment(self.grid, *ALL_SEGS).set_rule(
+            Rule().stripes((GREEN, WHITE), 3).animate(12).fade_out(1, WIN_TIME - 1.5))
+        MultiSegment(self.grid, *BOXES[box]).set_rule(
+            Rule().fill(GREEN).fade_out(1, WIN_TIME - 1.5))
+
+    def wrong_lights(self, box):
+        """
+        Set up light display if a player lands on a wrong box.
+        :param box: The ID of the wrong box.
+        """
+        self.wrong_lights1(box)
+
+    def wrong_lights1(self, box):
+        """
+        Wrong light show 1.
+        :param box: Wrong box ID.
+        """
+        MultiSegment(self.grid, *ALL_SEGS, continuous=False).set_rule(
+            Rule().stripes((RED, OFF), 10).crop(-30, 200).animate(12))
+        MultiSegment(self.grid, *BOXES[box], flipped_segs=(BOXES[0][0], BOXES[0][3])).set_rule(
+            Rule().stripes((RED, OFF), 3).animate(10).fade_out(1.2, 2.5))
 
     def set_mode(self, mode, clear_grid=False, clear_railings=False):
         """
@@ -228,12 +259,13 @@ class Game:
         self.mode_initialized = False
         self.new_mode = True
         self.grid.clear_rules(clear_grid, clear_railings)
-        print("New mode: ", mode)
 
     def reset_game(self):
         """
         Re-initialize the game for a new round.
         """
+        self.row = 0
+        self.box = -1
         self.correct_tiles = gen_correct_tiles()
         self.undertale_count = 0
         self.started_scream = False
