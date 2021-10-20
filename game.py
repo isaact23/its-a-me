@@ -64,10 +64,10 @@ class Game:
         self.box = -1
         self.controller = control
         self.grid = grid
-        self.mode = 300
+        self.mode = 100
         self.mode_initialized = False
         self.new_mode = False
-        self.start_time = 0
+        self.start_time = time.time()
         self.sound_player = sounds.SoundPlayer()
         self.correct_tiles = gen_correct_tiles()
 
@@ -93,10 +93,12 @@ class Game:
             # On space press, move to stage 2 - start the game.
             if keyboard.is_pressed(KEY_START):
                 self.set_mode(200, clear_grid=True, clear_railings=True)
+                self.sound_player.stop()
                 self.undertale_count = 0
 
             elif self.mode == 100:
                 if not self.mode_initialized:
+                    self.sound_player.music(sounds.AMBIENT_MUSIC_1)
                     # Railings are red/orange moving stripes in intro
                     self.grid.get_seg(27).set_rule(Rule().stripes((RED, ORANGE), width=8).animate(10).fade_in(2, 1))
                     self.grid.get_seg(28).set_rule(Rule().stripes((RED, ORANGE), width=8).animate(10).fade_in(2, 1))
@@ -196,8 +198,11 @@ class Game:
                     self.correct_lights(self.box)
 
                 if time_elapsed > WIN_TIME:
-                    self.set_mode(self.mode + 8, clear_grid=True, clear_railings=True)  # Next round
-                    self.row += 1
+                    if self.row == 4:
+                        self.set_mode(400, clear_grid=True, clear_railings=True)
+                    else:
+                        self.set_mode(300, clear_grid=True, clear_railings=True)  # Next round
+                        self.row += 1
 
             # If losing,
             elif digits[2] == 3:
@@ -209,8 +214,19 @@ class Game:
                     self.sound_player.scream()
                     self.started_scream = True
                 if time_elapsed > LOSE_TIME:
-                    self.set_mode(100, clear_grid=True, clear_railings=True)
                     self.reset_game()
+
+        # Modes 400-499: Final win sequence
+        elif self.mode <= 499:
+            if not self.mode_initialized:
+                self.sound_player.win()
+                MultiSegment(self.grid, 12, 15, 18, 21, 24).set_rule(Rule().hue(120, 240, 0.4).animate(20).fade_out(2, 6))
+                MultiSegment(self.grid, 13, 16, 19, 22, 25).set_rule(Rule().hue(120, 240, 0.4).animate(20).fade_out(2, 6))
+                MultiSegment(self.grid, 14, 17, 20, 23, 26).set_rule(Rule().hue(120, 240, 0.4).animate(20).fade_out(2, 6))
+                self.grid.get_seg(27).set_rule(Rule().hue(120, 240, 0.8).animate(10).fade_out(2, 6))
+                self.grid.get_seg(28).set_rule(Rule().hue(120, 240, 0.8).animate(10).fade_out(2, 6))
+            if time_elapsed > 8:
+                self.reset_game()
 
         # If we just initialized, prevent re-initialization on next update cycles.
         if not self.mode_initialized and not self.new_mode:
@@ -264,6 +280,7 @@ class Game:
         """
         Re-initialize the game for a new round.
         """
+        self.set_mode(100, clear_grid=True, clear_railings=True)
         self.row = 0
         self.box = -1
         self.correct_tiles = gen_correct_tiles()

@@ -4,32 +4,44 @@ from pygame import mixer
 mixer.init()
 mixer.music.set_volume(1)
 
-UNDERTALE = mixer.Sound("sounds/Undertale.ogg")
+AMBIENT_MUSIC_1 = "sounds/Ambient Horror Music - Red Space.ogg"
 
-CORRECT_1 = mixer.Sound("sounds/Super Mario World - Correct.ogg")
+UNDERTALE = "sounds/Undertale.ogg"
 
-SHATTER_1 = mixer.Sound("sounds/Glass Shatter 1.ogg")
-SHATTER_2 = mixer.Sound("sounds/Glass Shatter 2.ogg")
-SHATTER_3 = mixer.Sound("sounds/Glass Shatter 3.ogg")
+CORRECT_1 = "sounds/Super Mario World - Correct.ogg"
 
-SCREAM_1 = mixer.Sound("sounds/Scream - Goat.ogg")
-SCREAM_2 = mixer.Sound("sounds/Neverhood - Fall Scream.ogg")
-SCREAM_3 = mixer.Sound("sounds/Monsters Inc - Mr Bile Scream.ogg")
-SCREAM_4 = mixer.Sound("sounds/Homer Simpson Scream.ogg")
-SCREAM_5 = mixer.Sound("sounds/Spongebob My Leg.ogg")
+SHATTER_1 = "sounds/Glass Shatter 1.ogg"
+SHATTER_2 = "sounds/Glass Shatter 2.ogg"
+SHATTER_3 = "sounds/Glass Shatter 3.ogg"
 
-FINAL_FANTASY = mixer.Sound("sounds/Final Fantasy VII - One Winged Angel.ogg")
+SCREAM_1 = "sounds/Scream - Goat.ogg"
+SCREAM_2 = "sounds/Neverhood - Fall Scream.ogg"
+SCREAM_3 = "sounds/Monsters Inc - Mr Bile Scream.ogg"
+SCREAM_4 = "sounds/Homer Simpson Scream.ogg"
+SCREAM_5 = "sounds/Spongebob My Leg.ogg"
+
+FINAL_FANTASY = "sounds/Final Fantasy VII - One Winged Angel.ogg"
+
+WIN_MUSIC_1 = "sounds/Super Mario Bros Course Clear.ogg"
 
 
 class SoundPlayer:
     def __init__(self):
         pass
 
+    def music(self, sound):
+        """
+        Loop the sound indefinitely.
+        :param sound: The sound to loop as music.
+        """
+        mixer.music.load(sound)
+        mixer.music.play(-1)
+
     def play(self, sound):
         """
         :param sound: The Sound object to play.
         """
-        sound.play()
+        mixer.Sound(sound).play()
 
     def correct(self):
         """
@@ -49,5 +61,12 @@ class SoundPlayer:
         """
         self.play(random.choice([SCREAM_1, SCREAM_2, SCREAM_3, SCREAM_4, SCREAM_5]))
 
+    def win(self):
+        """
+        Play a random win fanfare.
+        """
+        self.play(WIN_MUSIC_1)
+
     def stop(self):
         mixer.stop()
+        mixer.music.stop()
