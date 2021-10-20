@@ -62,7 +62,7 @@ class Game:
         """
         self.controller = control
         self.grid = grid
-        self.mode = 100
+        self.mode = 300
         self.mode_initialized = False
         self.start_time = 0
         self.sound_player = sounds.SoundPlayer()
@@ -70,6 +70,7 @@ class Game:
 
         # Variables used by update_mode()
         self.undertale_count = 0
+        self.started_scream = False
 
     def update(self):
         """
@@ -149,10 +150,12 @@ class Game:
                 Rule().fill(BLUE).blink(REVEAL_BLINK_TIMES[0], REVEAL_BLINK_TIMES[0]))
         # Win box 0
         elif self.mode == 303:
+            self.sound_player.correct()
             MultiSegment(self.grid, *ALL_SEGS).set_rule(Rule().stripes((GREEN, WHITE), 3).animate(12))
             MultiSegment(self.grid, *BOXES[0]).set_rule(Rule().fill(GREEN))
         # Lose box 0
         elif self.mode == 304:
+            self.sound_player.shatter()
             MultiSegment(self.grid, *ALL_SEGS, continuous=False).set_rule(
                 Rule().stripes((RED, OFF), 10).crop(-30, 200).animate(12))
             MultiSegment(self.grid, *BOXES[0], flipped_segs=(BOXES[0][0], BOXES[0][3])).set_rule(
@@ -209,6 +212,9 @@ class Game:
                     self.set_mode(self.mode + 7)  # Next round
             # If losing,
             elif str(self.mode)[2] == "4":
+                if time_elapsed > 0.5 and not self.started_scream:
+                    self.sound_player.scream()
+                    self.started_scream = True
                 if time_elapsed > 5:
                     self.set_mode(100, clear_grid=True, clear_railings=True)
                     self.reset_game()
@@ -227,3 +233,5 @@ class Game:
         Re-initialize the game for a new round.
         """
         self.correct_tiles = gen_correct_tiles()
+        self.undertale_count = 0
+        self.started_scream = False
