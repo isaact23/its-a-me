@@ -13,8 +13,10 @@ SHATTER_2 = mixer.Sound("sounds/Glass Shatter 2.ogg")
 SHATTER_3 = mixer.Sound("sounds/Glass Shatter 3.ogg")
 
 SCREAM_1 = mixer.Sound("sounds/Scream - Goat.ogg")
-SCREAM_2 = mixer.Sound("sounds/Scream - Neverhood.ogg")
-SCREAM_3 = mixer.Sound("sounds/Scream - Mr Bile.ogg")
+SCREAM_2 = mixer.Sound("sounds/Neverhood - Fall Scream.ogg")
+SCREAM_3 = mixer.Sound("sounds/Monsters Inc - Mr Bile Scream.ogg")
+SCREAM_4 = mixer.Sound("sounds/Homer Simpson Scream.ogg")
+SCREAM_5 = mixer.Sound("sounds/Spongebob My Leg.ogg")
 
 FINAL_FANTASY = mixer.Sound("sounds/Final Fantasy VII - One Winged Angel.ogg")
 
@@ -45,7 +47,7 @@ class SoundPlayer:
         """
         Play a random screaming sound.
         """
-        self.play(random.choice([SCREAM_1, SCREAM_2, SCREAM_3]))
+        self.play(random.choice([SCREAM_1, SCREAM_2, SCREAM_3, SCREAM_4, SCREAM_5]))
 
     def stop(self):
         mixer.stop()
