@@ -128,38 +128,53 @@ class Game:
                 Rule().fill(WHITE).fade_in(0, CASCADE_TIME * 4).fade_out(1, 2 + CASCADE_TIME * 4))
 
         elif self.mode == 300:
-            self.sound_player.play(sounds.FINAL_FANTASY)
-            MultiSegment(self.grid, 0, 12, 2).set_rule(
-                Rule().fill(WHITE).blink(
-                    DECIDE_BLINK_TIMES[0], DECIDE_BLINK_TIMES[0] + DECIDE_BLINK_TIMES[1] * 2))
-            MultiSegment(self.grid, 1, 14, 3).set_rule(
-                Rule().fill(WHITE).blink(
-                    DECIDE_BLINK_TIMES[0], DECIDE_BLINK_TIMES[0] + DECIDE_BLINK_TIMES[1] * 2,
-                    start_time=time.time() - DECIDE_BLINK_TIMES[0] - DECIDE_BLINK_TIMES[1]))
-            self.grid.get_seg(13).set_rule(Rule().fill(WHITE).blink(DECIDE_BLINK_TIMES[0], DECIDE_BLINK_TIMES[1]))
 
-        # Blink box 0
-        elif self.mode == 301:
-            self.sound_player.stop()
-            MultiSegment(self.grid, *BOXES[0]).set_rule(
-                Rule().fill(BLUE).blink(REVEAL_BLINK_TIMES[0], REVEAL_BLINK_TIMES[0]))
-        # Blink box 1
-        elif self.mode == 302:
-            self.sound_player.stop()
-            MultiSegment(self.grid, *BOXES[1]).set_rule(
-                Rule().fill(BLUE).blink(REVEAL_BLINK_TIMES[0], REVEAL_BLINK_TIMES[0]))
-        # Win box 0
-        elif self.mode == 303:
-            self.sound_player.correct()
-            MultiSegment(self.grid, *ALL_SEGS).set_rule(Rule().stripes((GREEN, WHITE), 3).animate(12))
-            MultiSegment(self.grid, *BOXES[0]).set_rule(Rule().fill(GREEN))
-        # Lose box 0
-        elif self.mode == 304:
-            self.sound_player.shatter()
-            MultiSegment(self.grid, *ALL_SEGS, continuous=False).set_rule(
-                Rule().stripes((RED, OFF), 10).crop(-30, 200).animate(12))
-            MultiSegment(self.grid, *BOXES[0], flipped_segs=(BOXES[0][0], BOXES[0][3])).set_rule(
-                Rule().stripes((RED, OFF), 3).animate(10).fade_out(1.2, 2.5))
+
+        elif 300 <= self.mode < 400:
+            digits = [int(c) for c in str(self.mode)]
+            # Blink white left/right
+            if digits[2] == 0:
+                self.sound_player.play(sounds.FINAL_FANTASY)
+                MultiSegment(self.grid, 0, 12, 2).set_rule(
+                    Rule().fill(WHITE).blink(
+                        DECIDE_BLINK_TIMES[0], DECIDE_BLINK_TIMES[0] + DECIDE_BLINK_TIMES[1] * 2))
+                MultiSegment(self.grid, 1, 14, 3).set_rule(
+                    Rule().fill(WHITE).blink(
+                        DECIDE_BLINK_TIMES[0], DECIDE_BLINK_TIMES[0] + DECIDE_BLINK_TIMES[1] * 2,
+                        start_time=time.time() - DECIDE_BLINK_TIMES[0] - DECIDE_BLINK_TIMES[1]))
+                self.grid.get_seg(13).set_rule(Rule().fill(WHITE).blink(DECIDE_BLINK_TIMES[0], DECIDE_BLINK_TIMES[1]))
+
+            # Blink left
+            if digits[2] == 1:
+                self.sound_player.stop()
+                MultiSegment(self.grid, *BOXES[0]).set_rule(
+                    Rule().fill(BLUE).blink(REVEAL_BLINK_TIMES[0], REVEAL_BLINK_TIMES[0]))
+
+            # Blink right
+            elif digits[2] == 2:
+                self.sound_player.stop()
+                MultiSegment(self.grid, *BOXES[1]).set_rule(
+                    Rule().fill(BLUE).blink(REVEAL_BLINK_TIMES[0], REVEAL_BLINK_TIMES[0]))
+
+            # Win left
+            elif digits[2] == 3:
+                self.sound_player.correct()
+                MultiSegment(self.grid, *ALL_SEGS).set_rule(Rule().stripes((GREEN, WHITE), 3).animate(12))
+                MultiSegment(self.grid, *BOXES[0]).set_rule(Rule().fill(GREEN))
+
+            # Lose left
+            elif digits[2] == 4:
+                self.sound_player.shatter()
+                MultiSegment(self.grid, *ALL_SEGS, continuous=False).set_rule(
+                    Rule().stripes((RED, OFF), 10).crop(-30, 200).animate(12))
+                MultiSegment(self.grid, *BOXES[0], flipped_segs=(BOXES[0][0], BOXES[0][3])).set_rule(
+                    Rule().stripes((RED, OFF), 3).animate(10).fade_out(1.2, 2.5))
+
+            # Win right
+            elif digits[2] == 5:
+                pass
+            elif digits[2] == 6:
+                pass
 
     def update_mode(self):
         """
@@ -179,39 +194,43 @@ class Game:
             elif self.mode == 102:
                 if time_elapsed > 10:
                     self.set_mode(101)
+
         elif self.mode <= 299:
             if self.undertale_count < 5 and time_elapsed > self.undertale_count * CASCADE_TIME:
                 self.sound_player.play(sounds.UNDERTALE)
                 self.undertale_count += 1
             if time_elapsed > 7:
                 self.set_mode(300)
+
         elif self.mode <= 399:
+            digits = [int(c) for c in str(self.mode)]
+
             # Wait for user input on first row
-            if str(self.mode)[2] == "0":
+            if digits[2] == 0:
                 if keyboard.is_pressed(KEY_BOXES[0]):
                     self.set_mode(301, clear_grid=True)  # Blink left box
                 elif keyboard.is_pressed(KEY_BOXES[1]):
                     self.set_mode(302, clear_grid=True)  # Blink right box
             # If blinking on the left,
-            elif str(self.mode)[2] == "1":
+            elif digits[2] == 1:
                 if time_elapsed > 2:
                     if self.correct_tiles[0] == 0:
                         self.set_mode(303)  # Win left box
                     else:
                         self.set_mode(304)  # Lose left box
             # If blinking on the right,
-            elif str(self.mode)[2] == "2":
+            elif digits[2] == 2:
                 if time_elapsed > 2:
                     if self.correct_tiles[0] == 0:
                         self.set_mode(305)  # Win right box
                     else:
                         self.set_mode(306)  # Lose right box
-            # If winning,
-            elif str(self.mode)[2] == "3":
-                if time_elapsed > 10:
+            # If winning on left,
+            elif digits[2] == 3:
+                if time_elapsed > 3.5:
                     self.set_mode(self.mode + 7)  # Next round
-            # If losing,
-            elif str(self.mode)[2] == "4":
+            # If losing on left,
+            elif digits[2] == 4:
                 if time_elapsed > 0.5 and not self.started_scream:
                     self.sound_player.scream()
                     self.started_scream = True
@@ -227,6 +246,7 @@ class Game:
         self.start_time = time.time()
         self.mode_initialized = False
         self.grid.clear_rules(clear_grid, clear_railings)
+        print("New mode: ", mode)
 
     def reset_game(self):
         """
