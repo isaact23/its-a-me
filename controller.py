@@ -1,5 +1,6 @@
-#import neopixel, board
+# import neopixel, board
 from copy import deepcopy
+
 
 class Controller:
     """

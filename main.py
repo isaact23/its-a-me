@@ -1,7 +1,7 @@
 # Squid Game - Glass Stepping Stones
 # Code for LED strips, sound control, camera, etc.
 
-import fpstimer
+import fpstimer, sys
 from controller import Controller
 from grid import Grid
 from emulator import Emulator
@@ -9,6 +9,8 @@ from game import Game
 
 
 def main():
+    print("Python version:", sys.version)
+
     control = Controller((20, 20, 2000, 20, 1000))
     grid = Grid(control)
     game = Game(control, grid)

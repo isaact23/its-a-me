@@ -1,8 +1,7 @@
 import random
 from pygame import mixer
 
-mixer.init()
-mixer.music.set_volume(1)
+KID_MODE = True
 
 AMBIENT_MUSIC_1 = "sounds/Ambient Horror Music - Red Space.ogg"
 
@@ -24,6 +23,8 @@ FINAL_FANTASY = "sounds/Final Fantasy VII - One Winged Angel.ogg"
 
 WIN_MUSIC_1 = "sounds/Super Mario Bros Course Clear.ogg"
 
+mixer.init()
+mixer.music.set_volume(1)
 
 class SoundPlayer:
     def __init__(self):
@@ -59,7 +60,8 @@ class SoundPlayer:
         """
         Play a random screaming sound.
         """
-        self.play(random.choice([SCREAM_1, SCREAM_2, SCREAM_3, SCREAM_4, SCREAM_5]))
+        if not KID_MODE:
+            self.play(random.choice([SCREAM_1, SCREAM_2, SCREAM_3, SCREAM_4, SCREAM_5]))
 
     def win(self):
         """
