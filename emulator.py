@@ -129,12 +129,9 @@ class Emulator:
         """
         :param x: Left x coordinate of circle.
         :param y: Top y coordinate of circle.
-        :param color: RGB circle color.
+        :param size: Circle size.
         :return: The circle ID.
         """
-        # Convert RGB color to tkinter format
-        # r, g, b = color[0], color[1], color[2]
-        # hex_color = f'#{r:02x}{g:02x}{b:02x}'
 
         return self.canvas.create_oval(x, y, x + size, y + size)
 
