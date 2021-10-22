@@ -1,5 +1,5 @@
 import tkinter as tk
-import sys
+import os, sys
 from time import perf_counter
 
 # Set constants

@@ -86,7 +86,14 @@ class Game:
         # Mode 0-99 - testing purposes only
         if self.mode <= 99:
             # MultiSegment(self.grid, 12, 15, 18, 21, 24, 10, 11).set_rule(Rule().hue(60, 310, 0.1))
-            MultiSegment(self.grid, 12, 15, 18, 21, 24, 10, 11).set_rule(Rule().fill(RED).crop(40, 990))
+            # MultiSegment(self.grid, 12, 15, 18, 21, 24, 10, 11).set_rule(Rule().fill(RED).crop(40, 990))
+            if not self.mode_initialized:
+                self.grid.get_seg(27).set_rule(
+                    Rule().stripes((RED, GREEN, BLUE, WHITE), 1).animate(3)
+                )
+                self.grid.get_seg(28).set_rule(
+                    Rule().stripes((RED, GREEN, BLUE, WHITE), 1).animate(3)
+                )
 
         # Mode 100-199 - attract sequence
         elif self.mode <= 199:
@@ -98,7 +105,7 @@ class Game:
 
             elif self.mode == 100:
                 if not self.mode_initialized:
-                    self.sound_player.music(sounds.AMBIENT_MUSIC_1)
+                    self.sound_player.attract_music()
                     # Railings are red/orange moving stripes in intro
                     self.grid.get_seg(27).set_rule(Rule().stripes((RED, ORANGE), width=8).animate(10).fade_in(2, 1))
                     self.grid.get_seg(28).set_rule(Rule().stripes((RED, ORANGE), width=8).animate(10).fade_in(2, 1))
@@ -152,7 +159,7 @@ class Game:
             # Wait for user input on first row
             if digits[2] == 0:
                 if not self.mode_initialized:
-                    self.sound_player.play(sounds.FINAL_FANTASY)
+                    self.sound_player.play(sounds.CHOOSE_MUSIC_2)
                     left_box = self.row * 2
                     right_box = left_box + 1
                     blink_on = DECIDE_BLINK_TIMES[left_box]
@@ -168,6 +175,14 @@ class Game:
                             start_time=time.time() - blink_on - blink_off))
                     self.grid.get_seg(self.row * 3 + 13).set_rule(
                         Rule().fill(WHITE).blink(blink_on, blink_off))
+
+                    # Initialize railings
+                    self.grid.get_seg(27).set_rule(
+                        Rule().stripes((RED, GREEN, BLUE, WHITE), 1).animate(3)
+                    )
+                    self.grid.get_seg(28).set_rule(
+                        Rule().stripes((RED, GREEN, BLUE, WHITE), 1).animate(3)
+                    )
 
                 # Left box
                 if keyboard.is_pressed(KEY_BOXES[self.row * 2]):
@@ -275,6 +290,7 @@ class Game:
         self.mode_initialized = False
         self.new_mode = True
         self.grid.clear_rules(clear_grid, clear_railings)
+        print("Set mode to", mode)
 
     def reset_game(self):
         """
