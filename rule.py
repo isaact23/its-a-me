@@ -1,5 +1,6 @@
 import time, math, colorsys
 
+# TODO: Optimize to not use lambdas
 
 class Rule:
     """

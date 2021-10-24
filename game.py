@@ -159,11 +159,11 @@ class Game:
             # Wait for user input on first row
             if digits[2] == 0:
                 if not self.mode_initialized:
-                    self.sound_player.play(sounds.CHOOSE_MUSIC_2)
+                    tempo = self.sound_player.choose_music()
                     left_box = self.row * 2
                     right_box = left_box + 1
-                    blink_on = DECIDE_BLINK_TIMES[left_box]
-                    blink_off = DECIDE_BLINK_TIMES[right_box]
+                    blink_on = 30 / tempo
+                    blink_off = blink_on
                     left_segs = [box for i, box in enumerate(BOXES[left_box]) if i != 3]
                     right_segs = [box for i, box in enumerate(BOXES[right_box]) if i != 1]
                     MultiSegment(self.grid, *left_segs).set_rule(
