@@ -222,7 +222,7 @@ class Game:
             # If losing,
             elif digits[2] == 3:
                 if not self.mode_initialized:
-                    self.sound_player.shatter()
+                    self.sound_player.wrong()
                     self.wrong_lights(self.box)
 
                 if time_elapsed > 0.5 and not self.started_scream:

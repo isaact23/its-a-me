@@ -1,6 +1,7 @@
 import pathlib
 import random
 
+import pygame
 from pygame import mixer
 
 KID_MODE = False
@@ -10,7 +11,7 @@ SOUND_DIR = pathlib.Path(__file__).parent / 'sounds'
 # Import sounds from directories
 ATTRACT_MUSIC = [str(s) for s in (SOUND_DIR / 'attract_music').iterdir()]
 CORRECT_SOUNDS = [str(s) for s in (SOUND_DIR / 'correct').iterdir()]
-SHATTER_SOUNDS = [str(s) for s in (SOUND_DIR / 'shatters').iterdir()]
+WRONG_SOUNDS = [str(s) for s in (SOUND_DIR / 'wrong').iterdir()]
 SCREAM_SOUNDS = [str(s) for s in (SOUND_DIR / 'screams').iterdir()]
 
 UNDERTALE = "sounds/Undertale.ogg"
@@ -49,14 +50,20 @@ class SoundPlayer:
         Loop the sound indefinitely.
         :param sound: The sound to loop as music.
         """
-        mixer.music.load(sound)
-        mixer.music.play(-1)
+        try:
+            mixer.music.load(sound)
+            mixer.music.play(-1)
+        except pygame.error:
+            print("Error playing music", sound)
 
     def play(self, sound):
         """
         :param sound: The Sound object to play.
         """
-        mixer.Sound(sound).play()
+        try:
+            mixer.Sound(sound).play()
+        except FileNotFoundError:
+            print("Error playing sound", sound)
 
     def correct(self):
         """
@@ -64,11 +71,11 @@ class SoundPlayer:
         """
         self.play(random.choice(CORRECT_SOUNDS))
 
-    def shatter(self):
+    def wrong(self):
         """
-        Play a random glass shattering sound.
+        Play a random 'wrong' sound upon the player stepping on the wrong tile.
         """
-        self.play(random.choice(SHATTER_SOUNDS))
+        self.play(random.choice(WRONG_SOUNDS))
 
     def scream(self):
         """
