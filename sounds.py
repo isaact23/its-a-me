@@ -4,7 +4,7 @@ import random
 import pygame
 from pygame import mixer
 
-KID_MODE = False
+KID_MODE = True
 
 SOUND_DIR = pathlib.Path(__file__).parent / 'sounds'
 
@@ -13,14 +13,16 @@ ATTRACT_MUSIC = [str(s) for s in (SOUND_DIR / 'attract_music').iterdir()]
 CORRECT_SOUNDS = [str(s) for s in (SOUND_DIR / 'correct').iterdir()]
 WRONG_SOUNDS = [str(s) for s in (SOUND_DIR / 'wrong').iterdir()]
 SCREAM_SOUNDS = [str(s) for s in (SOUND_DIR / 'screams').iterdir()]
+SCARY_SCREAM_SOUNDS = [str(s) for s in (SOUND_DIR / 'screams_scary').iterdir()]
 
 UNDERTALE = "sounds/Undertale.ogg"
 
 CHOOSE_MUSIC = ["sounds/choose_music/Jeopardy.ogg",
                 "sounds/choose_music/Final Fantasy VII - One Winged Angel.ogg",
                 "sounds/choose_music/Undertale OST - 007 - Anticipation.ogg",
-                "sounds/choose_music/Undertale OST - 016 - Nyeh Heh Heh!.ogg"]
-CHOOSE_MUSIC_TEMPOS = (132, 120, 184, 150)
+                "sounds/choose_music/Undertale OST - 016 - Nyeh Heh Heh!.ogg",
+                "sounds/choose_music/Paper Mario - Koopa Bros Battle Music.ogg"]
+CHOOSE_MUSIC_TEMPOS = (132, 120, 184, 150, 158)
 
 WIN_MUSIC_1 = "sounds/win_music/Super Mario Bros Course Clear.ogg"
 
@@ -81,8 +83,10 @@ class SoundPlayer:
         """
         Play a random screaming sound.
         """
-        if not KID_MODE:
+        if KID_MODE:
             self.play(random.choice(SCREAM_SOUNDS))
+        else:
+            self.play(random.choice(SCARY_SCREAM_SOUNDS + SCREAM_SOUNDS))
 
     def win(self):
         """

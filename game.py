@@ -2,6 +2,7 @@ import keyboard
 import random
 import time
 
+import colors
 import sounds
 from colors import *
 from controller import MultiSegment
@@ -20,6 +21,9 @@ DECIDE_BLINK_TIMES = (0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25
 REVEAL_BLINK_TIMES = (0.2, 0.18, 0.16, 0.14, 0.12)
 WIN_TIME = 3.5
 LOSE_TIME = 5
+
+# An estimate as to the length of each segment
+SEG_WIDTH = 20
 
 # Box definitions
 BOXES = ((0, 12, 2, 13),
@@ -87,13 +91,7 @@ class Game:
         if self.mode <= 99:
             # MultiSegment(self.grid, 12, 15, 18, 21, 24, 10, 11).set_rule(Rule().hue(60, 310, 0.1))
             # MultiSegment(self.grid, 12, 15, 18, 21, 24, 10, 11).set_rule(Rule().fill(RED).crop(40, 990))
-            if not self.mode_initialized:
-                self.grid.get_seg(27).set_rule(
-                    Rule().stripes((RED, GREEN, BLUE, WHITE), 1).animate(3)
-                )
-                self.grid.get_seg(28).set_rule(
-                    Rule().stripes((RED, GREEN, BLUE, WHITE), 1).animate(3)
-                )
+            pass
 
         # Mode 100-199 - attract sequence
         elif self.mode <= 199:
@@ -109,17 +107,18 @@ class Game:
                     # Railings are red/orange moving stripes in intro
                     self.grid.get_seg(27).set_rule(Rule().stripes((RED, ORANGE), width=8).animate(10).fade_in(2, 1))
                     self.grid.get_seg(28).set_rule(Rule().stripes((RED, ORANGE), width=8).animate(10).fade_in(2, 1))
-                self.set_mode(101)
+                if time_elapsed > 4:
+                    self.set_mode(101)
 
             elif self.mode == 101:
                 if not self.mode_initialized:
                     # Have 5 boxes fade in and out in an orange color
                     box_ids = 0, 3, 4, 7, 8  # [BOX0, BOX3, BOX4, BOX7, BOX8]
                     for i, box_id in enumerate(box_ids):
-                        box_rule = Rule().fill(ORANGE).fade_in(0.25, 4 + 0.75 * i).fade_out(0.25, 4.5 + 0.75 * i)
+                        box_rule = Rule().fill(ORANGE).fade_in(0.25, 0.75 * i).fade_out(0.25, 0.5 + 0.75 * i)
                         for seg_id in BOXES[box_id]:
                             self.grid.get_seg(seg_id).set_rule(box_rule)
-                if time_elapsed > 10:
+                if time_elapsed > 5:
                     self.set_mode(102)
 
             elif self.mode == 102:
@@ -129,7 +128,64 @@ class Game:
                                              9, 22, 7, 20, 17, 14, 1, 0,
                                              flipped_segs=(4, 26, 9, 22, 20, 17, 14, 1, 0))
                     multi_seg.set_rule(Rule().fill(WHITE, -15, 0).animate(100))
-                if time_elapsed > 10:
+                if time_elapsed > 5:
+                    self.set_mode(103)
+
+            elif self.mode == 103:
+                if not self.mode_initialized:
+                    multi_segs = []
+                    multi_segs.append(MultiSegment(self.grid, 12, 15, 18, 21, 24, 10, 11))
+                    multi_segs.append(MultiSegment(self.grid, 8, 25))
+                    multi_segs.append(MultiSegment(self.grid, 6, 22, 9, 26))
+                    multi_segs.append(MultiSegment(self.grid, 4, 19, 7, 23))
+                    multi_segs.append(MultiSegment(self.grid, 2, 16, 5, 20))
+                    multi_segs.append(MultiSegment(self.grid, 0, 13, 3, 17))
+                    multi_segs.append(MultiSegment(self.grid, 1, 14))
+
+                    for i, multi_seg in enumerate(multi_segs):
+                        rule = Rule().hue_linear(5).fade_in(1, 0).fade_out(1, 5).animate(40)
+                        match i:
+                            case 1:
+                                rule.offset(SEG_WIDTH * 4)
+                            case 2:
+                                rule.offset(SEG_WIDTH * 3)
+                            case 3:
+                                rule.offset(SEG_WIDTH * 2)
+                            case 4:
+                                rule.offset(SEG_WIDTH)
+                            case 6:
+                                rule.offset(SEG_WIDTH)
+
+                        multi_seg.set_rule(rule)
+                if time_elapsed > 7:
+                    self.set_mode(104)
+
+            elif self.mode == 104:
+                if not self.mode_initialized:
+                    MultiSegment(self.grid, 12, 15, 18, 21, 24, 10, 11, 26, 23, 20, 17, 14, 1, 0,
+                                 flipped_segs=(26, 23, 20, 17, 14, 1, 0)).set_rule(
+                        Rule().stripes((RED, ORANGE, YELLOW), 12).animate(30).fade_in(1, 0).fade_out(1, 5)
+                    )
+                if time_elapsed > 7:
+                    self.set_mode(105)
+
+            elif self.mode == 105:
+                if not self.mode_initialized:
+                    width = 6
+                    speed = 50
+                    MultiSegment(self.grid, 19, 22, 25, 10, 24, 8, 6, 18, 4, flipped_segs=(10, 24, 6, 18)).set_rule(
+                        Rule().stripes((WHITE, BLACK), width).crop(-200, 0).animate(speed)
+                    )
+                    MultiSegment(self.grid, 11, 26, 9, 7, 20, 5, flipped_segs=(26, 9, 20, 5)).set_rule(
+                        Rule().stripes((WHITE, BLACK), width).crop(-200, 0).offset(SEG_WIDTH * 3).animate(speed)
+                    )
+                    MultiSegment(self.grid, 16, 13, 0, 12, 2, flipped_segs=(16, 13, 0)).set_rule(
+                        Rule().stripes((WHITE, BLACK), width).crop(-200, 0).animate(speed)
+                    )
+                    MultiSegment(self.grid, 1, 14, 3, flipped_segs=(3,)).set_rule(
+                        Rule().stripes((WHITE, BLACK), width).crop(-200, 0).offset(SEG_WIDTH * 2).animate(speed)
+                    )
+                if time_elapsed > 9:
                     self.set_mode(101)
 
         # Mode 200-299 - tile cascades
@@ -235,11 +291,11 @@ class Game:
         elif self.mode <= 499:
             if not self.mode_initialized:
                 self.sound_player.win()
-                MultiSegment(self.grid, 12, 15, 18, 21, 24).set_rule(Rule().hue(120, 240, 0.4).animate(20).fade_out(2, 6))
-                MultiSegment(self.grid, 13, 16, 19, 22, 25).set_rule(Rule().hue(120, 240, 0.4).animate(20).fade_out(2, 6))
-                MultiSegment(self.grid, 14, 17, 20, 23, 26).set_rule(Rule().hue(120, 240, 0.4).animate(20).fade_out(2, 6))
-                self.grid.get_seg(27).set_rule(Rule().hue(120, 240, 0.8).animate(10).fade_out(2, 6))
-                self.grid.get_seg(28).set_rule(Rule().hue(120, 240, 0.8).animate(10).fade_out(2, 6))
+                MultiSegment(self.grid, 12, 15, 18, 21, 24).set_rule(Rule().hue_wave(120, 240, 0.4).animate(20).fade_out(2, 6))
+                MultiSegment(self.grid, 13, 16, 19, 22, 25).set_rule(Rule().hue_wave(120, 240, 0.4).animate(20).fade_out(2, 6))
+                MultiSegment(self.grid, 14, 17, 20, 23, 26).set_rule(Rule().hue_wave(120, 240, 0.4).animate(20).fade_out(2, 6))
+                self.grid.get_seg(27).set_rule(Rule().hue_wave(120, 240, 0.8).animate(10).fade_out(2, 6))
+                self.grid.get_seg(28).set_rule(Rule().hue_wave(120, 240, 0.8).animate(10).fade_out(2, 6))
             if time_elapsed > 8:
                 self.reset_game()
 

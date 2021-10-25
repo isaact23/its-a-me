@@ -1,5 +1,7 @@
 # Definitions for colors and sets of colors
 
+import random
+
 # Colors
 DARK_RED = (80, 0, 0)
 RED = (255, 0, 0)
@@ -39,3 +41,9 @@ WARIO = (YELLOW, BLACK)
 WALUIGI = (PURPLE, GRAY)
 PEACH = (PINK, WHITE)
 BOO = (WHITE, BLACK)
+
+def random_color():
+    """
+    :return: A random color.
+    """
+    return random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)

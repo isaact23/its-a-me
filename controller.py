@@ -1,6 +1,8 @@
 # import neopixel, board
 from copy import deepcopy
 
+from grid import Grid
+
 
 class Controller:
     """
@@ -157,7 +159,7 @@ class MultiSegment:
     Manage multiple segments jointly such that LED animations move smoothly between segments.
     """
 
-    def __init__(self, grid, *segs, continuous=True, flipped_segs=None):
+    def __init__(self, grid: Grid, *segs, continuous=True, flipped_segs=None):
         """
         :param grid: A Grid containing all segments in the game.
         :param segs: A tuple of integers representing all segment indices.

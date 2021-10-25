@@ -2,6 +2,18 @@ import time, math, colorsys
 
 # TODO: Optimize to not use lambdas
 
+def zero_to_one(num):
+    """
+    Ensure a number is between 0 and 1 by adding or subtracting 1.
+    :param num: The number to normalize.
+    :return: A number between 0 and 1.
+    """
+    while num < 0:
+        num += 1
+    while num > 1:
+        num -= 1
+    return num
+
 class Rule:
     """
     Class passable to Segments and LightStrips that determines LED colors at runtime.
@@ -38,7 +50,21 @@ class Rule:
         self.func_chain.append(f)
         return self
 
-    def hue(self, low_hue, high_hue, frequency=1):
+    def hue_linear(self, frequency=1):
+        """
+        Fill pixels with color hue increasing with every pixel.
+        :param frequency: How fast hue should increase.
+        """
+        def f(**kwargs):
+            hue = kwargs['pixel'] * frequency / 360
+            hue = zero_to_one(hue)
+            rgb = colorsys.hsv_to_rgb(hue, 1, 1)
+            return tuple(round(c * 255) for c in rgb)
+
+        self.func_chain.append(f)
+        return self
+
+    def hue_wave(self, low_hue, high_hue, frequency=1):
         """
         Generate a rainbow sine wave ranging from low_hue to high_hue.
         :param low_hue: The low hue value (0 thru 360)
@@ -51,10 +77,7 @@ class Rule:
             amplitude = (high_hue - low_hue) / 720
             hue = mid + amplitude * math.sin(kwargs['pixel'] * frequency)
             # Ensure hue is between 0 and 1
-            while hue > 1:
-                hue -= 1
-            while hue < 0:
-                hue += 1
+            hue = zero_to_one(hue)
             rgb = colorsys.hsv_to_rgb(hue, 1, 1)
             return tuple(round(c * 255) for c in rgb)
 
