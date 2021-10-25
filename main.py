@@ -1,6 +1,9 @@
 # Squid Game - Glass Stepping Stones
 # Code for LED strips, sound control, camera, etc.
 
+# TODO: Red and green lights to sound of robot girl
+# TODO: Easy medium hard difficulties
+
 import fpstimer
 import sys
 from time import perf_counter
@@ -12,6 +15,7 @@ from game import Game
 import sounds
 
 USE_EMULATOR = True
+
 
 def main():
     print("Python version:", sys.version)

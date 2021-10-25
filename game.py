@@ -68,7 +68,7 @@ class Game:
         self.box = -1
         self.controller = control
         self.grid = grid
-        self.mode = 100
+        self.mode = 400
         self.mode_initialized = False
         self.new_mode = False
         self.start_time = time.time()

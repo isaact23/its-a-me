@@ -14,6 +14,7 @@ CORRECT_SOUNDS = [str(s) for s in (SOUND_DIR / 'correct').iterdir()]
 WRONG_SOUNDS = [str(s) for s in (SOUND_DIR / 'wrong').iterdir()]
 SCREAM_SOUNDS = [str(s) for s in (SOUND_DIR / 'screams').iterdir()]
 SCARY_SCREAM_SOUNDS = [str(s) for s in (SOUND_DIR / 'screams_scary').iterdir()]
+WIN_MUSIC = [str(s) for s in (SOUND_DIR / 'win_music').iterdir()]
 
 UNDERTALE = "sounds/Undertale.ogg"
 
@@ -24,8 +25,6 @@ CHOOSE_MUSIC = ["sounds/choose_music/Jeopardy.ogg",
                 "sounds/choose_music/Undertale OST - 068 - Death by Glamour.ogg",
                 "sounds/choose_music/Paper Mario - Koopa Bros Battle Music.ogg"]
 CHOOSE_MUSIC_TEMPOS = (132, 120, 184, 150, 148, 160)
-
-WIN_MUSIC_1 = "sounds/win_music/Super Mario Bros Course Clear.ogg"
 
 mixer.init(10000, -16, 1, 1024)
 mixer.music.set_volume(0.1)
@@ -95,7 +94,7 @@ class SoundPlayer:
         """
         Play a random win fanfare.
         """
-        self.play(WIN_MUSIC_1)
+        self.play(random.choice(WIN_MUSIC))
 
     def stop(self):
         """
