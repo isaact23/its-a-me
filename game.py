@@ -95,6 +95,10 @@ class Game:
 
         # Mode 100-199 - attract sequence
         elif self.mode <= 199:
+            # If attract music is not playing, play it now.
+            if not self.sound_player.get_busy():
+                self.sound_player.attract_music()
+
             # On space press, move to stage 2 - start the game.
             if keyboard.is_pressed(KEY_START):
                 self.set_mode(200, clear_grid=True, clear_railings=True)
@@ -103,7 +107,6 @@ class Game:
 
             elif self.mode == 100:
                 if not self.mode_initialized:
-                    self.sound_player.attract_music()
                     # Railings are red/orange moving stripes in intro
                     self.grid.get_seg(27).set_rule(Rule().stripes((RED, ORANGE), width=8).animate(10).fade_in(2, 1))
                     self.grid.get_seg(28).set_rule(Rule().stripes((RED, ORANGE), width=8).animate(10).fade_in(2, 1))
@@ -296,7 +299,7 @@ class Game:
                 MultiSegment(self.grid, 14, 17, 20, 23, 26).set_rule(Rule().hue_wave(120, 240, 0.4).animate(20).fade_out(2, 6))
                 self.grid.get_seg(27).set_rule(Rule().hue_wave(120, 240, 0.8).animate(10).fade_out(2, 6))
                 self.grid.get_seg(28).set_rule(Rule().hue_wave(120, 240, 0.8).animate(10).fade_out(2, 6))
-            if time_elapsed > 8:
+            if time_elapsed > 9:
                 self.reset_game()
 
         # If we just initialized, prevent re-initialization on next update cycles.

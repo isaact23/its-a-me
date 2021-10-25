@@ -21,8 +21,9 @@ CHOOSE_MUSIC = ["sounds/choose_music/Jeopardy.ogg",
                 "sounds/choose_music/Final Fantasy VII - One Winged Angel.ogg",
                 "sounds/choose_music/Undertale OST - 007 - Anticipation.ogg",
                 "sounds/choose_music/Undertale OST - 016 - Nyeh Heh Heh!.ogg",
+                "sounds/choose_music/Undertale OST - 068 - Death by Glamour.ogg",
                 "sounds/choose_music/Paper Mario - Koopa Bros Battle Music.ogg"]
-CHOOSE_MUSIC_TEMPOS = (132, 120, 184, 150, 158)
+CHOOSE_MUSIC_TEMPOS = (132, 120, 184, 150, 148, 160)
 
 WIN_MUSIC_1 = "sounds/win_music/Super Mario Bros Course Clear.ogg"
 
@@ -54,7 +55,8 @@ class SoundPlayer:
         """
         try:
             mixer.music.load(sound)
-            mixer.music.play(-1)
+            mixer.music.play(1)
+            print("Playing music", sound)
         except pygame.error:
             print("Error playing music", sound)
 
@@ -64,6 +66,7 @@ class SoundPlayer:
         """
         try:
             mixer.Sound(sound).play()
+            print("Played sound", sound)
         except FileNotFoundError:
             print("Error playing sound", sound)
 
@@ -95,5 +98,14 @@ class SoundPlayer:
         self.play(WIN_MUSIC_1)
 
     def stop(self):
+        """
+        Stop all sounds.
+        """
         mixer.stop()
         mixer.music.stop()
+
+    def get_busy(self):
+        """
+        Return true if music is playing.
+        """
+        return mixer.music.get_busy()

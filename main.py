@@ -9,12 +9,21 @@ from controller import Controller
 from grid import Grid
 from emulator import Emulator
 from game import Game
+import sounds
 
 USE_EMULATOR = True
 
-
 def main():
     print("Python version:", sys.version)
+    if USE_EMULATOR:
+        print("Using emulator.")
+    else:
+        print("Emulator disabled.")
+    if sounds.KID_MODE:
+        print("Kid mode enabled - scary sounds shouldn't play. No guarantees of course. Phew glad I got that "
+              "liability off my chest")
+    else:
+        print("Kid mode disabled - beware of scary sounds!")
 
     control = Controller((20, 20, 2000, 20, 1000))
     grid = Grid(control)
