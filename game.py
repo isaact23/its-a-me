@@ -71,7 +71,7 @@ class Game:
         self.difficulty = difficulty
         self.sound_player = sounds.SoundPlayer(kid_mode)
         self.box = -1
-        self.mode = 300
+        self.mode = 100
         self.mode_initialized = False
         self.new_mode = False
         self.start_time = time.time()
@@ -276,13 +276,19 @@ class Game:
                 if time_elapsed > 3.5:
                     self.set_mode(300, clear_grid=True, clear_railings=True)
 
-
         # Modes 300-399 - gameplay
         elif self.mode <= 399:
             # Wait for user input on first row
             if self.mode == 300:
                 if not self.mode_initialized:
-                    print("Current chance of winning is", self.get_winning_chance())
+                    winning_chance = self.get_winning_chance()
+                    if winning_chance < 0.0001:
+                        print("Current chance of winning is negligible.")
+                    elif winning_chance > 0.9999:
+                        print("Current chance of winning is quite high.")
+                    else:
+                        percent_chance = str(round(winning_chance * 100, 2)) + "%"
+                        print("Current chance of winning is", percent_chance)
 
                     tempo = self.sound_player.choose_music()
                     left_box = self.row * 2
@@ -454,9 +460,7 @@ class Game:
             row_chance = 0.5 + (0.5 * anomaly_chance)
         overall_chance = row_chance ** turns_remaining
 
-        # Convert chance to percentage
-        overall_chance_percent = str(round(overall_chance * 100, 2)) + "%"
-        return overall_chance_percent
+        return overall_chance
 
     def set_mode(self, mode, clear_grid=False, clear_railings=False):
         """
