@@ -119,9 +119,10 @@ class Emulator:
                 r, g, b = color[0], color[1], color[2]
                 try:
                     hex_color = f'#{r:02x}{g:02x}{b:02x}'
-                except ValueError:
-                    raise RuntimeError("LED strip updated with float color value", r, g, b)
-                self.canvas.itemconfig(circle_array[l], fill=hex_color)
+                    self.canvas.itemconfig(circle_array[l], fill=hex_color)
+                except:
+                    raise RuntimeError("Attempted LED strip update with float color value", r, g, b)
+
 
         self.root.update()
 

@@ -46,7 +46,7 @@ def gen_correct_tiles():
     Generate a 5 element array of bits, 0 representing left tile is correct, 1 means right is correct, for each row.
     """
     correct_tiles = [random.randint(0, 1) for i in range(5)]
-    print(correct_tiles)
+    print("Correct tiles are", correct_tiles)
     return correct_tiles
 
 
@@ -68,7 +68,7 @@ class Game:
         self.box = -1
         self.controller = control
         self.grid = grid
-        self.mode = 400
+        self.mode = 100
         self.mode_initialized = False
         self.new_mode = False
         self.start_time = time.time()
@@ -101,7 +101,7 @@ class Game:
 
             # On space press, move to stage 2 - start the game.
             if keyboard.is_pressed(KEY_START):
-                self.set_mode(200, clear_grid=True, clear_railings=True)
+                self.set_mode(random.randint(200, 201), clear_grid=True, clear_railings=True)
                 self.sound_player.stop()
                 self.undertale_count = 0
 
@@ -191,25 +191,89 @@ class Game:
                 if time_elapsed > 9:
                     self.set_mode(101)
 
-        # Mode 200-299 - tile cascades
+        # Mode 200-299 - transition to game
         elif self.mode <= 299:
-            if not self.mode_initialized:
-                MultiSegment(self.grid, 10, 11, 24, 25, 26, 8, 9).set_rule(
-                    Rule().fill(WHITE).fade_in(0, 0).fade_out(1, 2))
-                MultiSegment(self.grid, 21, 6, 22, 7, 23).set_rule(
-                    Rule().fill(WHITE).fade_in(0, CASCADE_TIME).fade_out(1, 2 + CASCADE_TIME))
-                MultiSegment(self.grid, 18, 4, 19, 5, 20).set_rule(
-                    Rule().fill(WHITE).fade_in(0, CASCADE_TIME * 2).fade_out(1, 2 + CASCADE_TIME * 2))
-                MultiSegment(self.grid, 15, 2, 16, 3, 17).set_rule(
-                    Rule().fill(WHITE).fade_in(0, CASCADE_TIME * 3).fade_out(1, 2 + CASCADE_TIME * 3))
-                MultiSegment(self.grid, 12, 0, 13, 1, 14).set_rule(
-                    Rule().fill(WHITE).fade_in(0, CASCADE_TIME * 4).fade_out(1, 2 + CASCADE_TIME * 4))
+            if self.mode == 200:
+                if not self.mode_initialized:
+                    MultiSegment(self.grid, 10, 11, 24, 25, 26, 8, 9).set_rule(
+                        Rule().fill(WHITE).fade_in(0, 0).fade_out(1, 2))
+                    MultiSegment(self.grid, 21, 6, 22, 7, 23).set_rule(
+                        Rule().fill(WHITE).fade_in(0, CASCADE_TIME).fade_out(1, 2 + CASCADE_TIME))
+                    MultiSegment(self.grid, 18, 4, 19, 5, 20).set_rule(
+                        Rule().fill(WHITE).fade_in(0, CASCADE_TIME * 2).fade_out(1, 2 + CASCADE_TIME * 2))
+                    MultiSegment(self.grid, 15, 2, 16, 3, 17).set_rule(
+                        Rule().fill(WHITE).fade_in(0, CASCADE_TIME * 3).fade_out(1, 2 + CASCADE_TIME * 3))
+                    MultiSegment(self.grid, 12, 0, 13, 1, 14).set_rule(
+                        Rule().fill(WHITE).fade_in(0, CASCADE_TIME * 4).fade_out(1, 2 + CASCADE_TIME * 4))
 
-            if self.undertale_count < 5 and time_elapsed > self.undertale_count * CASCADE_TIME:
-                self.sound_player.play(sounds.UNDERTALE)
-                self.undertale_count += 1
-            if time_elapsed > 7:
-                self.set_mode(300)
+                if self.undertale_count < 5 and time_elapsed > self.undertale_count * CASCADE_TIME:
+                    self.sound_player.play(sounds.UNDERTALE)
+                    self.undertale_count += 1
+                if time_elapsed > 7:
+                    self.set_mode(300)
+
+            elif self.mode == 201:
+                if not self.mode_initialized:
+                    speed = 80
+                    interval = 0.9
+                    self.sound_player.play(sounds.GLRL_ONCE)
+                    self.grid.get_seg(25).set_rule(
+                        Rule().fill(RED, -1000, 0).animate(speed / 3).flip()
+                    )
+                    MultiSegment(self.grid, 10, 24, 8, flipped_segs=(10, 24)).set_rule(
+                        Rule().fill(RED, -1000, 0).animate(speed)
+                    )
+                    MultiSegment(self.grid, 11, 26, 9, flipped_segs=(26, 9)).set_rule(
+                        Rule().fill(RED, -1000, 0).animate(speed)
+                    )
+                    self.grid.get_seg(22).set_rule(
+                        Rule().fill(RED, -1000, -interval * speed * 0.5).animate(speed / 2).flip()
+                    )
+                    MultiSegment(self.grid, 21, 6, flipped_segs=(21,)).set_rule(
+                        Rule().fill(RED, -1000, -interval * speed).animate(speed)
+                    )
+                    MultiSegment(self.grid, 23, 7, flipped_segs=(23, 7)).set_rule(
+                        Rule().fill(RED, -1000, -interval * speed).animate(speed)
+                    )
+                    self.grid.get_seg(19).set_rule(
+                        Rule().fill(RED, -1000, -interval * speed).animate(speed / 2).flip()
+                    )
+                    MultiSegment(self.grid, 18, 4, flipped_segs=(18,)).set_rule(
+                        Rule().fill(RED, -1000, -interval * speed * 2).animate(speed)
+                    )
+                    MultiSegment(self.grid, 20, 5, flipped_segs=(20, 5)).set_rule(
+                        Rule().fill(RED, -1000, -interval * speed * 2).animate(speed)
+                    )
+                    self.grid.get_seg(16).set_rule(
+                        Rule().fill(RED, -1000, -interval * speed * 1.5).animate(speed / 2).flip()
+                    )
+                    MultiSegment(self.grid, 15, 2, flipped_segs=(15,)).set_rule(
+                        Rule().fill(RED, -1000, -interval * speed * 3).animate(speed)
+                    )
+                    MultiSegment(self.grid, 17, 3, flipped_segs=(17, 3)).set_rule(
+                        Rule().fill(RED, -1000, -interval * speed * 3).animate(speed)
+                    )
+                    self.grid.get_seg(13).set_rule(
+                        Rule().fill(RED, -1000, -interval * speed * 2).animate(speed / 2).flip()
+                    )
+                    MultiSegment(self.grid, 12, 0, flipped_segs=(12,)).set_rule(
+                        Rule().fill(RED, -1000, -interval * speed * 4).animate(speed)
+                    )
+                    MultiSegment(self.grid, 14, 1, flipped_segs=(14, 1)).set_rule(
+                        Rule().fill(RED, -1000, -interval * speed * 4).animate(speed)
+                    )
+
+                if time_elapsed > 4.75:
+                    self.set_mode(202)
+
+            elif self.mode == 202:
+                if not self.mode_initialized:
+                    MultiSegment(self.grid, *ALL_SEGS).set_rule(
+                        Rule().fill(GREEN).fade_out(1, 2)
+                    )
+                if time_elapsed > 3.5:
+                    self.set_mode(300, clear_grid=True, clear_railings=True)
+
 
         # Modes 300-399 - gameplay
         elif self.mode <= 399:

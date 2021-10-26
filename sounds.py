@@ -8,23 +8,29 @@ KID_MODE = True
 
 SOUND_DIR = pathlib.Path(__file__).parent / 'sounds'
 
+
 # Import sounds from directories
-ATTRACT_MUSIC = [str(s) for s in (SOUND_DIR / 'attract_music').iterdir()]
-CORRECT_SOUNDS = [str(s) for s in (SOUND_DIR / 'correct').iterdir()]
-WRONG_SOUNDS = [str(s) for s in (SOUND_DIR / 'wrong').iterdir()]
-SCREAM_SOUNDS = [str(s) for s in (SOUND_DIR / 'screams').iterdir()]
-SCARY_SCREAM_SOUNDS = [str(s) for s in (SOUND_DIR / 'screams_scary').iterdir()]
-WIN_MUSIC = [str(s) for s in (SOUND_DIR / 'win_music').iterdir()]
+def get_sounds_from(dir):
+    """
+    Return all sounds from a given subdirectory of sounds.
+    :param dir: The directory to retrive sounds from.
+    :return: An array of paths to sound files.
+    """
+    return [str(s) for s in (SOUND_DIR / dir).iterdir()]
 
-UNDERTALE = "sounds/Undertale.ogg"
 
-CHOOSE_MUSIC = ["sounds/choose_music/Jeopardy.ogg",
-                "sounds/choose_music/Final Fantasy VII - One Winged Angel.ogg",
-                "sounds/choose_music/Undertale OST - 007 - Anticipation.ogg",
-                "sounds/choose_music/Undertale OST - 016 - Nyeh Heh Heh!.ogg",
-                "sounds/choose_music/Undertale OST - 068 - Death by Glamour.ogg",
-                "sounds/choose_music/Paper Mario - Koopa Bros Battle Music.ogg"]
-CHOOSE_MUSIC_TEMPOS = (132, 120, 184, 150, 148, 160)
+ATTRACT_MUSIC = get_sounds_from('attract_music')
+CHOOSE_MUSIC = get_sounds_from('choose_music')
+CORRECT_SOUNDS = get_sounds_from('correct')
+WRONG_SOUNDS = get_sounds_from('wrong')
+SCREAM_SOUNDS = get_sounds_from('screams')
+SCARY_SCREAM_SOUNDS = get_sounds_from('screams_scary')
+WIN_MUSIC = get_sounds_from('win_music')
+
+UNDERTALE = "sounds/misc/Undertale.ogg"
+GLRL_ONCE = "sounds/misc/Squid Game - Green Light Red Light Once.ogg"
+
+CHOOSE_MUSIC_TEMPOS = (120, 132, 160, 184, 150, 148)
 
 mixer.init(10000, -16, 1, 1024)
 mixer.music.set_volume(0.1)
@@ -36,7 +42,7 @@ class SoundPlayer:
 
     def attract_music(self):
         # TODO: Loop different music tracks
-        self.music(random.choice(ATTRACT_MUSIC))
+        self.music(random.choice(ATTRACT_MUSIC), 1)
 
     def choose_music(self):
         """
@@ -44,17 +50,20 @@ class SoundPlayer:
         :return: The tempo of the thinking music.
         """
         index = random.randint(0, len(CHOOSE_MUSIC) - 1)
-        self.music(CHOOSE_MUSIC[index])
-        return CHOOSE_MUSIC_TEMPOS[index]
+        self.music(CHOOSE_MUSIC[index], -1)
+        tempo = CHOOSE_MUSIC_TEMPOS[index]
+        print("Tempo of choose music is", tempo)
+        return tempo
 
-    def music(self, sound):
+    def music(self, sound, loops):
         """
         Loop the sound indefinitely.
         :param sound: The sound to loop as music.
+        :param loops: The number of times to loop the track. -1 for unlimited.
         """
         try:
             mixer.music.load(sound)
-            mixer.music.play(1)
+            mixer.music.play(loops)
             print("Playing music", sound)
         except pygame.error:
             print("Error playing music", sound)
