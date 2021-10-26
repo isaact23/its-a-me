@@ -1,6 +1,4 @@
-import time, math, colorsys
-
-# TODO: Optimize to not use lambdas
+import enum, time, math, colorsys
 
 def zero_to_one(num):
     """
@@ -13,6 +11,14 @@ def zero_to_one(num):
     while num > 1:
         num -= 1
     return num
+
+
+class Mode(enum.Enum):
+    """
+    Different modes for color functions - determines whether colors change based on pixels or time.
+    """
+    PIXEL = 'pixel'
+    TIME = 'time'
 
 class Rule:
     """
@@ -50,13 +56,25 @@ class Rule:
         self.func_chain.append(f)
         return self
 
-    def hue_linear(self, frequency=1):
+    def hue_linear(self, frequency=1, mode=Mode.PIXEL):
         """
         Fill pixels with color hue increasing with every pixel.
         :param frequency: How fast hue should increase.
+        :param mode: Color determination mode - either pixel or time.
         """
+        start_time = time.time()
+
         def f(**kwargs):
-            hue = kwargs['pixel'] * frequency / 360
+            # Based on mode, determine the independent variable (i.e. what changes the color).
+            var = 0
+            if mode == Mode.PIXEL:
+                var = kwargs['pixel']
+            elif mode == Mode.TIME:
+                var = time.time() - start_time
+            else:
+                raise RuntimeError("Mode", mode, "is invalid for Rule hue_linear().")
+
+            hue = var * frequency / 360
             hue = zero_to_one(hue)
             rgb = colorsys.hsv_to_rgb(hue, 1, 1)
             return tuple(round(c * 255) for c in rgb)
@@ -64,20 +82,35 @@ class Rule:
         self.func_chain.append(f)
         return self
 
-    def hue_wave(self, low_hue, high_hue, frequency=1):
+    def hue_wave(self, low_hue, high_hue, frequency=1, mode=Mode.PIXEL):
         """
         Generate a rainbow sine wave ranging from low_hue to high_hue.
         :param low_hue: The low hue value (0 thru 360)
         :param high_hue: The high hue value (0 thru 360)
         :param frequency: How often waves should appear (inverse of wavelength).
+        :param mode: Color determination mode - either pixel or time.
         """
 
+        start_time = time.time()
+
         def f(**kwargs):
+            # Based on mode, determine the independent variable (i.e. what changes the color).
+            var = 0
+            if mode == Mode.PIXEL:
+                var = kwargs['pixel']
+            elif mode == Mode.TIME:
+                var = time.time() - start_time
+            else:
+                raise RuntimeError("Mode", mode, "is invalid for Rule hue_wave().")
+
             mid = ((high_hue + low_hue) / 2) / 360
             amplitude = (high_hue - low_hue) / 720
-            hue = mid + amplitude * math.sin(kwargs['pixel'] * frequency)
+            hue = mid + amplitude * math.sin(var * frequency)
+
             # Ensure hue is between 0 and 1
             hue = zero_to_one(hue)
+
+            # Generate RGB value from hue
             rgb = colorsys.hsv_to_rgb(hue, 1, 1)
             return tuple(round(c * 255) for c in rgb)
 

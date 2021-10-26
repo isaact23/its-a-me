@@ -1,6 +1,6 @@
 import math
 import tkinter as tk
-import os, sys
+import sys
 from time import perf_counter
 
 # Set constants
@@ -33,6 +33,7 @@ coords = []
 for y in range(6):
     for x in range(3):
         coords.append((MARGIN + DIST + WIDTH * x, MARGIN + WIDTH * (5 - y)))
+
 
 # Image generator for the current state of the light show.
 class Emulator:

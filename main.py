@@ -2,6 +2,7 @@
 # Code for LED strips, sound control, camera, etc.
 
 # TODO: Add/program two segments for pumpkins
+# TODO: Optimize!
 
 import fpstimer
 import sys
@@ -19,7 +20,7 @@ KID_MODE = True
 # Make more negative so the wrong tiles are less likely to break.
 # Make more positive so the correct tiles are more likely to break.
 # Difficulty change compounds quite dramatically so small changes are best (maybe 0.5 at a time)
-DIFFICULTY = 2
+DIFFICULTY = 0
 
 
 def main():

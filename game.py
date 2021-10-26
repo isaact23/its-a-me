@@ -6,23 +6,23 @@ import colors
 import sounds
 from colors import *
 from controller import MultiSegment
-from rule import Rule
+from rule import Rule, Mode
 
 # TODO: Review iosoft.blog
 # https://iosoft.blog/2020/09/29/raspberry-pi-multi-channel-ws2812/
 
 # Key definitions
 KEY_START = 'space'
-KEY_BOXES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
+KEY_BOXES = ['left', 'right'] * 5
 
 # Game constants
 CASCADE_TIME = 0.8
-DECIDE_BLINK_TIMES = (0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25)
 REVEAL_BLINK_TIMES = (0.2, 0.18, 0.16, 0.14, 0.12)
 WIN_TIME = 3.5
 LOSE_TIME = 5
+PUMPKIN_BLINK_TIME = 0.15
 
-# An estimate as to the length of each segment
+# An estimate of the length of each segment
 SEG_WIDTH = 20
 
 # Box definitions
@@ -103,7 +103,7 @@ class Game:
 
             # On space press, move to stage 2 - start the game.
             if keyboard.is_pressed(KEY_START):
-                self.set_mode(random.randint(200, 201), clear_grid=True, clear_railings=True)
+                self.set_mode(random.randint(200, 201), clear_all=True)
                 self.sound_player.stop()
                 self.undertale_count = 0
 
@@ -112,8 +112,8 @@ class Game:
                     # Railings are red/orange moving stripes in intro
                     self.grid.get_seg(27).set_rule(Rule().stripes((RED, ORANGE), width=8).animate(10).fade_in(2, 1))
                     self.grid.get_seg(28).set_rule(Rule().stripes((RED, ORANGE), width=8).animate(10).fade_in(2, 1))
-                    self.grid.get_seg(29).set_rule(Rule().fill(CYAN))
-                    self.grid.get_seg(30).set_rule(Rule().fill(MAGENTA))
+                    self.grid.get_seg(29).set_rule(Rule().hue_wave(-120, 30, frequency=1, mode=Mode.TIME))
+                    self.grid.get_seg(30).set_rule(Rule().stripes((MAGENTA, BLACK), 3).animate(10))
                 if time_elapsed > 4:
                     self.set_mode(101)
 
@@ -283,6 +283,7 @@ class Game:
             # Wait for user input on first row
             if self.mode == 300:
                 if not self.mode_initialized:
+                    # Determine winning changes
                     winning_chance = self.get_winning_chance()
                     if winning_chance < 0.0001:
                         print("Current chance of winning is negligible.")
@@ -292,6 +293,7 @@ class Game:
                         percent_chance = str(round(winning_chance * 100, 2)) + "%"
                         print("Current chance of winning is", percent_chance)
 
+                    # Initialize blinking boxes
                     tempo = self.sound_player.choose_music()
                     left_box = self.row * 2
                     right_box = left_box + 1
@@ -316,6 +318,10 @@ class Game:
                     self.grid.get_seg(28).set_rule(
                         Rule().stripes((RED, GREEN, BLUE, WHITE), 1).animate(3)
                     )
+
+                    # Initialize pumpkins
+                    self.grid.get_seg(29).set_rule(Rule().hue_linear(15, mode=Mode.PIXEL).animate(10))
+                    self.grid.get_seg(30).set_rule(Rule().hue_linear(15, mode=Mode.PIXEL).animate(10))
 
                 # Left box
                 if keyboard.is_pressed(KEY_BOXES[self.row * 2]):
@@ -367,12 +373,16 @@ class Game:
         # Modes 400-499: Final win sequence
         elif self.mode <= 499:
             if not self.mode_initialized:
+                print("The player has won. On to the next game!")
                 self.sound_player.win()
-                MultiSegment(self.grid, 12, 15, 18, 21, 24).set_rule(Rule().hue_wave(120, 240, 0.4).animate(20).fade_out(2, 6))
-                MultiSegment(self.grid, 13, 16, 19, 22, 25).set_rule(Rule().hue_wave(120, 240, 0.4).animate(20).fade_out(2, 6))
-                MultiSegment(self.grid, 14, 17, 20, 23, 26).set_rule(Rule().hue_wave(120, 240, 0.4).animate(20).fade_out(2, 6))
+                MultiSegment(self.grid, 12, 15, 18, 21, 24).set_rule(Rule().hue_wave(120, 240, 0.4, Mode.PIXEL).animate(20).fade_out(2, 6))
+                MultiSegment(self.grid, 13, 16, 19, 22, 25).set_rule(Rule().hue_wave(120, 240, 0.4, Mode.PIXEL).animate(20).fade_out(2, 6))
+                MultiSegment(self.grid, 14, 17, 20, 23, 26).set_rule(Rule().hue_wave(120, 240, 0.4, Mode.PIXEL).animate(20).fade_out(2, 6))
+                MultiSegment(self.grid, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11).set_rule(Rule().hue_wave(120, 240, 2, Mode.TIME).fade_out(2, 6))
                 self.grid.get_seg(27).set_rule(Rule().hue_wave(120, 240, 0.8).animate(10).fade_out(2, 6))
                 self.grid.get_seg(28).set_rule(Rule().hue_wave(120, 240, 0.8).animate(10).fade_out(2, 6))
+                self.grid.get_seg(29).set_rule(Rule().stripes((GREEN, BLACK), 3).animate(15).fade_out(2, 6))
+                self.grid.get_seg(30).set_rule(Rule().stripes((GREEN, BLACK), 3).animate(-15).fade_out(2, 6))
             if time_elapsed > 9:
                 self.reset_game()
 
@@ -397,6 +407,14 @@ class Game:
         MultiSegment(self.grid, *BOXES[box]).set_rule(
             Rule().fill(GREEN).fade_out(1, WIN_TIME - 1.5))
 
+        bt = PUMPKIN_BLINK_TIME
+        self.grid.get_seg(29).set_rule(
+            Rule().fill(GREEN).blink(bt, bt, start_time=time.time() + bt).fade_out(1, WIN_TIME - 1.5)
+        )
+        self.grid.get_seg(30).set_rule(
+            Rule().fill(GREEN).blink(bt, bt).fade_out(1, WIN_TIME - 1.5)
+        )
+
     def wrong_lights(self, box):
         """
         Set up light display if a player lands on a wrong box.
@@ -413,6 +431,14 @@ class Game:
             Rule().stripes((RED, OFF), 10).crop(-30, 200).animate(12))
         MultiSegment(self.grid, *BOXES[box], flipped_segs=(BOXES[0][0], BOXES[0][3])).set_rule(
             Rule().stripes((RED, OFF), 3).animate(10).fade_out(1.2, 2.5))
+
+        bt = PUMPKIN_BLINK_TIME
+        self.grid.get_seg(29).set_rule(
+            Rule().fill(RED).blink(bt, bt, start_time=time.time() + bt).fade_out(1.2, 2.5)
+        )
+        self.grid.get_seg(30).set_rule(
+            Rule().fill(RED).blink(bt, bt).fade_out(1.2, 2.5)
+        )
 
     def is_tile_correct(self):
         """
