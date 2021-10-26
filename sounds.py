@@ -4,8 +4,6 @@ import random
 import pygame
 from pygame import mixer
 
-KID_MODE = True
-
 SOUND_DIR = pathlib.Path(__file__).parent / 'sounds'
 
 
@@ -37,8 +35,11 @@ mixer.music.set_volume(0.1)
 
 
 class SoundPlayer:
-    def __init__(self):
-        pass
+    def __init__(self, kid_mode):
+        """
+        :param kid_mode: Set to True to omit scary sounds.
+        """
+        self.kid_mode = kid_mode
 
     def attract_music(self):
         # TODO: Loop different music tracks
@@ -94,7 +95,7 @@ class SoundPlayer:
         """
         Play a random screaming sound.
         """
-        if KID_MODE:
+        if self.kid_mode:
             self.play(random.choice(SCREAM_SOUNDS))
         else:
             self.play(random.choice(SCARY_SCREAM_SOUNDS + SCREAM_SOUNDS))

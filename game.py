@@ -46,7 +46,7 @@ def gen_correct_tiles():
     Generate a 5 element array of bits, 0 representing left tile is correct, 1 means right is correct, for each row.
     """
     correct_tiles = [random.randint(0, 1) for i in range(5)]
-    print("Correct tiles are", correct_tiles)
+    print("Correct tiles are", ["Left" if value == 0 else "Right" for value in correct_tiles])
     return correct_tiles
 
 
@@ -57,22 +57,24 @@ class Game:
     Mode 100 - attract
     Mode 200 - startup
     Mode 300 - gameplay
+    Mode 400 - win
     """
 
-    def __init__(self, control, grid):
+    def __init__(self, control, grid, difficulty=0, kid_mode=True):
         """
         Initialize Game.
         :param control: LED controller.
         :param grid: Segment container class.
         """
-        self.box = -1
         self.controller = control
         self.grid = grid
-        self.mode = 100
+        self.difficulty = difficulty
+        self.sound_player = sounds.SoundPlayer(kid_mode)
+        self.box = -1
+        self.mode = 300
         self.mode_initialized = False
         self.new_mode = False
         self.start_time = time.time()
-        self.sound_player = sounds.SoundPlayer()
         self.correct_tiles = gen_correct_tiles()
 
         # Variables used by update()
@@ -277,11 +279,11 @@ class Game:
 
         # Modes 300-399 - gameplay
         elif self.mode <= 399:
-            digits = [int(c) for c in str(self.mode)]
-
             # Wait for user input on first row
-            if digits[2] == 0:
+            if self.mode == 300:
                 if not self.mode_initialized:
+                    print("Current chance of winning is", self.get_winning_chance())
+
                     tempo = self.sound_player.choose_music()
                     left_box = self.row * 2
                     right_box = left_box + 1
@@ -317,20 +319,20 @@ class Game:
                     self.box = self.row * 2 + 1
 
             # If blinking,
-            elif digits[2] == 1:
+            elif self.mode == 301:
                 if not self.mode_initialized:
                     self.sound_player.stop()
                     MultiSegment(self.grid, *BOXES[self.box]).set_rule(
                         Rule().fill(BLUE).blink(REVEAL_BLINK_TIMES[self.row], REVEAL_BLINK_TIMES[self.row]))
 
                 if time_elapsed > 2:
-                    if self.correct_tiles[self.row] == self.box % 2:
+                    if self.is_tile_correct():
                         self.set_mode(302)  # Win
                     else:
                         self.set_mode(303)  # Lose
 
             # If winning,
-            elif digits[2] == 2:
+            elif self.mode == 302:
                 if not self.mode_initialized:
                     self.sound_player.correct()
                     self.correct_lights(self.box)
@@ -343,7 +345,7 @@ class Game:
                         self.row += 1
 
             # If losing,
-            elif digits[2] == 3:
+            elif self.mode == 303:
                 if not self.mode_initialized:
                     self.sound_player.wrong()
                     self.wrong_lights(self.box)
@@ -403,6 +405,58 @@ class Game:
             Rule().stripes((RED, OFF), 10).crop(-30, 200).animate(12))
         MultiSegment(self.grid, *BOXES[box], flipped_segs=(BOXES[0][0], BOXES[0][3])).set_rule(
             Rule().stripes((RED, OFF), 3).animate(10).fade_out(1.2, 2.5))
+
+    def is_tile_correct(self):
+        """
+        Determine if the tile a player stepped on is correct (i.e. won't break)
+        :return: True if the tile didn't break.
+        """
+        tile = self.box % 2  # 0 if left, 1 if right
+        correct = self.correct_tiles[self.row]
+
+        # Calculate chance of something going wrong.
+        power = 2 ** abs(self.difficulty)
+        anomaly_chance = 1
+        if power != 0:
+            anomaly_chance = (power - 1) / power
+
+        # Determine if tile is correct, then determine if the chance will adjust the outcome.
+        if tile == correct:
+            if self.difficulty > 0 and random.random() <= anomaly_chance:
+                print("Correct tile, but it broke anyway. Difficulty =", self.difficulty)
+                return False
+            else:
+                print("Correct tile!")
+                return True
+        else:
+            if self.difficulty < 0 and random.random() <= anomaly_chance:
+                print("Wrong tile, but it didn't break. Difficulty =", self.difficulty)
+                return True
+            else:
+                print("Wrong tile!")
+                return False
+
+    def get_winning_chance(self):
+        """
+        :return: Current chance of winning as a percentage.
+        """
+        # Determine chance of anomaly
+        power = 2 ** abs(self.difficulty)
+        anomaly_chance = 1
+        if power != 0:
+            anomaly_chance = (power - 1) / power
+
+        # Determine chance of winning overall
+        turns_remaining = 5 - self.row
+        if self.difficulty > 0:
+            row_chance = 0.5 - (0.5 * anomaly_chance)
+        else:
+            row_chance = 0.5 + (0.5 * anomaly_chance)
+        overall_chance = row_chance ** turns_remaining
+
+        # Convert chance to percentage
+        overall_chance_percent = str(round(overall_chance * 100, 2)) + "%"
+        return overall_chance_percent
 
     def set_mode(self, mode, clear_grid=False, clear_railings=False):
         """

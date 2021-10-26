@@ -12,9 +12,15 @@ from controller import Controller
 from grid import Grid
 from emulator import Emulator
 from game import Game
-import sounds
 
 USE_EMULATOR = True
+KID_MODE = True
+
+# Set difficulty to 0 for a 50/50 shot for every row.
+# Make more negative so the wrong tiles are less likely to break.
+# Make more positive so the correct tiles are more likely to break.
+# Difficulty change compounds quite dramatically so small changes are best.
+DIFFICULTY = 0
 
 
 def main():
@@ -23,7 +29,7 @@ def main():
         print("Using emulator.")
     else:
         print("Emulator disabled.")
-    if sounds.KID_MODE:
+    if KID_MODE:
         print("Kid mode enabled - scary sounds shouldn't play. No guarantees of course. Phew glad I got that "
               "liability off my chest")
     else:
@@ -31,7 +37,7 @@ def main():
 
     control = Controller((20, 20, 2000, 20, 1000))
     grid = Grid(control)
-    game = Game(control, grid)
+    game = Game(control, grid, difficulty=DIFFICULTY, kid_mode=KID_MODE)
 
     # Begin emulation
     emulator = None
