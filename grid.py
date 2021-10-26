@@ -1,4 +1,4 @@
-SEG_COUNT = 29
+SEG_COUNT = 31
 
 
 # A container class for all Segments that are part of the game. This class also has an emulator.
@@ -9,7 +9,7 @@ class Grid:
             controller.get_strip(0).get_segment(0, 20),
             controller.get_strip(1).get_segment(0, 20)
         ]
-        for i in range(27):
+        for i in range(SEG_COUNT - 2):
             self.segments.append(controller.get_strip(2).get_segment(i * 20, (i + 1) * 20))
         self.segments[23] = controller.get_strip(3).get_segment(0, 12)
         # self.segments[28] = controller.get_strip(4).get_segment(900, 950)
@@ -34,7 +34,7 @@ class Grid:
             segment.use_rule()
         self.controller.write()
 
-    def clear_rules(self, clear_grid=True, clear_railings=True):
+    def clear_rules(self, clear_grid=True, clear_railings=True, clear_pumpkins=True):
         """
         Erase rules for some Segments.
         :param clear_grid: Whether to clear the grid.
@@ -42,5 +42,5 @@ class Grid:
         """
         if clear_grid or clear_railings:
             for i, segment in enumerate(self.segments):
-                if clear_grid and i < 27 or clear_railings and i > 26:
+                if clear_grid and i < 27 or clear_railings and 26 < i < 29 or clear_pumpkins and i > 28:
                     segment.rule = None

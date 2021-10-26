@@ -1,31 +1,38 @@
+import math
 import tkinter as tk
 import os, sys
 from time import perf_counter
 
 # Set constants
+import grid
+
 WIDTH = 100  # Width of each of the squares
-MARGIN = 50  # Distance between outside of game and edge of window
+MARGIN = 75  # Distance between outside of game and edge of window
 DIST = 75  # Distance between railing and tiles
 CIRCLE_MARGIN = 0  # Distance between coordinates and first circle of each Segment
+PUMPKIN_RADIUS = 20
+PUMPKIN_DISTANCE = 70  # Distance between pumpkins and bottom of grid
+
+LINE_WIDTH = 2
 CIRCLE_SIZE = 5
 RAIL_CIRCLE_SIZE = 10
-LINE_WIDTH = 2
+PUMPKIN_CIRCLE_SIZE = 5
 
 # Determine window size
 WINDOW_WIDTH = MARGIN * 2 + DIST * 2 + WIDTH * 2
-WINDOW_HEIGHT = MARGIN * 2 + WIDTH * 5
+WINDOW_HEIGHT = MARGIN * 2 + WIDTH * 5 + PUMPKIN_DISTANCE
 
 # Generate railing coordinates
 TL = (MARGIN, MARGIN)
 BL = (MARGIN, MARGIN + WIDTH * 5)
 TR = (MARGIN + DIST * 2 + WIDTH * 2, MARGIN)
 BR = (MARGIN + DIST * 2 + WIDTH * 2, MARGIN + WIDTH * 5)
+
 # Generate grid coordinates
 coords = []
 for y in range(6):
     for x in range(3):
         coords.append((MARGIN + DIST + WIDTH * x, MARGIN + WIDTH * (5 - y)))
-
 
 # Image generator for the current state of the light show.
 class Emulator:
@@ -107,11 +114,38 @@ class Emulator:
                 circles.append(self.draw_circle(pixel_x, pixel_y, size=RAIL_CIRCLE_SIZE))
             self.circles[seg_id] = circles
 
+        # Pumpkins
+        def gen_pumpkin_coords(center, radius, count):
+            coords = []
+            for i in range(count):
+                coords.append((
+                    center[0] + radius * math.sin(i * 2 * math.pi / count),
+                    center[1] + radius * math.cos(i * 2 * math.pi / count)
+                ))
+            return coords
+
+        left_center = (MARGIN, MARGIN + WIDTH * 5 + PUMPKIN_DISTANCE)
+        left_seg = self.grid.get_seg(29)
+        left_coords = gen_pumpkin_coords(left_center, PUMPKIN_RADIUS, left_seg.size())
+        left_circles = []
+        for coord in left_coords:
+            left_circles.append(self.draw_circle(*coord, size=PUMPKIN_CIRCLE_SIZE))
+        self.circles[29] = left_circles
+
+        right_center = (MARGIN + DIST * 2 + WIDTH * 2, MARGIN + WIDTH * 5 + PUMPKIN_DISTANCE)
+        right_seg = self.grid.get_seg(30)
+        right_coords = gen_pumpkin_coords(right_center, PUMPKIN_RADIUS, right_seg.size())
+        right_circles = []
+        for coord in right_coords:
+            right_circles.append(self.draw_circle(*coord, size=PUMPKIN_CIRCLE_SIZE))
+        self.circles[30] = right_circles
+
+
     def update(self):
         """
         Update the grid on-screen based on the Grid object.
         """
-        for s in range(29):
+        for s in range(grid.SEG_COUNT):
             circle_array = self.circles[s]
             color_array = self.grid.get_seg(s).get_pixels()
             for l in range(len(color_array)):

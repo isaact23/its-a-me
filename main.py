@@ -1,8 +1,7 @@
 # Squid Game - Glass Stepping Stones
 # Code for LED strips, sound control, camera, etc.
 
-# TODO: Red and green lights to sound of robot girl
-# TODO: Easy medium hard difficulties
+# TODO: Add/program two segments for pumpkins
 
 import fpstimer
 import sys
@@ -19,8 +18,8 @@ KID_MODE = True
 # Set difficulty to 0 for a 50/50 shot for every row.
 # Make more negative so the wrong tiles are less likely to break.
 # Make more positive so the correct tiles are more likely to break.
-# Difficulty change compounds quite dramatically so small changes are best.
-DIFFICULTY = 0
+# Difficulty change compounds quite dramatically so small changes are best (maybe 0.5 at a time)
+DIFFICULTY = 2
 
 
 def main():

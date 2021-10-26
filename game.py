@@ -112,6 +112,8 @@ class Game:
                     # Railings are red/orange moving stripes in intro
                     self.grid.get_seg(27).set_rule(Rule().stripes((RED, ORANGE), width=8).animate(10).fade_in(2, 1))
                     self.grid.get_seg(28).set_rule(Rule().stripes((RED, ORANGE), width=8).animate(10).fade_in(2, 1))
+                    self.grid.get_seg(29).set_rule(Rule().fill(CYAN))
+                    self.grid.get_seg(30).set_rule(Rule().fill(MAGENTA))
                 if time_elapsed > 4:
                     self.set_mode(101)
 
@@ -462,15 +464,19 @@ class Game:
 
         return overall_chance
 
-    def set_mode(self, mode, clear_grid=False, clear_railings=False):
+    def set_mode(self, mode, clear_all=False, clear_grid=False, clear_railings=False, clear_pumpkins=False):
         """
         Prepare for a new mode.
         """
+        if clear_all:
+            clear_grid = True
+            clear_railings = True
+            clear_pumpkins = True
         self.mode = mode
         self.start_time = time.time()
         self.mode_initialized = False
         self.new_mode = True
-        self.grid.clear_rules(clear_grid, clear_railings)
+        self.grid.clear_rules(clear_grid, clear_railings, clear_pumpkins)
         print("Set mode to", mode)
 
     def reset_game(self):
