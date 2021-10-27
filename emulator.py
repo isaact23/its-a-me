@@ -6,10 +6,10 @@ from time import perf_counter
 # Set constants
 import grid
 
-BOX_WIDTH = 100  # Width of each of the squares
+BOX_WIDTH = 80  # Width of each of the squares
 MARGIN = 75  # Distance between outside of game and edge of window
 RAILING_DIST = 75  # Distance between railing and tiles
-BOX_SPACING = 25  # Distance between squares
+BOX_SPACING = 20  # Distance between squares
 CIRCLE_MARGIN = 0  # Distance between coordinates and first circle of each Segment
 PUMPKIN_RADIUS = 20
 PUMPKIN_DISTANCE = 70  # Distance between pumpkins and bottom of grid
@@ -25,7 +25,7 @@ WINDOW_HEIGHT = MARGIN * 2 + BOX_WIDTH * 5 + PUMPKIN_DISTANCE + BOX_SPACING * 4
 
 # Generate railing coordinates
 TL = (MARGIN, MARGIN)
-BL = (MARGIN, MARGIN + BOX_WIDTH * 5)
+BL = (MARGIN, MARGIN + BOX_WIDTH * 5 + BOX_SPACING * 4)
 TR = (MARGIN + RAILING_DIST * 2 + BOX_WIDTH * 2 + BOX_SPACING, MARGIN)
 BR = (MARGIN + RAILING_DIST * 2 + BOX_WIDTH * 2 + BOX_SPACING, MARGIN + BOX_WIDTH * 5 + BOX_SPACING * 4)
 
@@ -56,13 +56,13 @@ class Emulator:
         self.canvas = tk.Canvas(self.root, bg="black", width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
 
         # Horizontal Lines
-        for i in range(6):
+        for i in range(10):
             self.canvas.create_line(*coords[i * 3], *coords[2 + i * 3], width=LINE_WIDTH)
 
         # Vertical Lines
         self.canvas.create_line(*TL, *BL, width=LINE_WIDTH)
         self.canvas.create_line(*TR, *BR, width=LINE_WIDTH)
-        for i in range(3):
+        for i in range(4):
             self.canvas.create_line(*coords[i], *coords[i + 15], width=LINE_WIDTH)
 
         self.canvas.pack()
@@ -73,49 +73,19 @@ class Emulator:
         """
         Create all circle objects representative of individual LEDs.
         """
-        # Columns
-        for y in range(5):
-            for x in range(3):
-                seg_id = 12 + x + y * 3
-                seg = self.grid.get_seg(seg_id)
-                led_count = seg.size()
-                seg_length = BOX_WIDTH - (CIRCLE_MARGIN * 2)
-                led_space = seg_length / led_count
-                origin = coords[x + y * 3]
-                pixel_x = origin[0] - round(CIRCLE_SIZE / 2)
-                circles = []
-                for i in range(led_count):
-                    pixel_y = origin[1] - CIRCLE_MARGIN - round(led_space * i) - CIRCLE_SIZE
-                    circles.append(self.draw_circle(pixel_x, pixel_y, size=CIRCLE_SIZE))
-                self.circles[seg_id] = circles
-
-        # Rows
-        for y in range(6):
-            for x in range(2):
-                seg_id = x + y * 2
-                seg = self.grid.get_seg(seg_id)
-                led_count = seg.size()
-                seg_length = BOX_WIDTH - (CIRCLE_MARGIN * 2)
-                led_space = seg_length / led_count
-                origin = coords[x + y * 3]
-                pixel_y = origin[1] - round(CIRCLE_SIZE / 2)
-                circles = []
-                for i in range(led_count):
-                    pixel_x = origin[0] + CIRCLE_MARGIN + round(led_space * i)
-                    circles.append(self.draw_circle(pixel_x, pixel_y, size=CIRCLE_SIZE))
-                self.circles[seg_id] = circles
-
         # Railings
-        seg_length = (BOX_WIDTH * 5) - (CIRCLE_MARGIN * 2)
+        seg_length = (BOX_WIDTH * 5) + (BOX_SPACING * 4) - (CIRCLE_MARGIN * 2)
         for x in range(2):
-            seg_id = 27 + x
+            seg_id = x
             seg = self.grid.get_seg(seg_id)
             led_count = seg.size()
             led_space = seg_length / led_count
             if x == 0:
-                origin = (MARGIN, MARGIN + BOX_WIDTH * 5)
+                origin = (MARGIN,
+                          MARGIN + BOX_WIDTH * 5 + BOX_SPACING * 4)
             else:
-                origin = (MARGIN + RAILING_DIST * 2 + BOX_WIDTH * 2, MARGIN + BOX_WIDTH * 5)
+                origin = (MARGIN + RAILING_DIST * 2 + BOX_WIDTH * 2 + BOX_SPACING,
+                          MARGIN + BOX_WIDTH * 5 + BOX_SPACING * 4)
             pixel_x = origin[0]
             circles = []
             for i in range(led_count):
@@ -123,31 +93,66 @@ class Emulator:
                 circles.append(self.draw_circle(pixel_x, pixel_y, size=RAIL_CIRCLE_SIZE))
             self.circles[seg_id] = circles
 
+        # Rows
+        for y in range(10):
+            for x in range(2):
+                seg_id = 2 + x + y * 2
+                seg = self.grid.get_seg(seg_id)
+                led_count = seg.size()
+                seg_length = BOX_WIDTH - (CIRCLE_MARGIN * 2)
+                led_space = seg_length / led_count
+                origin = coords[x * 2 + y * 4]
+                pixel_y = origin[1] - round(CIRCLE_SIZE / 2)
+                circles = []
+                for i in range(led_count):
+                    pixel_x = origin[0] + CIRCLE_MARGIN + round(led_space * i)
+                    circles.append(self.draw_circle(pixel_x, pixel_y, size=CIRCLE_SIZE))
+                self.circles[seg_id] = circles
+
+        # Columns
+        for y in range(5):
+            for x in range(4):
+                seg_id = 22 + x + y * 4
+                seg = self.grid.get_seg(seg_id)
+                led_count = seg.size()
+                seg_length = BOX_WIDTH - (CIRCLE_MARGIN * 2)
+                led_space = seg_length / led_count
+                origin = coords[x + y * 8]
+                pixel_x = origin[0] - round(CIRCLE_SIZE / 2)
+                circles = []
+                for i in range(led_count):
+                    pixel_y = origin[1] - CIRCLE_MARGIN - round(led_space * i) - CIRCLE_SIZE
+                    circles.append(self.draw_circle(pixel_x, pixel_y, size=CIRCLE_SIZE))
+                self.circles[seg_id] = circles
+
         # Pumpkins
         def gen_pumpkin_coords(center, radius, count):
-            coords = []
+            pumpkin_coords = []
             for i in range(count):
-                coords.append((
+                pumpkin_coords.append((
                     center[0] + radius * math.sin(i * 2 * math.pi / count),
                     center[1] + radius * math.cos(i * 2 * math.pi / count)
                 ))
-            return coords
+            return pumpkin_coords
 
-        left_center = (MARGIN, MARGIN + BOX_WIDTH * 5 + PUMPKIN_DISTANCE)
-        left_seg = self.grid.get_seg(29)
+        # TODO: Add this code to the above function
+        left_center = (MARGIN,
+                       MARGIN + BOX_WIDTH * 5 + BOX_SPACING * 4 + PUMPKIN_DISTANCE)
+        left_seg = self.grid.get_seg(42)
         left_coords = gen_pumpkin_coords(left_center, PUMPKIN_RADIUS, left_seg.size())
         left_circles = []
         for coord in left_coords:
             left_circles.append(self.draw_circle(*coord, size=PUMPKIN_CIRCLE_SIZE))
-        self.circles[29] = left_circles
+        self.circles[42] = left_circles
 
-        right_center = (MARGIN + RAILING_DIST * 2 + BOX_WIDTH * 2, MARGIN + BOX_WIDTH * 5 + PUMPKIN_DISTANCE)
-        right_seg = self.grid.get_seg(30)
+        right_center = (MARGIN + RAILING_DIST * 2 + BOX_WIDTH * 2 + BOX_SPACING,
+                        MARGIN + BOX_WIDTH * 5 + BOX_SPACING * 4 + PUMPKIN_DISTANCE)
+        right_seg = self.grid.get_seg(43)
         right_coords = gen_pumpkin_coords(right_center, PUMPKIN_RADIUS, right_seg.size())
         right_circles = []
         for coord in right_coords:
             right_circles.append(self.draw_circle(*coord, size=PUMPKIN_CIRCLE_SIZE))
-        self.circles[30] = right_circles
+        self.circles[43] = right_circles
 
 
     def update(self):

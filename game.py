@@ -26,19 +26,20 @@ PUMPKIN_BLINK_TIME = 0.15
 SEG_WIDTH = 12
 
 # Box definitions
-BOXES = ((0, 12, 2, 13),
-         (1, 13, 3, 14),
-         (2, 15, 4, 16),
-         (3, 16, 5, 17),
-         (4, 18, 6, 19),
-         (5, 19, 7, 20),
-         (6, 21, 8, 22),
-         (7, 22, 9, 23),
-         (8, 24, 10, 25),
-         (9, 25, 11, 26))
-GRID = tuple(i for i in range(27))
-RAILS = (27, 28)
-ALL_SEGS = tuple(i for i in range(29))
+BOXES = ((2, 22, 4, 23),
+         (3, 24, 5, 25),
+         (6, 26, 8, 27),
+         (7, 28, 9, 29),
+         (10, 30, 12, 31),
+         (11, 32, 13, 33),
+         (14, 34, 16, 35),
+         (15, 36, 17, 37),
+         (18, 38, 20, 39),
+         (19, 40, 21, 41))
+RAILS = (0, 1)
+GRID = tuple(i for i in range(2, 42))
+PUMPKINS = (42, 43)
+ALL_SEGS = tuple(i for i in range(44))
 
 
 def gen_correct_tiles():
@@ -71,7 +72,7 @@ class Game:
         self.difficulty = difficulty
         self.sound_player = sounds.SoundPlayer(kid_mode)
         self.box = -1
-        self.mode = 100
+        self.mode = 0
         self.mode_initialized = False
         self.new_mode = False
         self.start_time = time.time()
@@ -93,7 +94,10 @@ class Game:
         if self.mode <= 99:
             # MultiSegment(self.grid, 12, 15, 18, 21, 24, 10, 11).set_rule(Rule().hue(60, 310, 0.1))
             # MultiSegment(self.grid, 12, 15, 18, 21, 24, 10, 11).set_rule(Rule().fill(RED).crop(40, 990))
-            pass
+            #MultiSegment(self.grid, *ALL_SEGS).set_rule(
+            #    Rule().fill(WHITE)
+            #)
+            MultiSegment(self.grid, *ALL_SEGS).set_rule(Rule().fill(WHITE))
 
         # Mode 100-199 - attract sequence
         elif self.mode <= 199:
