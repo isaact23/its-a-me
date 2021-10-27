@@ -6,9 +6,10 @@ from time import perf_counter
 # Set constants
 import grid
 
-WIDTH = 100  # Width of each of the squares
+BOX_WIDTH = 100  # Width of each of the squares
 MARGIN = 75  # Distance between outside of game and edge of window
-DIST = 75  # Distance between railing and tiles
+RAILING_DIST = 75  # Distance between railing and tiles
+BOX_SPACING = 25  # Distance between squares
 CIRCLE_MARGIN = 0  # Distance between coordinates and first circle of each Segment
 PUMPKIN_RADIUS = 20
 PUMPKIN_DISTANCE = 70  # Distance between pumpkins and bottom of grid
@@ -19,20 +20,27 @@ RAIL_CIRCLE_SIZE = 9
 PUMPKIN_CIRCLE_SIZE = 8
 
 # Determine window size
-WINDOW_WIDTH = MARGIN * 2 + DIST * 2 + WIDTH * 2
-WINDOW_HEIGHT = MARGIN * 2 + WIDTH * 5 + PUMPKIN_DISTANCE
+WINDOW_WIDTH = MARGIN * 2 + RAILING_DIST * 2 + BOX_WIDTH * 2 + BOX_SPACING
+WINDOW_HEIGHT = MARGIN * 2 + BOX_WIDTH * 5 + PUMPKIN_DISTANCE + BOX_SPACING * 4
 
 # Generate railing coordinates
 TL = (MARGIN, MARGIN)
-BL = (MARGIN, MARGIN + WIDTH * 5)
-TR = (MARGIN + DIST * 2 + WIDTH * 2, MARGIN)
-BR = (MARGIN + DIST * 2 + WIDTH * 2, MARGIN + WIDTH * 5)
+BL = (MARGIN, MARGIN + BOX_WIDTH * 5)
+TR = (MARGIN + RAILING_DIST * 2 + BOX_WIDTH * 2 + BOX_SPACING, MARGIN)
+BR = (MARGIN + RAILING_DIST * 2 + BOX_WIDTH * 2 + BOX_SPACING, MARGIN + BOX_WIDTH * 5 + BOX_SPACING * 4)
 
 # Generate grid coordinates
 coords = []
-for y in range(6):
-    for x in range(3):
-        coords.append((MARGIN + DIST + WIDTH * x, MARGIN + WIDTH * (5 - y)))
+for y in range(10):
+    for x in range(4):
+        # Generate top left coordinate, then add on as needed
+        coord = [MARGIN + RAILING_DIST, MARGIN + (BOX_WIDTH * 5) + (BOX_SPACING * 4)]
+        coord[0] += BOX_WIDTH * (math.ceil(x / 2))
+        coord[0] += BOX_SPACING * (x // 2)
+        coord[1] -= BOX_WIDTH * (math.ceil(y / 2))
+        coord[1] -= BOX_SPACING * (y // 2)
+
+        coords.append(coord)
 
 
 # Image generator for the current state of the light show.
@@ -71,7 +79,7 @@ class Emulator:
                 seg_id = 12 + x + y * 3
                 seg = self.grid.get_seg(seg_id)
                 led_count = seg.size()
-                seg_length = WIDTH - (CIRCLE_MARGIN * 2)
+                seg_length = BOX_WIDTH - (CIRCLE_MARGIN * 2)
                 led_space = seg_length / led_count
                 origin = coords[x + y * 3]
                 pixel_x = origin[0] - round(CIRCLE_SIZE / 2)
@@ -87,7 +95,7 @@ class Emulator:
                 seg_id = x + y * 2
                 seg = self.grid.get_seg(seg_id)
                 led_count = seg.size()
-                seg_length = WIDTH - (CIRCLE_MARGIN * 2)
+                seg_length = BOX_WIDTH - (CIRCLE_MARGIN * 2)
                 led_space = seg_length / led_count
                 origin = coords[x + y * 3]
                 pixel_y = origin[1] - round(CIRCLE_SIZE / 2)
@@ -98,16 +106,16 @@ class Emulator:
                 self.circles[seg_id] = circles
 
         # Railings
-        seg_length = (WIDTH * 5) - (CIRCLE_MARGIN * 2)
+        seg_length = (BOX_WIDTH * 5) - (CIRCLE_MARGIN * 2)
         for x in range(2):
             seg_id = 27 + x
             seg = self.grid.get_seg(seg_id)
             led_count = seg.size()
             led_space = seg_length / led_count
             if x == 0:
-                origin = (MARGIN, MARGIN + WIDTH * 5)
+                origin = (MARGIN, MARGIN + BOX_WIDTH * 5)
             else:
-                origin = (MARGIN + DIST * 2 + WIDTH * 2, MARGIN + WIDTH * 5)
+                origin = (MARGIN + RAILING_DIST * 2 + BOX_WIDTH * 2, MARGIN + BOX_WIDTH * 5)
             pixel_x = origin[0]
             circles = []
             for i in range(led_count):
@@ -125,7 +133,7 @@ class Emulator:
                 ))
             return coords
 
-        left_center = (MARGIN, MARGIN + WIDTH * 5 + PUMPKIN_DISTANCE)
+        left_center = (MARGIN, MARGIN + BOX_WIDTH * 5 + PUMPKIN_DISTANCE)
         left_seg = self.grid.get_seg(29)
         left_coords = gen_pumpkin_coords(left_center, PUMPKIN_RADIUS, left_seg.size())
         left_circles = []
@@ -133,7 +141,7 @@ class Emulator:
             left_circles.append(self.draw_circle(*coord, size=PUMPKIN_CIRCLE_SIZE))
         self.circles[29] = left_circles
 
-        right_center = (MARGIN + DIST * 2 + WIDTH * 2, MARGIN + WIDTH * 5 + PUMPKIN_DISTANCE)
+        right_center = (MARGIN + RAILING_DIST * 2 + BOX_WIDTH * 2, MARGIN + BOX_WIDTH * 5 + PUMPKIN_DISTANCE)
         right_seg = self.grid.get_seg(30)
         right_coords = gen_pumpkin_coords(right_center, PUMPKIN_RADIUS, right_seg.size())
         right_circles = []

@@ -1,4 +1,4 @@
-SEG_COUNT = 31
+SEG_COUNT = 44
 
 
 # A container class for all Segments that are part of the game. This class also has an emulator.
@@ -6,12 +6,11 @@ class Grid:
     def __init__(self, controller):
         self.controller = controller
         self.segments = []
-        # Grid
-        for i in range(SEG_COUNT - 4):
-            self.segments.append(controller.get_strip(0).get_segment(100 + i * 12, 100 + (i + 1) * 12))
+        # Railings
         self.segments.append(controller.get_strip(0).get_segment(0, 50))
         self.segments.append(controller.get_strip(0).get_segment(50, 100))
-        for i in range(SEG_COUNT - 2, SEG_COUNT):
+        # Grid and pumpkins
+        for i in range(2, SEG_COUNT):
             self.segments.append(controller.get_strip(0).get_segment(100 + i * 12, 100 + (i + 1) * 12))
 
 
