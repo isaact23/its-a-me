@@ -15,7 +15,7 @@ from game import Game
 
 USE_EMULATOR = False
 KID_MODE = True
-REPORT_FPS = False
+REPORT_FPS = True
 
 # Set difficulty to 0 for a 50/50 shot for every row.
 # Make more negative so the wrong tiles are less likely to break.
@@ -45,7 +45,7 @@ def main():
         emulator = Emulator(grid)
 
     # Frames per second stuff
-    timer = fpstimer.FPSTimer(60)
+    timer = fpstimer.FPSTimer(1)
     start_time = time.time()
     frame_count = 0
 

@@ -106,8 +106,9 @@ class LightStrip:
             for i in range(pixel_count):
                 pixels[i] = self.pixels[i]
             pixels.write()
+            print(self.pixels)
         except:
-            pass
+            print("Error writing pixels.")
 
     class Segment:
         """
