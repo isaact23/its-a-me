@@ -402,14 +402,20 @@ class Game:
             if not self.mode_initialized:
                 print("The player has won. On to the next game!")
                 self.sound_player.win()
-                MultiSegment(self.grid, 12, 15, 18, 21, 24).set_rule(Rule().hue_wave(120, 240, 0.4, Mode.PIXEL).animate(20).fade_out(2, 6))
-                MultiSegment(self.grid, 13, 16, 19, 22, 25).set_rule(Rule().hue_wave(120, 240, 0.4, Mode.PIXEL).animate(20).fade_out(2, 6))
-                MultiSegment(self.grid, 14, 17, 20, 23, 26).set_rule(Rule().hue_wave(120, 240, 0.4, Mode.PIXEL).animate(20).fade_out(2, 6))
-                MultiSegment(self.grid, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11).set_rule(Rule().hue_wave(120, 240, 2, Mode.TIME).fade_out(2, 6))
-                self.grid.get_seg(27).set_rule(Rule().hue_wave(120, 240, 0.8).animate(10).fade_out(2, 6))
-                self.grid.get_seg(28).set_rule(Rule().hue_wave(120, 240, 0.8).animate(10).fade_out(2, 6))
-                self.grid.get_seg(29).set_rule(Rule().stripes((GREEN, BLACK), 3).animate(15).fade_out(2, 6))
-                self.grid.get_seg(30).set_rule(Rule().stripes((GREEN, BLACK), 3).animate(-15).fade_out(2, 6))
+                MultiSegment(self.grid, 22, 26, 30, 34, 38).set_rule(
+                    Rule().hue_wave(120, 240, 0.4, Mode.PIXEL).animate(20).fade_out(2, 6))
+                MultiSegment(self.grid, 23, 27, 31, 35, 39).set_rule(
+                    Rule().hue_wave(120, 240, 0.4, Mode.PIXEL).animate(20).fade_out(2, 6))
+                MultiSegment(self.grid, 24, 28, 32, 36, 40).set_rule(
+                    Rule().hue_wave(120, 240, 0.4, Mode.PIXEL).animate(20).fade_out(2, 6))
+                MultiSegment(self.grid, 25, 29, 33, 37, 41).set_rule(
+                    Rule().hue_wave(120, 240, 0.4, Mode.PIXEL).animate(20).fade_out(2, 6))
+                MultiSegment(self.grid, *[i for i in range(2, 22)]).set_rule(
+                    Rule().hue_wave(120, 240, 2, Mode.TIME).fade_out(2, 6))
+                self.grid.get_seg(0).set_rule(Rule().hue_wave(120, 240, 0.8).animate(10).fade_out(2, 6))
+                self.grid.get_seg(1).set_rule(Rule().hue_wave(120, 240, 0.8).animate(10).fade_out(2, 6))
+                self.grid.get_seg(42).set_rule(Rule().stripes((GREEN, BLACK), 3).animate(15).fade_out(2, 6))
+                self.grid.get_seg(43).set_rule(Rule().stripes((GREEN, BLACK), 3).animate(-15).fade_out(2, 6))
             if time_elapsed > 9:
                 self.reset_game()
 
