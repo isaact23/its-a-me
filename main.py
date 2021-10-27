@@ -12,7 +12,7 @@ from grid import Grid
 from emulator import Emulator
 from game import Game
 
-USE_EMULATOR = True
+USE_EMULATOR = False
 KID_MODE = True
 REPORT_FPS = False
 
