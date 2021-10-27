@@ -72,7 +72,7 @@ class Game:
         self.difficulty = difficulty
         self.sound_player = sounds.SoundPlayer(kid_mode)
         self.box = -1
-        self.mode = 104
+        self.mode = 201
         self.mode_initialized = False
         self.new_mode = False
         self.start_time = time.time()
@@ -194,17 +194,17 @@ class Game:
                 if not self.mode_initialized:
                     width = 6
                     speed = 50
-                    MultiSegment(self.grid, 19, 22, 25, 10, 24, 8, 6, 18, 4, flipped_segs=(10, 24, 6, 18)).set_rule(
+                    MultiSegment(self.grid, 31, 35, 39, 20, 38, 16, 12, 30, 8, flipped_segs=(20, 38, 12, 30)).set_rule(
                         Rule().stripes((WHITE, BLACK), width).crop(-200, 0).animate(speed)
                     )
-                    MultiSegment(self.grid, 11, 26, 9, 7, 20, 5, flipped_segs=(26, 9, 20, 5)).set_rule(
-                        Rule().stripes((WHITE, BLACK), width).crop(-200, 0).offset(SEG_WIDTH * 3).animate(speed)
-                    )
-                    MultiSegment(self.grid, 16, 13, 0, 12, 2, flipped_segs=(16, 13, 0)).set_rule(
+                    MultiSegment(self.grid, 32, 36, 40, 21, 41, 17, 13, 33, 9, flipped_segs=(41, 17, 33, 9)).set_rule(
                         Rule().stripes((WHITE, BLACK), width).crop(-200, 0).animate(speed)
                     )
-                    MultiSegment(self.grid, 1, 14, 3, flipped_segs=(3,)).set_rule(
-                        Rule().stripes((WHITE, BLACK), width).crop(-200, 0).offset(SEG_WIDTH * 2).animate(speed)
+                    MultiSegment(self.grid, 27, 23, 2, 22, 4, flipped_segs=(27, 23, 2)).set_rule(
+                        Rule().stripes((WHITE, BLACK), width).crop(-200, 0).animate(speed)
+                    )
+                    MultiSegment(self.grid, 28, 24, 3, 25, 5, flipped_segs=(28, 24, 5)).set_rule(
+                        Rule().stripes((WHITE, BLACK), width).crop(-200, 0).animate(speed)
                     )
                 if time_elapsed > 9:
                     self.set_mode(101)
@@ -235,49 +235,64 @@ class Game:
                     speed = 80
                     interval = 0.9
                     self.sound_player.play(sounds.GLRL_ONCE)
-                    self.grid.get_seg(25).set_rule(
+                    self.grid.get_seg(39).set_rule(
                         Rule().fill(RED, -1000, 0).animate(speed / 3).flip()
                     )
-                    MultiSegment(self.grid, 10, 24, 8, flipped_segs=(10, 24)).set_rule(
+                    self.grid.get_seg(40).set_rule(
+                        Rule().fill(RED, -1000, 0).animate(speed / 3).flip()
+                    )
+                    MultiSegment(self.grid, 20, 38, 18, flipped_segs=(20, 38)).set_rule(
                         Rule().fill(RED, -1000, 0).animate(speed)
                     )
-                    MultiSegment(self.grid, 11, 26, 9, flipped_segs=(26, 9)).set_rule(
+                    MultiSegment(self.grid, 21, 41, 19, flipped_segs=(41, 19)).set_rule(
                         Rule().fill(RED, -1000, 0).animate(speed)
                     )
-                    self.grid.get_seg(22).set_rule(
-                        Rule().fill(RED, -1000, -interval * speed * 0.5).animate(speed / 2).flip()
+                    self.grid.get_seg(35).set_rule(
+                        Rule().fill(RED, -1000, -interval * speed / 3).animate(speed / 3).flip()
                     )
-                    MultiSegment(self.grid, 21, 6, flipped_segs=(21,)).set_rule(
+                    self.grid.get_seg(36).set_rule(
+                        Rule().fill(RED, -1000, -interval * speed / 3).animate(speed / 3).flip()
+                    )
+                    MultiSegment(self.grid, 16, 34, 14, flipped_segs=(16, 34)).set_rule(
                         Rule().fill(RED, -1000, -interval * speed).animate(speed)
                     )
-                    MultiSegment(self.grid, 23, 7, flipped_segs=(23, 7)).set_rule(
+                    MultiSegment(self.grid, 17, 37, 15, flipped_segs=(37, 15)).set_rule(
                         Rule().fill(RED, -1000, -interval * speed).animate(speed)
                     )
-                    self.grid.get_seg(19).set_rule(
-                        Rule().fill(RED, -1000, -interval * speed).animate(speed / 2).flip()
+                    self.grid.get_seg(31).set_rule(
+                        Rule().fill(RED, -1000, -interval * speed * 2 / 3).animate(speed / 3).flip()
                     )
-                    MultiSegment(self.grid, 18, 4, flipped_segs=(18,)).set_rule(
+                    self.grid.get_seg(32).set_rule(
+                        Rule().fill(RED, -1000, -interval * speed * 2 / 3).animate(speed / 3).flip()
+                    )
+                    MultiSegment(self.grid, 12, 30, 10, flipped_segs=(12, 30)).set_rule(
                         Rule().fill(RED, -1000, -interval * speed * 2).animate(speed)
                     )
-                    MultiSegment(self.grid, 20, 5, flipped_segs=(20, 5)).set_rule(
+                    MultiSegment(self.grid, 13, 33, 11, flipped_segs=(33, 11)).set_rule(
                         Rule().fill(RED, -1000, -interval * speed * 2).animate(speed)
                     )
-                    self.grid.get_seg(16).set_rule(
-                        Rule().fill(RED, -1000, -interval * speed * 1.5).animate(speed / 2).flip()
+                    self.grid.get_seg(27).set_rule(
+                        Rule().fill(RED, -1000, -interval * speed).animate(speed / 3).flip()
                     )
-                    MultiSegment(self.grid, 15, 2, flipped_segs=(15,)).set_rule(
+                    self.grid.get_seg(28).set_rule(
+                        Rule().fill(RED, -1000, -interval * speed).animate(speed / 3).flip()
+                    )
+                    MultiSegment(self.grid, 8, 26, 6, flipped_segs=(8, 26)).set_rule(
                         Rule().fill(RED, -1000, -interval * speed * 3).animate(speed)
                     )
-                    MultiSegment(self.grid, 17, 3, flipped_segs=(17, 3)).set_rule(
+                    MultiSegment(self.grid, 9, 29, 7, flipped_segs=(29, 7)).set_rule(
                         Rule().fill(RED, -1000, -interval * speed * 3).animate(speed)
                     )
-                    self.grid.get_seg(13).set_rule(
-                        Rule().fill(RED, -1000, -interval * speed * 2).animate(speed / 2).flip()
+                    self.grid.get_seg(23).set_rule(
+                        Rule().fill(RED, -1000, -interval * speed * 4 / 3).animate(speed / 3).flip()
                     )
-                    MultiSegment(self.grid, 12, 0, flipped_segs=(12,)).set_rule(
+                    self.grid.get_seg(24).set_rule(
+                        Rule().fill(RED, -1000, -interval * speed * 4 / 3).animate(speed / 3).flip()
+                    )
+                    MultiSegment(self.grid, 4, 22, 2, flipped_segs=(4, 22)).set_rule(
                         Rule().fill(RED, -1000, -interval * speed * 4).animate(speed)
                     )
-                    MultiSegment(self.grid, 14, 1, flipped_segs=(14, 1)).set_rule(
+                    MultiSegment(self.grid, 5, 25, 3, flipped_segs=(25, 3)).set_rule(
                         Rule().fill(RED, -1000, -interval * speed * 4).animate(speed)
                     )
 
