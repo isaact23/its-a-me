@@ -7,14 +7,16 @@ class Grid:
         self.controller = controller
         self.segments = []
         # Grid
-        for i in range(SEG_COUNT - 4):
-            self.segments.append(controller.get_strip(2).get_segment(i * 12, (i + 1) * 12))
+        for i in range(SEG_COUNT):
+            self.segments.append(controller.get_strip(0).get_segment(i * 12, (i + 1) * 12))
+        """
         # Railings
         self.segments.append(controller.get_strip(0).get_segment(0, 30))
-        self.segments.append(controller.get_strip(1).get_segment(0, 30))
+        self.segments.append(controller.get_strip(0).get_segment(0, 30))
         # Pumpkins
         for i in range(SEG_COUNT - 2, SEG_COUNT):
-            self.segments.append(controller.get_strip(2).get_segment(i * 12, (i + 1) * 12))
+            self.segments.append(controller.get_strip(0).get_segment(i * 12, (i + 1) * 12))
+        """
 
     def get_seg(self, segment):
         """

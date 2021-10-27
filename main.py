@@ -36,7 +36,7 @@ def main():
     else:
         print("Kid mode disabled - beware of scary sounds!")
 
-    control = Controller((30, 30, 2000, 20, 1000))
+    control = Controller((1000,))
     grid = Grid(control)
     game = Game(control, grid, difficulty=DIFFICULTY, kid_mode=KID_MODE)
 

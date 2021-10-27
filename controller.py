@@ -100,11 +100,14 @@ class LightStrip:
         """
         Send pixel data to this LED strip.
         """
-        pixel_count = 100
-        pixels = neopixel.NeoPixel(board.D18, pixel_count, auto_write=False)
-        for i in range(pixel_count):
-            pixels[i] = self.pixels[i]
-        pixels.write()
+        try:
+            pixel_count = 1000
+            pixels = neopixel.NeoPixel(board.D18, pixel_count, auto_write=False)
+            for i in range(pixel_count):
+                pixels[i] = self.pixels[i]
+            pixels.write()
+        except NameError:
+            pass
 
     class Segment:
         """
