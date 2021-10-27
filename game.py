@@ -72,7 +72,7 @@ class Game:
         self.difficulty = difficulty
         self.sound_player = sounds.SoundPlayer(kid_mode)
         self.box = -1
-        self.mode = 300
+        self.mode = 200
         self.mode_initialized = False
         self.new_mode = False
         self.start_time = time.time()
@@ -213,15 +213,15 @@ class Game:
         elif self.mode <= 299:
             if self.mode == 200:
                 if not self.mode_initialized:
-                    MultiSegment(self.grid, 10, 11, 24, 25, 26, 8, 9).set_rule(
+                    MultiSegment(self.grid, *BOXES[8], *BOXES[9]).set_rule(
                         Rule().fill(WHITE).fade_in(0, 0).fade_out(1, 2))
-                    MultiSegment(self.grid, 21, 6, 22, 7, 23).set_rule(
+                    MultiSegment(self.grid, *BOXES[6], *BOXES[7]).set_rule(
                         Rule().fill(WHITE).fade_in(0, CASCADE_TIME).fade_out(1, 2 + CASCADE_TIME))
-                    MultiSegment(self.grid, 18, 4, 19, 5, 20).set_rule(
+                    MultiSegment(self.grid, *BOXES[4], *BOXES[5]).set_rule(
                         Rule().fill(WHITE).fade_in(0, CASCADE_TIME * 2).fade_out(1, 2 + CASCADE_TIME * 2))
-                    MultiSegment(self.grid, 15, 2, 16, 3, 17).set_rule(
+                    MultiSegment(self.grid, *BOXES[2], *BOXES[3]).set_rule(
                         Rule().fill(WHITE).fade_in(0, CASCADE_TIME * 3).fade_out(1, 2 + CASCADE_TIME * 3))
-                    MultiSegment(self.grid, 12, 0, 13, 1, 14).set_rule(
+                    MultiSegment(self.grid, *BOXES[0], *BOXES[1]).set_rule(
                         Rule().fill(WHITE).fade_in(0, CASCADE_TIME * 4).fade_out(1, 2 + CASCADE_TIME * 4))
 
                 if self.undertale_count < 5 and time_elapsed > self.undertale_count * CASCADE_TIME:
