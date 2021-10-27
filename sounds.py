@@ -4,6 +4,8 @@ import random
 import pygame
 from pygame import mixer
 
+ENABLE_SOUND = True
+
 SOUND_DIR = pathlib.Path(__file__).parent / 'sounds'
 
 
@@ -30,8 +32,9 @@ GLRL_ONCE = "sounds/misc/Squid Game - Green Light Red Light Once.ogg"
 
 CHOOSE_MUSIC_TEMPOS = (120, 132, 160, 184, 150, 148)
 
-mixer.init(10000, -16, 1, 1024)
-mixer.music.set_volume(0.1)
+if ENABLE_SOUND:
+    mixer.init(10000, -16, 1, 1024)
+    mixer.music.set_volume(0.1)
 
 
 class SoundPlayer:
@@ -43,7 +46,8 @@ class SoundPlayer:
 
     def attract_music(self):
         # TODO: Loop different music tracks
-        self.music(random.choice(ATTRACT_MUSIC), 1)
+        if ENABLE_SOUND:
+            self.music(random.choice(ATTRACT_MUSIC), 1)
 
     def choose_music(self):
         """
