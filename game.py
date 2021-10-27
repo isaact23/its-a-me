@@ -72,7 +72,7 @@ class Game:
         self.difficulty = difficulty
         self.sound_player = sounds.SoundPlayer(kid_mode)
         self.box = -1
-        self.mode = 200
+        self.mode = 100
         self.mode_initialized = False
         self.new_mode = False
         self.start_time = time.time()
@@ -435,10 +435,10 @@ class Game:
             Rule().fill(GREEN).fade_out(1, WIN_TIME - 1.5))
 
         bt = PUMPKIN_BLINK_TIME
-        self.grid.get_seg(29).set_rule(
+        self.grid.get_seg(42).set_rule(
             Rule().fill(GREEN).blink(bt, bt, start_time=time.time() + bt).fade_out(1, WIN_TIME - 1.5)
         )
-        self.grid.get_seg(30).set_rule(
+        self.grid.get_seg(43).set_rule(
             Rule().fill(GREEN).blink(bt, bt).fade_out(1, WIN_TIME - 1.5)
         )
 
@@ -455,15 +455,21 @@ class Game:
         :param box: Wrong box ID.
         """
         MultiSegment(self.grid, *ALL_SEGS, continuous=False).set_rule(
-            Rule().stripes((RED, OFF), 10).crop(-30, 200).animate(12))
-        MultiSegment(self.grid, *BOXES[box], flipped_segs=(BOXES[0][0], BOXES[0][3])).set_rule(
+            Rule().stripes((RED, OFF), 6).crop(-30, 200).animate(12))
+        MultiSegment(self.grid, *BOXES[box], flipped_segs=(BOXES[box][0], BOXES[box][3])).set_rule(
             Rule().stripes((RED, OFF), 3).animate(10).fade_out(1.2, 2.5))
+        self.grid.get_seg(0).set_rule(
+            Rule().stripes((RED, OFF), 10).crop(0, 100).animate(15)
+        )
+        self.grid.get_seg(1).set_rule(
+            Rule().stripes((RED, OFF), 10).crop(0, 100).animate(15)
+        )
 
         bt = PUMPKIN_BLINK_TIME
-        self.grid.get_seg(29).set_rule(
+        self.grid.get_seg(42).set_rule(
             Rule().fill(RED).blink(bt, bt, start_time=time.time() + bt).fade_out(1.2, 2.5)
         )
-        self.grid.get_seg(30).set_rule(
+        self.grid.get_seg(43).set_rule(
             Rule().fill(RED).blink(bt, bt).fade_out(1.2, 2.5)
         )
 
