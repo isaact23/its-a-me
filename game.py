@@ -23,7 +23,7 @@ LOSE_TIME = 5
 PUMPKIN_BLINK_TIME = 0.15
 
 # An estimate of the length of each segment
-SEG_WIDTH = 20
+SEG_WIDTH = 12
 
 # Box definitions
 BOXES = ((0, 12, 2, 13),
@@ -151,17 +151,16 @@ class Game:
 
                     for i, multi_seg in enumerate(multi_segs):
                         rule = Rule().hue_linear(5).fade_in(1, 0).fade_out(1, 5).animate(40)
-                        match i:
-                            case 1:
-                                rule.offset(SEG_WIDTH * 4)
-                            case 2:
-                                rule.offset(SEG_WIDTH * 3)
-                            case 3:
-                                rule.offset(SEG_WIDTH * 2)
-                            case 4:
-                                rule.offset(SEG_WIDTH)
-                            case 6:
-                                rule.offset(SEG_WIDTH)
+                        if i == 1:
+                            rule.offset(SEG_WIDTH * 4)
+                        if i == 2:
+                            rule.offset(SEG_WIDTH * 3)
+                        if i == 3:
+                            rule.offset(SEG_WIDTH * 2)
+                        if i == 4:
+                            rule.offset(SEG_WIDTH)
+                        if i == 6:
+                            rule.offset(SEG_WIDTH)
 
                         multi_seg.set_rule(rule)
                 if time_elapsed > 7:

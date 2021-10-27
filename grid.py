@@ -10,9 +10,7 @@ class Grid:
             controller.get_strip(1).get_segment(0, 20)
         ]
         for i in range(SEG_COUNT - 2):
-            self.segments.append(controller.get_strip(2).get_segment(i * 20, (i + 1) * 20))
-        self.segments[23] = controller.get_strip(3).get_segment(0, 12)
-        # self.segments[28] = controller.get_strip(4).get_segment(900, 950)
+            self.segments.append(controller.get_strip(2).get_segment(i * 12, (i + 1) * 12))
 
     def get_seg(self, segment):
         """
