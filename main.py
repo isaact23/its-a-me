@@ -51,13 +51,20 @@ def main():
     frame_count = 0
 
     while True:
+        time1 = time.perf_counter()
         game.update()  # Update game logic
+        time2 = time.perf_counter()
         grid.use_rule()  # Update colors
+        time3 = time.perf_counter()
         control.write()  # Update LED strips
         if USE_EMULATOR:
             emulator.update()  # Update GUI
+        time4 = time.perf_counter()
         timer.sleep()  # 60 FPS
         frame_count += 1
+        print("Game update time:", time2 - time1)
+        print("Use rule time:", time3 - time2)
+        print("Write time:", time4 - time3)
 
         # Report FPS
         if REPORT_FPS:
