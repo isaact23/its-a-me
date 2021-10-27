@@ -72,7 +72,7 @@ class Game:
         self.difficulty = difficulty
         self.sound_player = sounds.SoundPlayer(kid_mode)
         self.box = -1
-        self.mode = 0
+        self.mode = 104
         self.mode_initialized = False
         self.new_mode = False
         self.start_time = time.time()
@@ -114,10 +114,10 @@ class Game:
             elif self.mode == 100:
                 if not self.mode_initialized:
                     # Railings are red/orange moving stripes in intro
-                    self.grid.get_seg(27).set_rule(Rule().stripes((RED, ORANGE), width=8).animate(10).fade_in(2, 1))
-                    self.grid.get_seg(28).set_rule(Rule().stripes((RED, ORANGE), width=8).animate(10).fade_in(2, 1))
-                    self.grid.get_seg(29).set_rule(Rule().hue_wave(-120, 30, frequency=1, mode=Mode.TIME))
-                    self.grid.get_seg(30).set_rule(Rule().stripes((MAGENTA, BLACK), 3).animate(10))
+                    self.grid.get_seg(0).set_rule(Rule().stripes((RED, ORANGE), width=8).animate(10).fade_in(2, 1))
+                    self.grid.get_seg(1).set_rule(Rule().stripes((RED, ORANGE), width=8).animate(10).fade_in(2, 1))
+                    self.grid.get_seg(42).set_rule(Rule().hue_wave(-120, 30, frequency=1, mode=Mode.TIME))
+                    self.grid.get_seg(43).set_rule(Rule().stripes((MAGENTA, BLACK), 3).animate(10))
                 if time_elapsed > 4:
                     self.set_mode(101)
 
@@ -135,35 +135,46 @@ class Game:
             elif self.mode == 102:
                 if not self.mode_initialized:
                     # Have a white light zoom around the strip
-                    multi_seg = MultiSegment(self.grid, 12, 2, 16, 4, 18, 21, 24, 10, 11, 26,
-                                             9, 22, 7, 20, 17, 14, 1, 0,
-                                             flipped_segs=(4, 26, 9, 22, 20, 17, 14, 1, 0))
-                    multi_seg.set_rule(Rule().fill(WHITE, -15, 0).animate(100))
+                    multi_seg = MultiSegment(self.grid, 22, 4, 27, 8, 30, 34, 38, 20, 21, 41,
+                                             17, 36, 13, 33, 29, 25, 3, 2,
+                                             flipped_segs=(8, 41, 17, 36, 33, 29, 25, 3, 2))
+                    multi_seg.set_rule(Rule().fill(WHITE, -15, 0).animate(60))
                 if time_elapsed > 5:
                     self.set_mode(103)
 
             elif self.mode == 103:
                 if not self.mode_initialized:
                     multi_segs = []
-                    multi_segs.append(MultiSegment(self.grid, 12, 15, 18, 21, 24, 10, 11))
-                    multi_segs.append(MultiSegment(self.grid, 8, 25))
-                    multi_segs.append(MultiSegment(self.grid, 6, 22, 9, 26))
-                    multi_segs.append(MultiSegment(self.grid, 4, 19, 7, 23))
-                    multi_segs.append(MultiSegment(self.grid, 2, 16, 5, 20))
-                    multi_segs.append(MultiSegment(self.grid, 0, 13, 3, 17))
-                    multi_segs.append(MultiSegment(self.grid, 1, 14))
+                    multi_segs.append(MultiSegment(self.grid, 22, 26, 30, 34, 38, 20, 21))
+
+                    multi_segs.append(MultiSegment(self.grid, 18, 39))
+                    multi_segs.append(MultiSegment(self.grid, 16, 40))
+
+                    multi_segs.append(MultiSegment(self.grid, 14, 35, 19, 41))
+                    multi_segs.append(MultiSegment(self.grid, 12, 36, 17))
+
+                    multi_segs.append(MultiSegment(self.grid, 10, 31, 15, 37))
+                    multi_segs.append(MultiSegment(self.grid, 8, 32, 13))
+
+                    multi_segs.append(MultiSegment(self.grid, 6, 27, 11, 33))
+                    multi_segs.append(MultiSegment(self.grid, 4, 28, 9))
+
+                    multi_segs.append(MultiSegment(self.grid, 2, 23, 7, 29))
+
+                    multi_segs.append(MultiSegment(self.grid, 24, 5))
+                    multi_segs.append(MultiSegment(self.grid, 3, 25))
 
                     for i, multi_seg in enumerate(multi_segs):
                         rule = Rule().hue_linear(5).fade_in(1, 0).fade_out(1, 5).animate(40)
-                        if i == 1:
+                        if 1 <= i <= 2:
                             rule.offset(SEG_WIDTH * 4)
-                        if i == 2:
+                        elif 3 <= i <= 4:
                             rule.offset(SEG_WIDTH * 3)
-                        if i == 3:
+                        elif 5 <= i <= 6:
                             rule.offset(SEG_WIDTH * 2)
-                        if i == 4:
+                        elif 7 <= i <= 8:
                             rule.offset(SEG_WIDTH)
-                        if i == 6:
+                        elif 10 <= i <= 11:
                             rule.offset(SEG_WIDTH)
 
                         multi_seg.set_rule(rule)
@@ -172,8 +183,8 @@ class Game:
 
             elif self.mode == 104:
                 if not self.mode_initialized:
-                    MultiSegment(self.grid, 12, 15, 18, 21, 24, 10, 11, 26, 23, 20, 17, 14, 1, 0,
-                                 flipped_segs=(26, 23, 20, 17, 14, 1, 0)).set_rule(
+                    MultiSegment(self.grid, 22, 26, 30, 34, 38, 20, 21, 41, 37, 33, 29, 25, 3, 2,
+                                 flipped_segs=(41, 37, 33, 29, 25, 3, 2)).set_rule(
                         Rule().stripes((RED, ORANGE, YELLOW), 12).animate(30).fade_in(1, 0).fade_out(1, 5)
                     )
                 if time_elapsed > 7:
