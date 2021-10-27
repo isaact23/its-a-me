@@ -1,8 +1,9 @@
 # Squid Game - Glass Stepping Stones
 # Code for LED strips, sound control, camera, etc.
 
-# TODO: Optimize!
+# TODO: Optimize! Profile Rule(), write() functions, etc.
 # TODO: Add python console controls
+# TODO: Make it so squares don't share sides
 
 import fpstimer
 import sys
@@ -14,7 +15,7 @@ from emulator import Emulator
 from game import Game
 
 FRAMERATE = 60
-USE_EMULATOR = False
+USE_EMULATOR = True
 KID_MODE = True
 REPORT_FPS = True
 
@@ -62,9 +63,9 @@ def main():
         time4 = time.perf_counter()
         timer.sleep()  # 60 FPS
         frame_count += 1
-        print("Game update time:", time2 - time1)
+        """print("Game update time:", time2 - time1)
         print("Use rule time:", time3 - time2)
-        print("Write time:", time4 - time3)
+        print("Write time:", time4 - time3)"""
 
         # Report FPS
         if REPORT_FPS:
