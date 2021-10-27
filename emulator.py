@@ -165,11 +165,12 @@ class Emulator:
             for l in range(len(color_array)):
                 color = color_array[l]
                 r, g, b = color[0], color[1], color[2]
-                try:
+                # TODO: Find source of colors being out of range
+                if r < 0 or g < 0 or b < 0 or r > 255 or g > 255 or b > 255:
+                    print("Error: Color", r, g, b, "out of range.")
+                else:
                     hex_color = f'#{r:02x}{g:02x}{b:02x}'
                     self.canvas.itemconfig(circle_array[l], fill=hex_color)
-                except:
-                    raise RuntimeError("Attempted LED strip update with float color value", r, g, b)
 
 
         self.root.update()

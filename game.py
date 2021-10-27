@@ -116,8 +116,8 @@ class Game:
                     # Railings are red/orange moving stripes in intro
                     self.grid.get_seg(0).set_rule(Rule().stripes((RED, ORANGE), width=8).animate(10).fade_in(2, 1))
                     self.grid.get_seg(1).set_rule(Rule().stripes((RED, ORANGE), width=8).animate(10).fade_in(2, 1))
-                    self.grid.get_seg(42).set_rule(Rule().hue_wave(-120, 30, frequency=1, mode=Mode.TIME))
-                    self.grid.get_seg(43).set_rule(Rule().stripes((MAGENTA, BLACK), 3).animate(10))
+                    self.grid.get_seg(42).set_rule(Rule().hue_wave(-120, 30, frequency=1, mode=Mode.TIME).fade_in(2, 1))
+                    self.grid.get_seg(43).set_rule(Rule().stripes((MAGENTA, BLACK), 3).animate(10).fade_in(2, 1))
                 if time_elapsed > 4:
                     self.set_mode(101)
 
