@@ -13,6 +13,7 @@ from grid import Grid
 from emulator import Emulator
 from game import Game
 
+FRAMERATE = 60
 USE_EMULATOR = False
 KID_MODE = True
 REPORT_FPS = True
@@ -45,7 +46,7 @@ def main():
         emulator = Emulator(grid)
 
     # Frames per second stuff
-    timer = fpstimer.FPSTimer(1)
+    timer = fpstimer.FPSTimer(FRAMERATE)
     start_time = time.time()
     frame_count = 0
 
