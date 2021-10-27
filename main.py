@@ -2,6 +2,7 @@
 # Code for LED strips, sound control, camera, etc.
 
 # TODO: Optimize!
+# TODO: Add python console controls
 
 import fpstimer
 import sys
@@ -12,7 +13,7 @@ from grid import Grid
 from emulator import Emulator
 from game import Game
 
-USE_EMULATOR = False
+USE_EMULATOR = True
 KID_MODE = True
 REPORT_FPS = False
 
@@ -35,7 +36,7 @@ def main():
     else:
         print("Kid mode disabled - beware of scary sounds!")
 
-    control = Controller((20, 20, 2000, 20, 1000))
+    control = Controller((30, 30, 2000, 20, 1000))
     grid = Grid(control)
     game = Game(control, grid, difficulty=DIFFICULTY, kid_mode=KID_MODE)
 

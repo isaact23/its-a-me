@@ -5,11 +5,15 @@ SEG_COUNT = 31
 class Grid:
     def __init__(self, controller):
         self.controller = controller
-        self.segments = [
-            controller.get_strip(0).get_segment(0, 20),
-            controller.get_strip(1).get_segment(0, 20)
-        ]
-        for i in range(SEG_COUNT - 2):
+        self.segments = []
+        # Grid
+        for i in range(SEG_COUNT - 4):
+            self.segments.append(controller.get_strip(2).get_segment(i * 12, (i + 1) * 12))
+        # Railings
+        self.segments.append(controller.get_strip(0).get_segment(0, 30))
+        self.segments.append(controller.get_strip(1).get_segment(0, 30))
+        # Pumpkins
+        for i in range(SEG_COUNT - 2, SEG_COUNT):
             self.segments.append(controller.get_strip(2).get_segment(i * 12, (i + 1) * 12))
 
     def get_seg(self, segment):

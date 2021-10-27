@@ -14,8 +14,8 @@ PUMPKIN_RADIUS = 20
 PUMPKIN_DISTANCE = 70  # Distance between pumpkins and bottom of grid
 
 LINE_WIDTH = 2
-CIRCLE_SIZE = 10
-RAIL_CIRCLE_SIZE = 15
+CIRCLE_SIZE = 7
+RAIL_CIRCLE_SIZE = 9
 PUMPKIN_CIRCLE_SIZE = 8
 
 # Determine window size

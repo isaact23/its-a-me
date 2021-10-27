@@ -1,6 +1,12 @@
 # import neopixel, board
 from copy import deepcopy
 
+try:
+    import board
+    import neopixel
+except:
+    print("Error importing board and/or neopixel.")
+
 from grid import Grid
 
 
@@ -94,7 +100,14 @@ class LightStrip:
         """
         Send pixel data to this LED strip.
         """
-        pass
+        try:
+            pixel_count = 100
+            pixels = neopixel.NeoPixel(board.D18, pixel_count, auto_write=False)
+            for i in range(pixel_count):
+                pixels[i] = self.pixels[i]
+            pixels.write()
+        except:
+            pass
 
     class Segment:
         """
