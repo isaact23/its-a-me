@@ -40,7 +40,7 @@ class Grid:
         :param clear_grid: Whether to clear the grid.
         :param clear_railings: Whether to clear railings.
         """
-        if clear_grid or clear_railings:
+        if clear_grid or clear_railings or clear_pumpkins:
             for i, segment in enumerate(self.segments):
-                if clear_grid and i < 27 or clear_railings and 26 < i < 29 or clear_pumpkins and i > 28:
+                if clear_railings and i < 2 or clear_grid and 1 < i < 42 or clear_pumpkins and i > 41:
                     segment.rule = None

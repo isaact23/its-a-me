@@ -72,7 +72,7 @@ class Game:
         self.difficulty = difficulty
         self.sound_player = sounds.SoundPlayer(kid_mode)
         self.box = -1
-        self.mode = 201
+        self.mode = 300
         self.mode_initialized = False
         self.new_mode = False
         self.start_time = time.time()
@@ -328,8 +328,8 @@ class Game:
                     right_box = left_box + 1
                     blink_on = 30 / tempo
                     blink_off = blink_on
-                    left_segs = [box for i, box in enumerate(BOXES[left_box]) if i != 3]
-                    right_segs = [box for i, box in enumerate(BOXES[right_box]) if i != 1]
+                    left_segs = BOXES[left_box]
+                    right_segs = BOXES[right_box]
                     MultiSegment(self.grid, *left_segs).set_rule(
                         Rule().fill(WHITE).blink(
                             blink_on, blink_on + blink_off * 2))
@@ -337,20 +337,18 @@ class Game:
                         Rule().fill(WHITE).blink(
                             blink_on, blink_on + blink_off * 2,
                             start_time=time.time() - blink_on - blink_off))
-                    self.grid.get_seg(self.row * 3 + 13).set_rule(
-                        Rule().fill(WHITE).blink(blink_on, blink_off))
 
                     # Initialize railings
-                    self.grid.get_seg(27).set_rule(
+                    self.grid.get_seg(0).set_rule(
                         Rule().stripes((RED, GREEN, BLUE, WHITE), 1).animate(3)
                     )
-                    self.grid.get_seg(28).set_rule(
+                    self.grid.get_seg(1).set_rule(
                         Rule().stripes((RED, GREEN, BLUE, WHITE), 1).animate(3)
                     )
 
                     # Initialize pumpkins
-                    self.grid.get_seg(29).set_rule(Rule().hue_linear(15, mode=Mode.PIXEL).animate(10))
-                    self.grid.get_seg(30).set_rule(Rule().hue_linear(15, mode=Mode.PIXEL).animate(10))
+                    self.grid.get_seg(42).set_rule(Rule().hue_linear(15, mode=Mode.PIXEL).animate(10))
+                    self.grid.get_seg(43).set_rule(Rule().hue_linear(15, mode=Mode.PIXEL).animate(10))
 
                 # Left box
                 if keyboard.is_pressed(KEY_BOXES[self.row * 2]):
