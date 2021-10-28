@@ -72,7 +72,7 @@ class Game:
         self.difficulty = difficulty
         self.sound_player = sounds.SoundPlayer(kid_mode)
         self.box = -1
-        self.mode = 0
+        self.mode = 100
         self.mode_initialized = False
         self.new_mode = False
         self.start_time = time.time()
