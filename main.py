@@ -61,7 +61,7 @@ def main():
         if USE_EMULATOR:
             emulator.update()  # Update GUI
         time4 = time.perf_counter()
-        timer.sleep()  # 60 FPS
+        # timer.sleep()  # 60 FPS
         frame_count += 1
         """print("Game update time:", time2 - time1)
         print("Use rule time:", time3 - time2)
