@@ -1,11 +1,8 @@
 # import neopixel, board
 from copy import deepcopy
 
-try:
-    import board
-    import neopixel
-except:
-    print("Error importing board and/or neopixel.")
+import board
+import neopixel
 
 from grid import Grid
 

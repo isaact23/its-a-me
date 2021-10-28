@@ -15,7 +15,7 @@ from emulator import Emulator
 from game import Game
 
 FRAMERATE = 60
-USE_EMULATOR = True
+USE_EMULATOR = False
 KID_MODE = True
 REPORT_FPS = False
 
