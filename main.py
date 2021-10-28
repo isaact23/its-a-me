@@ -15,9 +15,9 @@ from emulator import Emulator
 from game import Game
 
 FRAMERATE = 60
-USE_EMULATOR = True
+USE_EMULATOR = False
 KID_MODE = True
-REPORT_FPS = True
+REPORT_FPS = False
 
 # Set difficulty to 0 for a 50/50 shot for every row.
 # Make more negative so the wrong tiles are less likely to break.
