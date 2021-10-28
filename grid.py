@@ -12,6 +12,7 @@ class Grid:
         # Grid and pumpkins
         for i in range(2, SEG_COUNT):
             self.segments.append(controller.get_strip(0).get_segment(100 + i * 12, 100 + (i + 1) * 12))
+        self.segments.append(controller.get_strip(0).get_segment(26, 46))
 
 
     def get_seg(self, segment):

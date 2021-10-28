@@ -4,6 +4,7 @@
 # TODO: Optimize! Profile Rule(), write() functions, etc.
 # TODO: Add python console controls
 # TODO: Add GRB mode for segments
+# TODO: Add mode to make left/right blinking slower
 
 import fpstimer
 import sys

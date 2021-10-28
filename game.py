@@ -72,7 +72,7 @@ class Game:
         self.difficulty = difficulty
         self.sound_player = sounds.SoundPlayer(kid_mode)
         self.box = -1
-        self.mode = 100
+        self.mode = 0
         self.mode_initialized = False
         self.new_mode = False
         self.start_time = time.time()
@@ -97,7 +97,10 @@ class Game:
             #MultiSegment(self.grid, *ALL_SEGS).set_rule(
             #    Rule().fill(WHITE)
             #)
-            MultiSegment(self.grid, *ALL_SEGS).set_rule(Rule().fill(WHITE))
+            # MultiSegment(self.grid, *ALL_SEGS).set_rule(Rule().fill(WHITE))
+            self.grid.get_seg(44).set_rule(
+                Rule().stripes((BLUE, RED), 5).animate(40)
+            )
 
         # Mode 100-199 - attract sequence
         elif self.mode <= 199:
