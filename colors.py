@@ -5,7 +5,7 @@ import random
 # Colors
 DARK_RED = (80, 0, 0)
 RED = (255, 0, 0)
-ORANGE = (255, 150, 0)
+ORANGE = (255, 40, 0)
 YELLOW = (255, 255, 0)
 DARK_GREEN = (0, 80, 0)
 GREEN = (0, 255, 0)

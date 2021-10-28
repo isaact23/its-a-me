@@ -3,7 +3,7 @@
 
 # TODO: Optimize! Profile Rule(), write() functions, etc.
 # TODO: Add python console controls
-# TODO: Make it so squares don't share sides
+# TODO: Add GRB mode for segments
 
 import fpstimer
 import sys
@@ -15,9 +15,9 @@ from emulator import Emulator
 from game import Game
 
 FRAMERATE = 60
-USE_EMULATOR = False
+USE_EMULATOR = True
 KID_MODE = True
-REPORT_FPS = False
+REPORT_FPS = True
 
 # Set difficulty to 0 for a 50/50 shot for every row.
 # Make more negative so the wrong tiles are less likely to break.

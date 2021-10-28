@@ -33,7 +33,7 @@ GLRL_ONCE = "sounds/misc/Squid Game - Green Light Red Light Once.ogg"
 CHOOSE_MUSIC_TEMPOS = (120, 132, 160, 184, 150, 148)
 
 if ENABLE_SOUND:
-    mixer.init(10000, -16, 1, 1024)
+    mixer.init(44100, -16, 1, 1024)
     mixer.music.set_volume(0.1)
 
 
