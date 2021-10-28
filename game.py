@@ -188,7 +188,7 @@ class Game:
                         Rule().stripes((RED, ORANGE, YELLOW), 12).animate(30).fade_in(1, 0).fade_out(1, 5)
                     )
                 if time_elapsed > 7:
-                    self.set_mode(105)
+                    self.set_mode(101)
 
             elif self.mode == 105:
                 if not self.mode_initialized:
