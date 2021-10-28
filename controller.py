@@ -1,8 +1,8 @@
 # import neopixel, board
 from copy import deepcopy
 
-#import board
-#import neopixel
+import board
+import neopixel
 
 from grid import Grid
 
