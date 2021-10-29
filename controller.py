@@ -55,6 +55,7 @@ class LightStrip:
         self.size = size
         self.pixels = [(0, 0, 0)] * size
         self.rule = None  # Color generation rule
+        self.rgb_flip_ranges = []  # Pixel ranges for which to flip red and green values
         # self.neopixel = neopixel.NeoPixel(board.D18, 150, auto_write=False)
 
     def get_segment(self, start, end):
@@ -106,10 +107,26 @@ class LightStrip:
             pixel_count = 1000
             pixels = neopixel.NeoPixel(board.D18, pixel_count, auto_write=False)
             for i in range(pixel_count):
-                pixels[i] = self.pixels[i]
+                color = self.pixels[i]
+                flip = False
+                for pixel_range in self.rgb_flip_ranges:
+                    if i in pixel_range:
+                        flip = True
+                        break
+                if flip:
+                    color = color[1], color[0], color[2]
+                pixels[i] = color
             pixels.write()
         except NameError:
             pass
+
+    def flip_rgb(self, start, end):
+        """
+        Specify a range of pixels for which red and green pixel values should be swapped.
+        :param start: First pixel (inclusive)
+        :param end: Last pixel (exclusive)
+        """
+        self.rgb_flip_ranges.append(range(start, end))
 
     class Segment:
         """
