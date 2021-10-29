@@ -17,7 +17,8 @@ KEY_BOXES = ['left', 'right'] * 5
 
 # Game constants
 CASCADE_TIME = 0.8
-REVEAL_BLINK_TIMES = (0.25, 0.25, 0.25, 0.25, 0.25)
+DO_BLINK = False
+REVEAL_BLINK_TIMES = (0.25, 0.20, 0.18, 0.16, 0.14)
 WIN_TIME = 3.5
 LOSE_TIME = 5
 PUMPKIN_BLINK_TIME = 0.15
@@ -354,19 +355,25 @@ class Game:
                     self.grid.get_seg(42).set_rule(Rule().hue_linear(15, mode=Mode.PIXEL).animate(10))
                     self.grid.get_seg(43).set_rule(Rule().hue_linear(15, mode=Mode.PIXEL).animate(10))
 
-                # Left box
-                if keyboard.is_pressed(KEY_BOXES[self.row * 2]):
-                    self.set_mode(301, clear_grid=True)
-                    self.box = self.row * 2
-                # Right box
-                elif keyboard.is_pressed(KEY_BOXES[self.row * 2 + 1]):
-                    self.set_mode(301, clear_grid=True)
-                    self.box = self.row * 2 + 1
+                # Handle transition after left/right box is stepped on
+                left_pressed = keyboard.is_pressed(KEY_BOXES[self.row * 2])
+                right_pressed = keyboard.is_pressed(KEY_BOXES[self.row * 2 + 1])
+                self.box = self.row * 2
+                if right_pressed:
+                    self.box += 1
+                if left_pressed or right_pressed:
+                    self.sound_player.stop()
+                    if DO_BLINK:
+                        self.set_mode(301, clear_grid=True)
+                    else:
+                        if self.is_tile_correct():
+                            self.set_mode(302)  # Win
+                        else:
+                            self.set_mode(303)  # Lose
 
             # If blinking,
             elif self.mode == 301:
                 if not self.mode_initialized:
-                    self.sound_player.stop()
                     MultiSegment(self.grid, *BOXES[self.box]).set_rule(
                         Rule().fill(BLUE).blink(REVEAL_BLINK_TIMES[self.row], REVEAL_BLINK_TIMES[self.row]))
 
