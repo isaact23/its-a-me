@@ -17,7 +17,7 @@ KEY_BOXES = ['left', 'right'] * 5
 
 # Game constants
 CASCADE_TIME = 0.8
-REVEAL_BLINK_TIMES = (0.2, 0.18, 0.16, 0.14, 0.12)
+REVEAL_BLINK_TIMES = (0.25, 0.25, 0.25, 0.25, 0.25)
 WIN_TIME = 3.5
 LOSE_TIME = 5
 PUMPKIN_BLINK_TIME = 0.15
