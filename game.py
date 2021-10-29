@@ -99,8 +99,8 @@ class Game:
             #)
             # MultiSegment(self.grid, *ALL_SEGS).set_rule(Rule().fill(WHITE))
             if not self.mode_initialized:
-                self.grid.get_seg(44).set_rule(
-                    Rule().stripes((BLUE, RED), 5).animate(40)
+                self.grid.get_seg(0).set_rule(
+                    Rule().stripes((RED, YELLOW), 5).animate(10)
                 )
 
         # Mode 100-199 - attract sequence
