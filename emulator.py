@@ -55,16 +55,6 @@ class Emulator:
         self.root.protocol("WM_DELETE_WINDOW", self.exit)
         self.canvas = tk.Canvas(self.root, bg="black", width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
 
-        # Horizontal Lines
-        for i in range(10):
-            self.canvas.create_line(*coords[i * 3], *coords[2 + i * 3], width=LINE_WIDTH)
-
-        # Vertical Lines
-        self.canvas.create_line(*TL, *BL, width=LINE_WIDTH)
-        self.canvas.create_line(*TR, *BR, width=LINE_WIDTH)
-        for i in range(4):
-            self.canvas.create_line(*coords[i], *coords[i + 15], width=LINE_WIDTH)
-
         self.canvas.pack()
         self.gen_circles()
         self.update()
