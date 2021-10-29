@@ -1,8 +1,13 @@
 # import neopixel, board
 from copy import deepcopy
 
-import board
-import neopixel
+try:
+    import board
+    import neopixel
+except ModuleNotFoundError:
+    print("ModuleNotFoundError when importing board and/or neopixel")
+except ImportError:
+    print("ImportError when importing board and/or neopixel")
 
 from grid import Grid
 
