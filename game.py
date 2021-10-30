@@ -13,7 +13,9 @@ from rule import Rule, Mode
 
 # Key definitions
 KEY_START = 'space'
-KEY_BOXES = ['left', 'right'] * 5
+KEY_BOXES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
+KEY_LEFT = 'left'
+KEY_RIGHT = 'right'
 
 # Game constants
 CASCADE_TIME = 0.8
@@ -356,8 +358,8 @@ class Game:
                     self.grid.get_seg(43).set_rule(Rule().hue_linear(15, mode=Mode.PIXEL).animate(10))
 
                 # Handle transition after left/right box is stepped on
-                left_pressed = keyboard.is_pressed(KEY_BOXES[self.row * 2])
-                right_pressed = keyboard.is_pressed(KEY_BOXES[self.row * 2 + 1])
+                left_pressed = keyboard.is_pressed(KEY_BOXES[self.row * 2]) or keyboard.is_pressed(KEY_LEFT)
+                right_pressed = keyboard.is_pressed(KEY_BOXES[self.row * 2 + 1]) or keyboard.is_pressed(KEY_RIGHT)
                 self.box = self.row * 2
                 if right_pressed:
                     self.box += 1
