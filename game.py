@@ -12,8 +12,8 @@ from rule import Rule, Mode
 # https://iosoft.blog/2020/09/29/raspberry-pi-multi-channel-ws2812/
 
 # Key definitions
-KEY_START = 'space'
-KEY_BOXES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
+KEY_START = 'f'
+KEY_BOXES = ['v', 'y', 'd', 'j', 'a', 'z', 'm', 'w', 'x', 't']
 KEY_LEFT = 'left'
 KEY_RIGHT = 'right'
 
