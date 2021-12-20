@@ -14,8 +14,6 @@ one of the games from Squid Game. The program had to be completed
 before it was built due to time constraints, so I created an emulator
 GUI.
 
-![Rainbow](https://raw.githubusercontent.com/isaact23/squidgame/main/screenshots/rainbow.png)
-
 ## Can I use it?
 
 Yes. Enjoy.
@@ -27,10 +25,12 @@ then run it with `python3 main.py`. Press space to start the game,
 then use the left/right arrow keys to choose tiles. You may
 have to `pip3 install <missing module>` a few times.
 
-![Choose](https://raw.githubusercontent.com/isaact23/squidgame/main/screenshots/choose.png)
-
 ## I have more questions!
 
 Feel free to open an issue! I'll try to respond promptly.
+
+![Rainbow](https://raw.githubusercontent.com/isaact23/squidgame/main/screenshots/rainbow.png)
+
+![Choose](https://raw.githubusercontent.com/isaact23/squidgame/main/screenshots/choose.png)
 
 ![Win](https://raw.githubusercontent.com/isaact23/squidgame/main/screenshots/win.png)
