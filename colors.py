@@ -42,6 +42,7 @@ WALUIGI = (PURPLE, GRAY)
 PEACH = (PINK, WHITE)
 BOO = (WHITE, BLACK)
 
+
 def random_color():
     """
     :return: A random color.

@@ -11,9 +11,11 @@ class Grid:
         strip.flip_rgb(0, 100)
         # Railings
         self.segments.append(strip.get_segment(0, 50))  # 0
-        self.segments.append(strip.get_segment(100, 50))  # 1
+        self.segments.append(strip.get_segment(50, 100))  # 1
         # Grid
-        self.segments.append(strip.get_segment(160, 148))  # 2
+        for i in range(40):
+            self.segments.append(strip.get_segment(100 + i * 12, 100 + (i + 1) * 12))
+        """self.segments.append(strip.get_segment(160, 148))  # 2
         self.segments.append(strip.get_segment(148, 136))  # 3
         self.segments.append(strip.get_segment(172, 184))  # 4
         self.segments.append(strip.get_segment(112, 124))  # 5
@@ -52,7 +54,7 @@ class Grid:
         self.segments.append(strip.get_segment(556, 568))  # 38
         self.segments.append(strip.get_segment(592, 580))  # 39
         self.segments.append(strip.get_segment(496, 508))  # 40
-        self.segments.append(strip.get_segment(532, 520))  # 41
+        self.segments.append(strip.get_segment(532, 520))  # 41"""
         # Pumpkins
         for i in range(SEG_COUNT - 2, SEG_COUNT):
             self.segments.append(controller.get_strip(0).get_segment(100 + i * 12, 100 + (i + 1) * 12))
