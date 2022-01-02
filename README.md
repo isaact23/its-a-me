@@ -18,7 +18,7 @@ GUI.
 
 Yes. Enjoy.
 
-## Okay, what I meant to ask is HOW to do you use it.
+## Okay, what I meant to ask is HOW do you use it.
 
 Glad you asked! Clone the repository with `git clone https://github.com/isaact23/squidgame`
 then run it with `python3 main.py`. Press space to start the game,
