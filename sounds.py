@@ -38,11 +38,8 @@ if ENABLE_SOUND:
 
 
 class SoundPlayer:
-    def __init__(self, kid_mode):
-        """
-        :param kid_mode: Set to True to omit scary sounds.
-        """
-        self.kid_mode = kid_mode
+    def __init__(self):
+        pass
 
     def attract_music(self):
         # TODO: Loop different music tracks

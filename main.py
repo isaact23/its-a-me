@@ -1,12 +1,8 @@
-# Squid Game - Glass Stepping Stones
-# Code for LED strips, sound control, camera, etc.
-
-# TODO: Optimize! Profile Rule(), write() functions, etc.
-# TODO: Add python console controls
+# It's a me
+# Halloween 2022 project by Andy Thompson and Isaac Thompson
 
 import fpstimer
 import sys
-import time
 
 from controller import Controller
 from grid import Grid
@@ -15,14 +11,6 @@ from game import Game
 
 FRAMERATE = 60
 USE_EMULATOR = True
-KID_MODE = True
-REPORT_FPS = False
-
-# Set difficulty to 0 for a 50/50 shot for every row.
-# Make more negative so the wrong tiles are less likely to break.
-# Make more positive so the correct tiles are more likely to break.
-# Difficulty change compounds quite dramatically so small changes are best (maybe 0.5 at a time)
-DIFFICULTY = 0
 
 
 def main():
@@ -31,48 +19,26 @@ def main():
         print("Using emulator.")
     else:
         print("Emulator disabled.")
-    if KID_MODE:
-        print("Kid mode enabled - scary sounds shouldn't play. No guarantees of course. Phew glad I got that "
-              "liability off my chest")
-    else:
-        print("Kid mode disabled - beware of scary sounds!")
 
-    control = Controller((1000,))
+    control = Controller((580,))
     grid = Grid(control)
-    game = Game(control, grid, difficulty=DIFFICULTY, kid_mode=KID_MODE)
+    game = Game(control, grid)
 
     # Begin emulation
     if USE_EMULATOR:
         emulator = Emulator(grid)
 
-    # Frames per second stuff
+    # Framerate maintainer
     timer = fpstimer.FPSTimer(FRAMERATE)
-    start_time = time.time()
-    frame_count = 0
 
     while True:
-        time1 = time.perf_counter()
         game.update()  # Update game logic
-        time2 = time.perf_counter()
-        grid.use_rule()  # Update colors
-        time3 = time.perf_counter()
+        grid.use_rule()  # Update LED colors
         control.write()  # Update LED strips
         if USE_EMULATOR:
             emulator.update()  # Update GUI
-        time4 = time.perf_counter()
-        # timer.sleep()  # 60 FPS
-        frame_count += 1
-        """print("Game update time:", time2 - time1)
-        print("Use rule time:", time3 - time2)
-        print("Write time:", time4 - time3)"""
-
-        # Report FPS
-        if REPORT_FPS:
-            time_elapsed = time.time() - start_time
-            if time_elapsed > 1.0:
-                print("FPS: ", frame_count / time_elapsed)
-                start_time = time.time()
-                frame_count = 0
+        
+        timer.sleep()  # 60 FPS
 
 
 if __name__ == "__main__":

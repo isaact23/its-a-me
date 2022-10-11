@@ -1,15 +1,17 @@
-# import neopixel, board
 from copy import deepcopy
+from grid import Grid
 
+NEOPIXEL_ENABLED = False
+
+# Import modules for controlling LEDs from RPi
 try:
     import board
     import neopixel
+    NEOPIXEL_ENABLED = True
 except ModuleNotFoundError:
     print("ModuleNotFoundError when importing board and/or neopixel")
 except ImportError:
     print("ImportError when importing board and/or neopixel")
-
-from grid import Grid
 
 
 class Controller:

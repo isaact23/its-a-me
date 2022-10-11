@@ -11,24 +11,10 @@ from rule import Rule, Mode
 # TODO: Review iosoft.blog
 # https://iosoft.blog/2020/09/29/raspberry-pi-multi-channel-ws2812/
 
-# Key definitions
-KEY_START = 'space'  # 'f'
-KEY_BOXES = ['v', 'y', 'd', 'j', 'a', 'z', 'm', 'w', 'x', 't']
-KEY_LEFT = 'left'
-KEY_RIGHT = 'right'
+# Keys
+KEY_START = 'f'
 
-# Game constants
-CASCADE_TIME = 0.8
-DO_BLINK = False
-REVEAL_BLINK_TIMES = (0.25, 0.20, 0.18, 0.16, 0.14)
-WIN_TIME = 3.5
-LOSE_TIME = 5
-PUMPKIN_BLINK_TIME = 0.15
-
-# An estimate of the length of each segment
-SEG_WIDTH = 12
-
-# Box definitions
+# Segment numbers
 BOXES = ((2, 22, 4, 23),
          (3, 24, 5, 25),
          (6, 26, 8, 27),
@@ -41,17 +27,7 @@ BOXES = ((2, 22, 4, 23),
          (19, 40, 21, 41))
 RAILS = (0, 1)
 GRID = tuple(i for i in range(2, 42))
-PUMPKINS = (42, 43)
-ALL_SEGS = tuple(i for i in range(44))
-
-
-def gen_correct_tiles():
-    """
-    Generate a 5 element array of bits, 0 representing left tile is correct, 1 means right is correct, for each row.
-    """
-    correct_tiles = [random.randint(0, 1) for i in range(5)]
-    print("Correct tiles are", ["Left" if value == 0 else "Right" for value in correct_tiles])
-    return correct_tiles
+ALL_SEGS = tuple(i for i in range(42))
 
 
 class Game:
@@ -64,7 +40,7 @@ class Game:
     Mode 400 - win
     """
 
-    def __init__(self, control, grid, difficulty=0, kid_mode=True):
+    def __init__(self, control, grid):
         """
         Initialize Game.
         :param control: LED controller.
@@ -72,14 +48,10 @@ class Game:
         """
         self.controller = control
         self.grid = grid
-        self.difficulty = difficulty
-        self.sound_player = sounds.SoundPlayer(kid_mode)
-        self.box = -1
+        self.sound_player = sounds.SoundPlayer()
         self.mode = 100
         self.mode_initialized = False
-        self.new_mode = False
         self.start_time = time.time()
-        self.correct_tiles = gen_correct_tiles()
 
         # Variables used by update()
         self.row = 0
@@ -542,19 +514,16 @@ class Game:
 
         return overall_chance
 
-    def set_mode(self, mode, clear_all=False, clear_grid=False, clear_railings=False, clear_pumpkins=False):
+    def set_mode(self, mode, clear=False):
         """
         Prepare for a new mode.
         """
-        if clear_all:
-            clear_grid = True
-            clear_railings = True
-            clear_pumpkins = True
         self.mode = mode
         self.start_time = time.time()
         self.mode_initialized = False
-        self.new_mode = True
-        self.grid.clear_rules(clear_grid, clear_railings, clear_pumpkins)
+        if clear:
+            self.grid.clear_rules()
+
         print("Set mode to", mode)
 
     def reset_game(self):

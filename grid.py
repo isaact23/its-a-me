@@ -55,9 +55,6 @@ class Grid:
         self.segments.append(strip.get_segment(592, 580))  # 39
         self.segments.append(strip.get_segment(496, 508))  # 40
         self.segments.append(strip.get_segment(532, 520))  # 41"""
-        # Pumpkins
-        for i in range(SEG_COUNT - 2, SEG_COUNT):
-            self.segments.append(controller.get_strip(0).get_segment(100 + i * 12, 100 + (i + 1) * 12))
 
 
     def get_seg(self, segment):
@@ -80,13 +77,9 @@ class Grid:
             segment.use_rule()
         self.controller.write()
 
-    def clear_rules(self, clear_grid=True, clear_railings=True, clear_pumpkins=True):
+    def clear_rules(self):
         """
-        Erase rules for some Segments.
-        :param clear_grid: Whether to clear the grid.
-        :param clear_railings: Whether to clear railings.
+        Erase rules for all Segments.
         """
-        if clear_grid or clear_railings or clear_pumpkins:
-            for i, segment in enumerate(self.segments):
-                if clear_railings and i < 2 or clear_grid and 1 < i < 42 or clear_pumpkins and i > 41:
-                    segment.rule = None
+        for i, segment in enumerate(self.segments):
+            segment.rule = None
