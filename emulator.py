@@ -10,18 +10,15 @@ BOX_WIDTH = 80  # Width of each of the squares
 MARGIN = 75  # Distance between outside of game and edge of window
 RAILING_DIST = 75  # Distance between railing and tiles
 BOX_SPACING = 20  # Distance between squares
-CIRCLE_MARGIN = 0  # Distance between coordinates and first circle of each Segment
-PUMPKIN_RADIUS = 20
-PUMPKIN_DISTANCE = 70  # Distance between pumpkins and bottom of grid
+CIRCLE_MARGIN = 0  # Distance between coordinates and first circle of each Segment=
 
 LINE_WIDTH = 2
 CIRCLE_SIZE = 7
 RAIL_CIRCLE_SIZE = 9
-PUMPKIN_CIRCLE_SIZE = 8
 
 # Determine window size
 WINDOW_WIDTH = MARGIN * 2 + RAILING_DIST * 2 + BOX_WIDTH * 2 + BOX_SPACING
-WINDOW_HEIGHT = MARGIN * 2 + BOX_WIDTH * 5 + PUMPKIN_DISTANCE + BOX_SPACING * 4
+WINDOW_HEIGHT = MARGIN * 2 + BOX_WIDTH * 5 + BOX_SPACING * 4
 
 # Generate railing coordinates
 TL = (MARGIN, MARGIN)
@@ -114,35 +111,6 @@ class Emulator:
                     pixel_y = origin[1] - CIRCLE_MARGIN - round(led_space * i) - CIRCLE_SIZE
                     circles.append(self.draw_circle(pixel_x, pixel_y, size=CIRCLE_SIZE))
                 self.circles[seg_id] = circles
-
-        # Pumpkins
-        def gen_pumpkin_coords(center, radius, count):
-            pumpkin_coords = []
-            for i in range(count):
-                pumpkin_coords.append((
-                    center[0] + radius * math.sin(i * 2 * math.pi / count),
-                    center[1] + radius * math.cos(i * 2 * math.pi / count)
-                ))
-            return pumpkin_coords
-
-        # TODO: Add this code to the above function
-        left_center = (MARGIN,
-                       MARGIN + BOX_WIDTH * 5 + BOX_SPACING * 4 + PUMPKIN_DISTANCE)
-        left_seg = self.grid.get_seg(42)
-        left_coords = gen_pumpkin_coords(left_center, PUMPKIN_RADIUS, left_seg.size())
-        left_circles = []
-        for coord in left_coords:
-            left_circles.append(self.draw_circle(*coord, size=PUMPKIN_CIRCLE_SIZE))
-        self.circles[42] = left_circles
-
-        right_center = (MARGIN + RAILING_DIST * 2 + BOX_WIDTH * 2 + BOX_SPACING,
-                        MARGIN + BOX_WIDTH * 5 + BOX_SPACING * 4 + PUMPKIN_DISTANCE)
-        right_seg = self.grid.get_seg(43)
-        right_coords = gen_pumpkin_coords(right_center, PUMPKIN_RADIUS, right_seg.size())
-        right_circles = []
-        for coord in right_coords:
-            right_circles.append(self.draw_circle(*coord, size=PUMPKIN_CIRCLE_SIZE))
-        self.circles[43] = right_circles
 
 
     def update(self):

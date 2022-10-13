@@ -80,9 +80,7 @@ class Game:
 
         # Mode 100-199 - attract sequence
         elif self.mode <= 199:
-            # If attract music is not playing, play it now.
-            if not self.sound_player.get_busy():
-                self.sound_player.attract_music()
+            self.sound_player.update()
 
             # On space press, move to stage 2 - start the game.
             if keyboard.is_pressed(KEY_START):
@@ -92,6 +90,9 @@ class Game:
 
             elif self.mode == 100:
                 if not self.mode_initialized:
+                    # Play attract music
+                    self.music_player.set_mode(sounds.SoundPlayer.Mode.ATTRACT)
+
                     # Railings are red/orange moving stripes in intro
                     self.grid.get_seg(0).set_rule(Rule().stripes((GREEN, PURPLE), width=8).animate(10).fade_in(2, 1))
                     self.grid.get_seg(1).set_rule(Rule().stripes((GREEN, PURPLE), width=8).animate(10).fade_in(2, 1))

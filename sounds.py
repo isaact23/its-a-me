@@ -1,10 +1,4 @@
-import pathlib
-import random
-
-import pygame
-from pygame import mixer
-
-ENABLE_SOUND = True
+import enum, pathlib, pyaudio, random
 
 SOUND_DIR = pathlib.Path(__file__).parent / 'sounds'
 
@@ -20,42 +14,28 @@ def get_sounds_from(dir):
 
 
 ATTRACT_MUSIC = get_sounds_from('attract_music')
-CHOOSE_MUSIC = get_sounds_from('choose_music')
-CORRECT_SOUNDS = get_sounds_from('correct')
-WRONG_SOUNDS = get_sounds_from('wrong')
-SCREAM_SOUNDS = get_sounds_from('screams')
-SCARY_SCREAM_SOUNDS = get_sounds_from('screams_scary')
-WIN_MUSIC = get_sounds_from('win_music')
-
-UNDERTALE = "sounds/misc/Undertale.ogg"
-GLRL_ONCE = "sounds/misc/Squid Game - Green Light Red Light Once.ogg"
-
-CHOOSE_MUSIC_TEMPOS = (120, 132, 160, 184, 150, 148)
-
-if ENABLE_SOUND:
-    mixer.init(44100, -16, 1, 1024)
-    mixer.music.set_volume(0.1)
 
 
 class SoundPlayer:
     def __init__(self):
-        pass
+        self.mode = self.Mode.NONE
 
-    def attract_music(self):
-        # TODO: Loop different music tracks
-        if ENABLE_SOUND:
-            self.music(random.choice(ATTRACT_MUSIC), 1)
+    # All possible states for the sound player to be in.
+    class Mode(enum.Enum):
+        NONE = 0
+        ATTRACT = 1
+    
+    # Update loop. Restart songs if necessary
+    def update(self):
+        if self.mode == self.Mode.ATTRACT:
+            pass
+            # Play attract music if not already playing
 
-    def choose_music(self):
-        """
-        Play a random track from choose_music.
-        :return: The tempo of the thinking music.
-        """
-        index = random.randint(0, len(CHOOSE_MUSIC) - 1)
-        self.music(CHOOSE_MUSIC[index], -1)
-        tempo = CHOOSE_MUSIC_TEMPOS[index]
-        print("Tempo of choose music is", tempo)
-        return tempo
+    # Update mode.
+    def set_mode(self, mode):
+        if mode != self.mode:
+            # Stop all music
+            self.mode = mode
 
     def music(self, sound, loops):
         """

@@ -1,6 +1,9 @@
 # It's a me
 # Halloween 2022 project by Andy Thompson and Isaac Thompson
 
+import faulthandler
+faulthandler.enable()
+
 import fpstimer
 import sys
 
@@ -39,6 +42,7 @@ def main():
             emulator.update()  # Update GUI
         
         timer.sleep()  # 60 FPS
+        print("RUNNING")
 
 
 if __name__ == "__main__":
