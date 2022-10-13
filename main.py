@@ -1,49 +1,44 @@
 # It's a me
 # Halloween 2022 project by Andy Thompson and Isaac Thompson
 
+import fpstimer
+import sys
 import faulthandler
 faulthandler.enable()
 
-import fpstimer
-import sys
+import pygame
 
 from controller import Controller
 from grid import Grid
-from emulator import Emulator
+#from emulator import Emulator
 from game import Game
 
 FRAMERATE = 60
-USE_EMULATOR = True
+PIXEL_COUNT = 580
 
+class ItsAMe():
+    def __init__(self):
+        print("Python version:", sys.version)
 
-def main():
-    print("Python version:", sys.version)
-    if USE_EMULATOR:
-        print("Using emulator.")
-    else:
-        print("Emulator disabled.")
+        self.control = Controller((PIXEL_COUNT,))  # LED Controller
+        self.grid = Grid(control)                  # Container for all LED segments
+        self.game = Game(control, grid)            # Game logic manager
 
-    control = Controller((580,))
-    grid = Grid(control)
-    game = Game(control, grid)
+        self.timer = fpstimer.FPSTimer(FRAMERATE)
 
-    # Begin emulation
-    if USE_EMULATOR:
-        emulator = Emulator(grid)
+        while(True):
+            self.update()
 
-    # Framerate maintainer
-    timer = fpstimer.FPSTimer(FRAMERATE)
-
-    while True:
-        game.update()  # Update game logic
-        grid.use_rule()  # Update LED colors
-        control.write()  # Update LED strips
-        if USE_EMULATOR:
-            emulator.update()  # Update GUI
+    def update(self):
+        self.game.update()  # Update game logic
+        print("Updated game")
+        self.grid.use_rule()  # Update LED colors
+        print("Updated rule")
+        self.control.write()  # Update LED strips
+        print("Updated strip")
         
-        timer.sleep()  # 60 FPS
-        print("RUNNING")
-
+        self.timer.sleep()  # 60 FPS
+        
 
 if __name__ == "__main__":
-    main()
+    its_a_me = ItsAMe() # Initialize the entire gosh diddly dang darn thing

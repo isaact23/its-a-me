@@ -1,6 +1,7 @@
-import keyboard
 import random
 import time
+
+import pygame
 
 import colors
 import sounds
@@ -8,8 +9,8 @@ from colors import *
 from controller import MultiSegment
 from rule import Rule, Mode
 
-# TODO: Review iosoft.blog
-# https://iosoft.blog/2020/09/29/raspberry-pi-multi-channel-ws2812/
+# GUI settings
+WINDOW_SIZE = (800, 600)
 
 # Keys
 KEY_START = 'f'
@@ -27,17 +28,18 @@ BOXES = ((2, 22, 4, 23),
          (19, 40, 21, 41))
 RAILS = (0, 1)
 GRID = tuple(i for i in range(2, 42))
-ALL_SEGS = tuple(i for i in range(42))
+ALL_SEGS = tuple(i f# TODO: Review iosoft.blog
+# https://iosoft.blog/2020/09/29/raspberry-pi-multi-channel-ws2812/or i in range(42))
 
 
 class Game:
     """
-    Control all game logic for Glass Stepping Stones. There are multiple 'modes' which
+    Control all game logic. There are multiple 'modes' which
     govern how rules are generated for lights and how input is handled.
     Mode 100 - attract
-    Mode 200 - startup
+    Mode 200 - rules
     Mode 300 - gameplay
-    Mode 400 - win
+    Mode 400 - scores
     """
 
     def __init__(self, control, grid):
@@ -58,12 +60,19 @@ class Game:
         self.undertale_count = 0
         self.started_scream = False
 
+        # Initialize Pygame
+        pygame.init()
+        self.screen = pygame.display.set_mode(WINDOW_SIZE)
+
+
     def update(self):
         """
         Called every frame - update the game state, LEDs, etc. based on input and timing.
         """
         time_elapsed = time.time() - self.start_time
         self.new_mode = False
+        keys = pygame.key.get_pressed()
+        print(keys)
 
         # Mode 0-99 - testing purposes only
         if self.mode <= 99:
@@ -91,13 +100,11 @@ class Game:
             elif self.mode == 100:
                 if not self.mode_initialized:
                     # Play attract music
-                    self.music_player.set_mode(sounds.SoundPlayer.Mode.ATTRACT)
+                    self.sound_player.set_mode(sounds.SoundPlayer.Mode.ATTRACT)
 
                     # Railings are red/orange moving stripes in intro
                     self.grid.get_seg(0).set_rule(Rule().stripes((GREEN, PURPLE), width=8).animate(10).fade_in(2, 1))
                     self.grid.get_seg(1).set_rule(Rule().stripes((GREEN, PURPLE), width=8).animate(10).fade_in(2, 1))
-                    self.grid.get_seg(42).set_rule(Rule().hue_wave(-120, 30, frequency=1, mode=Mode.TIME).fade_in(2, 1))
-                    self.grid.get_seg(43).set_rule(Rule().stripes((MAGENTA, BLACK), 3).animate(10).fade_in(2, 1))
                 if time_elapsed > 4:
                     self.set_mode(101)
 

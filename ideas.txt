@@ -1,0 +1,23 @@
+Sequences will now have mapping function to corresponding lights on light strip / emulator
+
+Attract Mode
+	On game start, either go to intro mode or play mode
+	Do light sequences as normal
+	Cloud eyeballs GUI
+
+Intro Mode
+	Intro music
+	Toad sound effects / Toad tutorial GUI
+	"Step on the lit square!"
+
+Play Mode
+	Play music
+	Show score in GUI
+	Light up random squares; disappear after some time
+	Eventually light up multiple squares at once
+
+Results Mode
+	Play results music (Mario Kart)
+	Show final score
+	1-UP Mushroom
+	Flood light
