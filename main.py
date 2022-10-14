@@ -3,42 +3,52 @@
 
 import fpstimer
 import sys
-import faulthandler
-faulthandler.enable()
+#import faulthandler
+#faulthandler.enable()
 
 import pygame
 
 from controller import Controller
 from grid import Grid
-#from emulator import Emulator
 from game import Game
+#from emulator import Emulator
 
 FRAMERATE = 60
 PIXEL_COUNT = 580
+
+# GUI settings
+WINDOW_SIZE = (800, 600)
+
 
 class ItsAMe():
     def __init__(self):
         print("Python version:", sys.version)
 
+        # Initialize game logic and LED stuff
         self.control = Controller((PIXEL_COUNT,))  # LED Controller
-        self.grid = Grid(control)                  # Container for all LED segments
-        self.game = Game(control, grid)            # Game logic manager
+        self.grid = Grid(self.control)                  # Container for all LED segments
+        self.game = Game(self.control, self.grid)            # Game logic manager
 
+        # Initialize FPS timer
         self.timer = fpstimer.FPSTimer(FRAMERATE)
+
+        # Initialize Pygame (GUI / Sound)
+        pygame.init()
+        self.screen = pygame.display.set_mode(WINDOW_SIZE)
 
         while(True):
             self.update()
 
     def update(self):
-        self.game.update()  # Update game logic
-        print("Updated game")
+        self.game.update(pygame.key.get_pressed())  # Update game logic
+        #print("Updated game")
         self.grid.use_rule()  # Update LED colors
-        print("Updated rule")
+        #print("Updated rule")
         self.control.write()  # Update LED strips
-        print("Updated strip")
+        #print("Updated strip")
         
         self.timer.sleep()  # 60 FPS
-        
+
 
 if __name__ == "__main__":
     its_a_me = ItsAMe() # Initialize the entire gosh diddly dang darn thing

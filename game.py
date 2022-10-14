@@ -9,11 +9,8 @@ from colors import *
 from controller import MultiSegment
 from rule import Rule, Mode
 
-# GUI settings
-WINDOW_SIZE = (800, 600)
-
 # Keys
-KEY_START = 'f'
+KEY_START = pygame.K_f
 
 # Segment numbers
 BOXES = ((2, 22, 4, 23),
@@ -28,8 +25,7 @@ BOXES = ((2, 22, 4, 23),
          (19, 40, 21, 41))
 RAILS = (0, 1)
 GRID = tuple(i for i in range(2, 42))
-ALL_SEGS = tuple(i f# TODO: Review iosoft.blog
-# https://iosoft.blog/2020/09/29/raspberry-pi-multi-channel-ws2812/or i in range(42))
+ALL_SEGS = tuple(i for i in range(42))
 
 
 class Game:
@@ -60,19 +56,13 @@ class Game:
         self.undertale_count = 0
         self.started_scream = False
 
-        # Initialize Pygame
-        pygame.init()
-        self.screen = pygame.display.set_mode(WINDOW_SIZE)
 
-
-    def update(self):
+    def update(self, pressed_keys):
         """
         Called every frame - update the game state, LEDs, etc. based on input and timing.
         """
         time_elapsed = time.time() - self.start_time
         self.new_mode = False
-        keys = pygame.key.get_pressed()
-        print(keys)
 
         # Mode 0-99 - testing purposes only
         if self.mode <= 99:
@@ -92,7 +82,8 @@ class Game:
             self.sound_player.update()
 
             # On space press, move to stage 2 - start the game.
-            if keyboard.is_pressed(KEY_START):
+            if pressed_keys[KEY_START]:
+                print("Starting!")
                 self.set_mode(random.randint(200, 201), clear_all=True)
                 self.sound_player.stop()
                 self.undertale_count = 0

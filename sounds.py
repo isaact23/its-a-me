@@ -3,6 +3,7 @@ from pygame import mixer
 
 SOUND_DIR = pathlib.Path(__file__).parent / 'sounds'
 
+
 # Import sounds from directories
 def get_sounds_from(dir):
     """
@@ -16,7 +17,8 @@ def get_sounds_from(dir):
 ATTRACT_MUSIC = get_sounds_from('attract_music')
 
 mixer.init(44100, -16, 1, 1024)
-mixer.music.set_volume(0.1)
+mixer.music.set_volume(1)
+
 
 class SoundPlayer:
     def __init__(self):
@@ -26,12 +28,12 @@ class SoundPlayer:
     class Mode(enum.Enum):
         NONE = 0
         ATTRACT = 1
-    
+
     # Update loop. Restart songs if necessary
     def update(self):
         if self.mode == self.Mode.ATTRACT:
             if not mixer.music.get_busy():
-                self.play_music(random.choice(ATTRACT_MUSIC))
+                self._play_music(random.choice(ATTRACT_MUSIC))
 
     # Update mode.
     def set_mode(self, mode):
@@ -39,14 +41,15 @@ class SoundPlayer:
             # Stop all music
             self.mode = mode
 
-    # Play a music file.
-    def play_music(self, music):
+    # Play a music file.            if not mixer.music.get_busy():
+    def _play_music(self, music):
         try:
-            mixer.Sound(music).play()
+            mixer.music.load(music)
+            mixer.music.play()
             print("Played music", music)
         except FileNotFoundError:
             print("Error playing music", music)
-        
+
     # Play a sound file.
-    def play_sound(self, sound):
+    def _play_sound(self, sound):
         pass
