@@ -1,7 +1,7 @@
 import enum, pathlib, random
 from pygame import mixer
 
-SOUND_DIR = pathlib.Path(__file__).parent / 'sounds'
+SOUND_DIR = pathlib.Path(__file__).parent / 'media/sounds'
 
 
 # Import sounds from directories
@@ -40,6 +40,10 @@ class SoundPlayer:
         if mode != self.mode:
             # Stop all music
             self.mode = mode
+
+    # Stop music.
+    def stop(self):
+        mixer.music.stop()
 
     # Play a music file.            if not mixer.music.get_busy():
     def _play_music(self, music):

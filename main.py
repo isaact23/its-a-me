@@ -3,10 +3,8 @@
 
 import fpstimer
 import sys
-#import faulthandler
-#faulthandler.enable()
 
-ENABLE_EMULATOR = True
+ENABLE_EMULATOR = False
 
 import pygame
 
@@ -20,30 +18,35 @@ FRAMERATE = 60
 PIXEL_COUNT = 580
 
 # GUI settings
-WINDOW_SIZE = (800, 600)
+WINDOW_SIZE = (1920, 1080)
 
 
 class ItsAMe():
     def __init__(self):
         print("Python version:", sys.version)
 
+        # Initialize Pygame (GUI / Sound)
+        pygame.init()
+        self.screen = pygame.display.set_mode(WINDOW_SIZE)
+        pygame.display.set_caption("It's a me")
+
         # Initialize game logic and LED stuff
         self.control = Controller((PIXEL_COUNT,))  # LED Controller
         self.grid = Grid(self.control)                  # Container for all LED segments
-        self.game = Game(self.control, self.grid)            # Game logic manager
+        self.game = Game(self.control, self.grid, self.screen)            # Game logic manager
         if ENABLE_EMULATOR:
             self.emulator = Emulator(self.grid)
 
         # Initialize FPS timer
         self.timer = fpstimer.FPSTimer(FRAMERATE)
 
-        # Initialize Pygame (GUI / Sound)
-        pygame.init()
-                # TODO: Find source of colors being out of range
-        self.screen = pygame.display.set_mode(WINDOW_SIZE)
-
-        while(True):
+        # Main game loop
+        running = True
+        while running:
             self.update()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
 
     def update(self):
         self.game.update(pygame.key.get_pressed())  # Update game logic
