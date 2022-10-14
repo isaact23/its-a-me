@@ -1,15 +1,16 @@
 from copy import deepcopy
 from grid import Grid
 
-NEOPIXEL_ENABLED = False
+RPI_MODE = False
 
 # Import modules for controlling LEDs from RPi
 try:
     import board
     import neopixel
-    NEOPIXEL_ENABLED = True
+    import RPi.GPIO as GPIO
+    RPI_MODE = True
 except Exception as e:
-    print("Error when importing board and/or neopixel:", str(e))
+    print("Error when importing Raspberry Pi Modules:", str(e))
 
 
 class Controller:
@@ -25,6 +26,23 @@ class Controller:
         self.strips = {}
         for i, size in enumerate(strip_sizes):
             self.strips[i] = LightStrip(self, size)
+
+        # Initialize relay
+        if RPI_MODE:
+            self.relay_enabled = False
+            GPIO.setmode(GPIO.BCM)  # GPIO Numbers instead of board numbers
+            self.relay_pin = 17
+            GPIO.setup(self.relay_pin, GPIO.OUT)  # Assign mode
+
+    def flip_relay(self):
+        if RPI_MODE:
+            self.relay_enabled = not self.relay_enabled
+            if self.relay_enabled:
+                print("Relay enabled")
+                GPIO.output(self.relay_pin, GPIO.LOW)
+            else:
+                print("Relay disabled")
+                GPIO.output(self.relay_pin, GPIO.LOW)
 
     def get_strip(self, strip):
         """
@@ -156,6 +174,10 @@ class LightStrip:
             Set a function for LED color generation to be used on every use_func() call.
             :param r: The anonymous function.
             """
+            if r is None:
+                self.rule = None
+                return
+
             if self.flip:
                 self.rule = r.flip()
             else:

@@ -1,4 +1,4 @@
-import pathlib, random, time
+import math, pathlib, random, time
 
 import pygame
 
@@ -10,6 +10,15 @@ from rule import Rule, Mode
 
 # Keys
 KEY_START = pygame.K_f
+BOX_KEYS = [pygame.K_v, pygame.K_y,
+             pygame.K_d, pygame.K_j,
+             pygame.K_a, pygame.K_z,
+             pygame.K_m, pygame.K_w,
+             pygame.K_x, pygame.K_t]
+RELAY_KEY = pygame.K_r
+
+# Tutorial box numbers
+TUTORIAL_BOXES = (5, 0, 8)
 
 # Segment numbers
 BOXES = ((2, 22, 4, 23),
@@ -53,20 +62,48 @@ class Game:
         self.mode_initializing = True
         self.start_time = time.time()
 
+        # Variables changed during gameplay
+        self.square_count = 0
+        self.active_squares = {i: False for i in range(10)}
+        self.score = 0
+        self.max_score = 0
+        self.relay_key_pressed = False
+
         # Initialize images for Pygame
         sound_dir = pathlib.Path(__file__).parent / 'media/images'
-        self.image_cloud = pygame.image.load(sound_dir / 'lakitu.png').convert()
+        self.image_cloud = pygame.image.load(str(sound_dir / 'lakitu.png')).convert()
         self.image_cloud = pygame.transform.scale(self.image_cloud, (800, 800))
+        self.image_toad = pygame.image.load(str(sound_dir / 'toad.png')).convert()
+        self.image_toad = pygame.transform.scale(self.image_toad, (360, 400))
+        self.image_mole = pygame.image.load(str(sound_dir / 'mole.png')).convert()
+        self.image_mole = pygame.transform.scale(self.image_mole, (1000, 800))
 
-        self.screen.fill(WHITE)
-        self.screen.blit(self.image_cloud, (550, 100))
-        pygame.display.flip()
+        # Initialize text for Pygame
+        pygame.font.init()
+        self.font = pygame.font.SysFont("monospace", 50)
+        self.toad_text1 = self.font.render("Hi! I need your help to collect the power", 1, BLACK)
+        self.toad_text2 = self.font.render("stars! Step on the square to start!", 1, BLACK)
+        self.toad_text3 = self.font.render("Great! Keep it up!", 1, BLACK)
+        self.toad_text4 = self.font.render("One square to go!", 1, BLACK)
+        self.toad_text5 = self.font.render("Great! Now get ready for the real game!", 1, BLACK)
+
+        # Initalize miscellaneous Pygame objects
+        self.mole_text_cover = pygame.Rect(50, 50, 1000, 50)
 
     def update(self, pressed_keys):
         """
         Called every frame - update the game state, LEDs, etc. based on input and timing.
         """
         time_elapsed = time.time() - self.start_time
+        self.sound_player.update()
+
+        # Relay code
+        if pressed_keys[RELAY_KEY]:
+            if not self.relay_key_pressed:
+                self.relay_key_pressed = True
+                self.controller.flip_relay()
+        else:
+            self.relay_key_pressed = False
 
         # Mode 0-99 - testing purposes only
         if self.mode <= 99:
@@ -83,7 +120,6 @@ class Game:
 
         # Mode 100-199 - attract sequence
         elif self.mode <= 199:
-            self.sound_player.update()
 
             # On space press, move to stage 2 - start the game.
             if pressed_keys[KEY_START]:
@@ -93,6 +129,11 @@ class Game:
 
             elif self.mode == 100:
                 if not self.mode_initialized:
+                    # Render cloud GUI
+                    self.screen.fill(WHITE)
+                    self.screen.blit(self.image_cloud, (550, 100))
+                    pygame.display.update()
+
                     # Play attract music
                     self.sound_player.set_mode(sounds.SoundPlayer.Mode.ATTRACT)
 
@@ -180,32 +221,75 @@ class Game:
                 if time_elapsed > 7:
                     self.set_mode(101)
 
-            elif self.mode == 105:
-                if not self.mode_initialized:
-                    width = 6
-                    speed = 50
-                    MultiSegment(self.grid, 31, 35, 39, 20, 38, 16, 12, 30, 8, flipped_segs=(20, 38, 12, 30)).set_rule(
-                        Rule().stripes((WHITE, BLACK), width).crop(-200, 0).animate(speed)
-                    )
-                    MultiSegment(self.grid, 32, 36, 40, 21, 41, 17, 13, 33, 9, flipped_segs=(41, 17, 33, 9)).set_rule(
-                        Rule().stripes((WHITE, BLACK), width).crop(-200, 0).animate(speed)
-                    )
-                    MultiSegment(self.grid, 27, 23, 2, 22, 4, flipped_segs=(27, 23, 2)).set_rule(
-                        Rule().stripes((WHITE, BLACK), width).crop(-200, 0).animate(speed)
-                    )
-                    MultiSegment(self.grid, 28, 24, 3, 25, 5, flipped_segs=(28, 24, 5)).set_rule(
-                        Rule().stripes((WHITE, BLACK), width).crop(-200, 0).animate(speed)
-                    )
-                if time_elapsed > 9:
-                    self.set_mode(101)
-
-        # Mode 200-299 - transition to game
+        # Mode 200-299 - tutorial mode
         elif self.mode <= 299:
             if self.mode == 200:
-                if not self.mode_initialized:
-                    pass
+                box_no = TUTORIAL_BOXES[0]
 
-                if time_elapsed > 7:
+                if not self.mode_initialized:
+                    # Render toad GUI
+                    self.screen.fill(WHITE)
+                    self.screen.blit(self.image_toad, (100, 50))
+                    self.screen.blit(self.toad_text1, (500, 50))
+                    self.screen.blit(self.toad_text2, (500, 100))
+                    pygame.display.update()
+
+                    # Play tutorial music
+                    self.sound_player.set_mode(sounds.SoundPlayer.Mode.TUTORIAL)
+
+                    # Start light strip pattern
+                    box = BOXES[box_no]
+                    multiseg = MultiSegment(self.grid, box[0], box[1], box[2], box[3], flipped_segs=(box[0], box[3]))
+                    multiseg.set_rule(Rule().stripes((WHITE, OFF), 6).animate(16))
+
+                if pressed_keys[BOX_KEYS[box_no]] or (time_elapsed > 3 and pressed_keys[KEY_START]):
+                    self.set_mode(201, clear=True)
+
+            elif self.mode == 201:
+                box_no = TUTORIAL_BOXES[1]
+
+                if not self.mode_initialized:
+                    # Render toad GUI
+                    self.screen.fill(WHITE)
+                    self.screen.blit(self.image_toad, (100, 50))
+                    self.screen.blit(self.toad_text3, (500, 50))
+                    pygame.display.update()
+
+                    # Start light strip pattern
+                    box = BOXES[box_no]
+                    multiseg = MultiSegment(self.grid, box[0], box[1], box[2], box[3], flipped_segs=(box[0], box[3]))
+                    multiseg.set_rule(Rule().stripes((WHITE, OFF), 6).animate(16))
+
+                if pressed_keys[BOX_KEYS[box_no]] or (time_elapsed > 3 and pressed_keys[KEY_START]):
+                    self.set_mode(202, clear=True)
+
+            elif self.mode == 202:
+                box_no = TUTORIAL_BOXES[2]
+
+                if not self.mode_initialized:
+                    # Render toad GUI
+                    self.screen.fill(WHITE)
+                    self.screen.blit(self.image_toad, (100, 50))
+                    self.screen.blit(self.toad_text4, (500, 50))
+                    pygame.display.update()
+
+                    # Start light strip pattern
+                    box = BOXES[box_no]
+                    multiseg = MultiSegment(self.grid, box[0], box[1], box[2], box[3], flipped_segs=(box[0], box[3]))
+                    multiseg.set_rule(Rule().stripes((WHITE, OFF), 6).animate(16))
+
+                if pressed_keys[BOX_KEYS[box_no]] or (time_elapsed > 3 and pressed_keys[KEY_START]):
+                    self.set_mode(203, clear=True)
+
+            elif self.mode == 203:
+                if not self.mode_initialized:
+                    # Render toad GUI
+                    self.screen.fill(WHITE)
+                    self.screen.blit(self.image_toad, (100, 50))
+                    self.screen.blit(self.toad_text5, (500, 50))
+                    pygame.display.update()
+
+                if time_elapsed > 10:
                     self.set_mode(300)
 
         # Modes 300-399 - gameplay
@@ -213,15 +297,61 @@ class Game:
             # Wait for user input on first row
             if self.mode == 300:
                 if not self.mode_initialized:
-                    pass
+                    # Play game music
+                    self.sound_player.set_mode(sounds.SoundPlayer.Mode.PLAY)
+
+                    # Render GUI
+                    self.screen.fill(WHITE)
+                    self.screen.blit(self.image_mole, (550, 150))
+                    pygame.display.update()
+
+                    # Initialize rules for side rails
+                    self.grid.get_seg(0).set_rule(Rule().stripes((RED, OFF, OFF, OFF, OFF, BLUE, OFF, OFF, OFF, OFF), 3).animate(30))
+                    self.grid.get_seg(1).set_rule(Rule().stripes((RED, OFF, OFF, OFF, OFF, BLUE, OFF, OFF, OFF, OFF), 3).animate(30))
+
+                # Display score
+                score_text = self.font.render("Stars collected: " + str(self.score) + " / " + str(self.max_score), 1, BLACK)
+                pygame.draw.rect(self.screen, WHITE, self.mole_text_cover)
+                self.screen.blit(score_text, (200, 50))
+                pygame.display.update()
+
+                # Spawn more squares after some time
+                if time_elapsed < 25:
+                    exp = 2 * math.exp(time_elapsed / 12) - 1
+                    if exp > self.square_count:
+                        self.max_score += 1
+                        self.square_count = math.ceil(exp)
+                        available_squares = [i for i in range(10) if not self.active_squares[i]]
+                        if len(available_squares) > 0:
+                            chosen_square = random.choice(available_squares)
+                            self.active_squares[chosen_square] = True
+                            multi_segment = MultiSegment(self.grid, *BOXES[chosen_square], flipped_segs=[BOXES[chosen_square][0], BOXES[chosen_square][3]])
+                            multi_segment.set_rule(
+                                Rule().stripes((random.choice(
+                                    [RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, WHITE]
+                                ), OFF), 6).animate(20)
+                            )
+
+                # Check to see if active squares have been stepped on
+                for i in range(10):
+                    if pressed_keys[BOX_KEYS[i]]:
+                        if self.active_squares[i]:
+                            self.active_squares[i] = False
+                            self.score += 1
+                            for j in BOXES[i]:
+                                self.grid.get_seg(j).set_rule(None)
+
+                if time_elapsed > 30:
+                    self.set_mode(400, clear=True)
 
         # Modes 400-499: Final win sequence
         elif self.mode <= 499:
-            if not self.mode_initialized:
-                pass
+            if self.mode == 400:
+                if not self.mode_initialized:
+                    pass
 
-            if time_elapsed > 9:
-                self.reset_game()
+                if time_elapsed > 9:
+                    self.reset_game()
 
         # If we just initialized, prevent re-initialization on next update cycles.
         if self.mode_initializing:
@@ -247,3 +377,10 @@ class Game:
         Re-initialize the game for a new round.
         """
         self.set_mode(100)
+
+        # Reset variables changed during gameplay
+        self.square_count = 0
+        self.active_squares = {i: False for i in range(10)}
+        self.score = 0
+        self.max_score = 0
+        self.relay_key_pressed = False

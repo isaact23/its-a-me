@@ -4,7 +4,7 @@
 import fpstimer
 import sys
 
-ENABLE_EMULATOR = False
+ENABLE_EMULATOR = True
 
 import pygame
 
