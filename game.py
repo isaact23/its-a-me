@@ -27,6 +27,7 @@ RAILS = (0, 1)
 GRID = tuple(i for i in range(2, 42))
 ALL_SEGS = tuple(i for i in range(42))
 
+SEG_WIDTH = 12
 
 class Game:
     """
@@ -49,6 +50,7 @@ class Game:
         self.sound_player = sounds.SoundPlayer()
         self.mode = 100
         self.mode_initialized = False
+        self.mode_initializing = True
         self.start_time = time.time()
 
         # Variables used by update()
@@ -62,7 +64,6 @@ class Game:
         Called every frame - update the game state, LEDs, etc. based on input and timing.
         """
         time_elapsed = time.time() - self.start_time
-        self.new_mode = False
 
         # Mode 0-99 - testing purposes only
         if self.mode <= 99:
@@ -84,9 +85,8 @@ class Game:
             # On space press, move to stage 2 - start the game.
             if pressed_keys[KEY_START]:
                 print("Starting!")
-                self.set_mode(random.randint(200, 201), clear_all=True)
+                self.set_mode(random.randint(200, 201), clear=True)
                 self.sound_player.stop()
-                self.undertale_count = 0
 
             elif self.mode == 100:
                 if not self.mode_initialized:
@@ -94,8 +94,18 @@ class Game:
                     self.sound_player.set_mode(sounds.SoundPlayer.Mode.ATTRACT)
 
                     # Railings are red/orange moving stripes in intro
-                    self.grid.get_seg(0).set_rule(Rule().stripes((GREEN, PURPLE), width=8).animate(10).fade_in(2, 1))
-                    self.grid.get_seg(1).set_rule(Rule().stripes((GREEN, PURPLE), width=8).animate(10).fade_in(2, 1))
+                    self.grid.get_seg(0).set_rule(Rule().stripes((RED, WHITE, BLUE), width=8).animate(10).fade_in(2, 1))
+                    self.grid.get_seg(1).set_rule(Rule().stripes((RED, WHITE, BLUE), width=8).animate(10).fade_in(2, 1))
+
+                    #multi_seg = MultiSegment(self.grid, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                    #                         17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33,
+                    #                         34, 35, 36, 37, 38, 39, 40, 41,
+                    #                         flipped_segs=())
+                    #multi_seg = MultiSegment(self.grid, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+                    #                         flipped_segs=())
+                    #multi_seg.set_rule(Rule().fill(WHITE, 0, 1).animate(8))
+
+
                 if time_elapsed > 4:
                     self.set_mode(101)
 
@@ -404,7 +414,9 @@ class Game:
                 self.reset_game()
 
         # If we just initialized, prevent re-initialization on next update cycles.
-        if not self.mode_initialized and not self.new_mode:
+        if self.mode_initializing:
+            self.mode_initializing = False
+        elif not self.mode_initialized:
             self.mode_initialized = True
 
     def correct_lights(self, box):
@@ -423,14 +435,6 @@ class Game:
             Rule().stripes((GREEN, WHITE), 3).animate(12).fade_out(1, WIN_TIME - 1.5))
         MultiSegment(self.grid, *BOXES[box]).set_rule(
             Rule().fill(GREEN).fade_out(1, WIN_TIME - 1.5))
-
-        bt = PUMPKIN_BLINK_TIME
-        self.grid.get_seg(42).set_rule(
-            Rule().fill(GREEN).blink(bt, bt, start_time=time.time() + bt).fade_out(1, WIN_TIME - 1.5)
-        )
-        self.grid.get_seg(43).set_rule(
-            Rule().fill(GREEN).blink(bt, bt).fade_out(1, WIN_TIME - 1.5)
-        )
 
     def wrong_lights(self, box):
         """
@@ -455,64 +459,6 @@ class Game:
             Rule().stripes((RED, OFF), 10).crop(0, 100).animate(15)
         )
 
-        bt = PUMPKIN_BLINK_TIME
-        self.grid.get_seg(42).set_rule(
-            Rule().fill(RED).blink(bt, bt, start_time=time.time() + bt).fade_out(1.2, 2.5)
-        )
-        self.grid.get_seg(43).set_rule(
-            Rule().fill(RED).blink(bt, bt).fade_out(1.2, 2.5)
-        )
-
-    def is_tile_correct(self):
-        """
-        Determine if the tile a player stepped on is correct (i.e. won't break)
-        :return: True if the tile didn't break.
-        """
-        tile = self.box % 2  # 0 if left, 1 if right
-        correct = self.correct_tiles[self.row]
-
-        # Calculate chance of something going wrong.
-        power = 2 ** abs(self.difficulty)
-        anomaly_chance = 1
-        if power != 0:
-            anomaly_chance = (power - 1) / power
-
-        # Determine if tile is correct, then determine if the chance will adjust the outcome.
-        if tile == correct:
-            if self.difficulty > 0 and random.random() <= anomaly_chance:
-                print("Correct tile, but it broke anyway. Difficulty =", self.difficulty)
-                return False
-            else:
-                print("Correct tile!")
-                return True
-        else:
-            if self.difficulty < 0 and random.random() <= anomaly_chance:
-                print("Wrong tile, but it didn't break. Difficulty =", self.difficulty)
-                return True
-            else:
-                print("Wrong tile!")
-                return False
-
-    def get_winning_chance(self):
-        """
-        :return: Current chance of winning as a percentage.
-        """
-        # Determine chance of anomaly
-        power = 2 ** abs(self.difficulty)
-        anomaly_chance = 1
-        if power != 0:
-            anomaly_chance = (power - 1) / power
-
-        # Determine chance of winning overall
-        turns_remaining = 5 - self.row
-        if self.difficulty > 0:
-            row_chance = 0.5 - (0.5 * anomaly_chance)
-        else:
-            row_chance = 0.5 + (0.5 * anomaly_chance)
-        overall_chance = row_chance ** turns_remaining
-
-        return overall_chance
-
     def set_mode(self, mode, clear=False):
         """
         Prepare for a new mode.
@@ -520,6 +466,7 @@ class Game:
         self.mode = mode
         self.start_time = time.time()
         self.mode_initialized = False
+        self.mode_initializing = True
         if clear:
             self.grid.clear_rules()
 
@@ -529,9 +476,4 @@ class Game:
         """
         Re-initialize the game for a new round.
         """
-        self.set_mode(100, clear_grid=True, clear_railings=True)
-        self.row = 0
-        self.box = -1
-        self.correct_tiles = gen_correct_tiles()
-        self.undertale_count = 0
-        self.started_scream = False
+        self.set_mode(100)

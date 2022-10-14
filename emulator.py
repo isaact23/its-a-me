@@ -48,7 +48,7 @@ class Emulator:
 
         # Initialize window/canvas
         self.root = tk.Tk()
-        self.root.title("Glass Stepping Stones")
+        self.root.title("Its a me")
         self.root.protocol("WM_DELETE_WINDOW", self.exit)
         self.canvas = tk.Canvas(self.root, bg="black", width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
 
@@ -119,11 +119,14 @@ class Emulator:
         """
         for s in range(grid.SEG_COUNT):
             circle_array = self.circles[s]
-            color_array = self.grid.get_seg(s).get_pixels()
+            seg = self.grid.get_seg(s)
+            color_array = seg.get_pixels()
+            if seg.flip:
+                color_array.reverse()
+
             for l in range(len(color_array)):
                 color = color_array[l]
                 r, g, b = color[0], color[1], color[2]
-                # TODO: Find source of colors being out of range
                 if r < 0 or g < 0 or b < 0 or r > 255 or g > 255 or b > 255:
                     print("Error: Color", r, g, b, "out of range.")
                 else:
