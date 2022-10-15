@@ -3,7 +3,7 @@ import math, pathlib, random, time
 import pygame
 
 import colors
-import sounds
+from sounds import SoundPlayer
 from colors import *
 from controller import MultiSegment
 from rule import Rule, Mode
@@ -56,8 +56,8 @@ class Game:
         self.controller = control
         self.grid = grid
         self.screen = screen
-        self.sound_player = sounds.SoundPlayer()
-        self.mode = 100
+        self.sound_player = SoundPlayer()
+        self.mode = 300
         self.mode_initialized = False
         self.mode_initializing = True
         self.start_time = time.time()
@@ -135,7 +135,7 @@ class Game:
                     pygame.display.update()
 
                     # Play attract music
-                    self.sound_player.set_mode(sounds.SoundPlayer.Mode.ATTRACT)
+                    self.sound_player.set_mode(SoundPlayer.Mode.ATTRACT)
 
                     # Railings are red/orange moving stripes in intro
                     self.grid.get_seg(0).set_rule(Rule().stripes((RED, WHITE, BLUE), width=8).animate(10).fade_in(2, 1))
@@ -235,7 +235,7 @@ class Game:
                     pygame.display.update()
 
                     # Play tutorial music
-                    self.sound_player.set_mode(sounds.SoundPlayer.Mode.TUTORIAL)
+                    self.sound_player.set_mode(SoundPlayer.Mode.TUTORIAL)
 
                     # Start light strip pattern
                     box = BOXES[box_no]
@@ -281,6 +281,7 @@ class Game:
                 if pressed_keys[BOX_KEYS[box_no]] or (time_elapsed > 3 and pressed_keys[KEY_START]):
                     self.set_mode(203, clear=True)
 
+            # Tutorial complete; prepare for real game
             elif self.mode == 203:
                 if not self.mode_initialized:
                     # Render toad GUI
@@ -288,6 +289,9 @@ class Game:
                     self.screen.blit(self.image_toad, (100, 50))
                     self.screen.blit(self.toad_text5, (500, 50))
                     pygame.display.update()
+
+                    # Play powerup stinger
+                    self.sound_player.set_mode(SoundPlayer.Mode.STINGER, SoundPlayer.Stingers.SMG_POWERUP)
 
                 if time_elapsed > 10:
                     self.set_mode(300)
@@ -298,7 +302,7 @@ class Game:
             if self.mode == 300:
                 if not self.mode_initialized:
                     # Play game music
-                    self.sound_player.set_mode(sounds.SoundPlayer.Mode.PLAY)
+                    self.sound_player.set_mode(SoundPlayer.Mode.PLAY)
 
                     # Render GUI
                     self.screen.fill(WHITE)
