@@ -36,6 +36,7 @@ GRID = tuple(i for i in range(2, 42))
 ALL_SEGS = tuple(i for i in range(42))
 
 SEG_WIDTH = 12
+WHACK_TIME = 10  # How many seconds before a tile despawns
 
 class Game:
     """
@@ -64,7 +65,7 @@ class Game:
 
         # Variables changed during gameplay
         self.square_count = 0
-        self.active_squares = {i: False for i in range(10)}
+        self.active_squares = {i: -1 for i in range(10)}
         self.score = 0
         self.max_score = 0
         self.relay_key_pressed = False
@@ -325,10 +326,10 @@ class Game:
                     if exp > self.square_count:
                         self.max_score += 1
                         self.square_count = math.ceil(exp)
-                        available_squares = [i for i in range(10) if not self.active_squares[i]]
+                        available_squares = [i for i in range(10) if self.active_squares[i] < 0]
                         if len(available_squares) > 0:
                             chosen_square = random.choice(available_squares)
-                            self.active_squares[chosen_square] = True
+                            self.active_squares[chosen_square] = time.time()
                             multi_segment = MultiSegment(self.grid, *BOXES[chosen_square], flipped_segs=[BOXES[chosen_square][0], BOXES[chosen_square][3]])
                             multi_segment.set_rule(
                                 Rule().stripes((random.choice(
@@ -336,14 +337,22 @@ class Game:
                                 ), OFF), 6).animate(20)
                             )
 
-                # Check to see if active squares have been stepped on
+
                 for i in range(10):
+                    # Check to see if active squares have been stepped on
                     if pressed_keys[BOX_KEYS[i]]:
                         if self.active_squares[i]:
-                            self.active_squares[i] = False
+                            self.active_squares[i] = -1
                             self.score += 1
                             for j in BOXES[i]:
                                 self.grid.get_seg(j).set_rule(None)
+
+                    # Check to see if active squares have run out of time
+                    curr_time = time.time()
+                    if curr_time - self.active_squares[i] > WHACK_TIME:
+                        self.active_squares[i] = -1
+                        for j in BOXES[i]:
+                            self.grid.get_seg(j).set_rule(None)
 
                 if time_elapsed > 30:
                     self.set_mode(400, clear=True)
@@ -384,7 +393,7 @@ class Game:
 
         # Reset variables changed during gameplay
         self.square_count = 0
-        self.active_squares = {i: False for i in range(10)}
+        self.active_squares = {i: -1 for i in range(10)}
         self.score = 0
         self.max_score = 0
         self.relay_key_pressed = False
