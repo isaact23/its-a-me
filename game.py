@@ -243,7 +243,7 @@ class Game:
                     multiseg = MultiSegment(self.grid, box[0], box[1], box[2], box[3], flipped_segs=(box[0], box[3]))
                     multiseg.set_rule(Rule().stripes((WHITE, OFF), 6).animate(16))
 
-                if pressed_keys[BOX_KEYS[box_no]] or (time_elapsed > 3 and pressed_keys[KEY_START]):
+                if pressed_keys[BOX_KEYS[box_no]]:
                     self.set_mode(201, clear=True)
 
             elif self.mode == 201:
@@ -261,7 +261,7 @@ class Game:
                     multiseg = MultiSegment(self.grid, box[0], box[1], box[2], box[3], flipped_segs=(box[0], box[3]))
                     multiseg.set_rule(Rule().stripes((WHITE, OFF), 6).animate(16))
 
-                if pressed_keys[BOX_KEYS[box_no]] or (time_elapsed > 3 and pressed_keys[KEY_START]):
+                if pressed_keys[BOX_KEYS[box_no]]:
                     self.set_mode(202, clear=True)
 
             elif self.mode == 202:
@@ -279,7 +279,7 @@ class Game:
                     multiseg = MultiSegment(self.grid, box[0], box[1], box[2], box[3], flipped_segs=(box[0], box[3]))
                     multiseg.set_rule(Rule().stripes((WHITE, OFF), 6).animate(16))
 
-                if pressed_keys[BOX_KEYS[box_no]] or (time_elapsed > 3 and pressed_keys[KEY_START]):
+                if pressed_keys[BOX_KEYS[box_no]]:
                     self.set_mode(203, clear=True)
 
             # Tutorial complete; prepare for real game
