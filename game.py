@@ -58,7 +58,7 @@ class Game:
         self.grid = grid
         self.screen = screen
         self.sound_player = SoundPlayer()
-        self.mode = 300
+        self.mode = 100
         self.mode_initialized = False
         self.mode_initializing = True
         self.start_time = time.time()
@@ -88,7 +88,7 @@ class Game:
         self.toad_text4 = self.font.render("One square to go!", 1, BLACK)
         self.toad_text5 = self.font.render("Great! Now get ready for the real game!", 1, BLACK)
 
-        # Initalize miscellaneous Pygame objects
+        # Initialize miscellaneous Pygame objects
         self.mole_text_cover = pygame.Rect(50, 50, 1000, 50)
 
     def update(self, pressed_keys):
@@ -341,7 +341,7 @@ class Game:
                 for i in range(10):
                     # Check to see if active squares have been stepped on
                     if pressed_keys[BOX_KEYS[i]]:
-                        if self.active_squares[i]:
+                        if self.active_squares[i] > 0:
                             self.active_squares[i] = -1
                             self.score += 1
                             for j in BOXES[i]:
