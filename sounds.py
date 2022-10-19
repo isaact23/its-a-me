@@ -10,6 +10,8 @@ class SoundPlayer:
         self.attract_music = self._get_sounds_from('music/attract_music')
         self.tutorial_music = self._get_sounds_from('music/tutorial_music')
         self.play_music = self._get_sounds_from('music/play_music')
+        self.win_music = self._get_sounds_from('music/win_music')
+        self.lose_music = self._get_sounds_from('music/lose_music')
 
         # Initialize pygame sound mixer
         mixer.init(44100, -16, 1, 1024)
@@ -21,10 +23,8 @@ class SoundPlayer:
         ATTRACT = 1
         TUTORIAL = 2
         PLAY = 3
-        STINGER = 10  # Used for specific oneshot music tracks
-
-    class Stingers:
-        SMG_POWERUP = SOUND_DIR / 'music/stingers/Super Mario Galaxy - Power Up Found.ogg'
+        WIN = 4
+        LOSE = 5
 
     # Update loop. Restart songs if necessary
     def update(self):
@@ -35,17 +35,16 @@ class SoundPlayer:
                 self._play_music(random.choice(self.tutorial_music))
             elif self.mode == self.Mode.PLAY:
                 self._play_music(random.choice(self.play_music))
-            elif self.mode == self.Mode.STINGER:
-                pass
 
     # Update mode.
-    def set_mode(self, mode, song=None):
+    def set_mode(self, mode):
         if mode != self.mode:
             self.stop()
             self.mode = mode
-            if mode == self.Mode.STINGER:
-                self._play_music(song)
-
+            if mode == self.Mode.WIN:
+                self._play_music(random.choice(self.win_music))
+            elif mode == self.mode.LOSE:
+                self._play_music(random.choice(self.lose_music))
 
     # Stop music.
     def stop(self):

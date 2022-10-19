@@ -37,6 +37,7 @@ ALL_SEGS = tuple(i for i in range(42))
 
 SEG_WIDTH = 12
 WHACK_TIME = 10  # How many seconds before a tile despawns
+WIN_PERCENT = 0.7  # The percentage of tiles that must be whacked to win
 
 class Game:
     """
@@ -69,6 +70,7 @@ class Game:
         self.score = 0
         self.max_score = 0
         self.relay_key_pressed = False
+        self.lives = 1
 
         # Initialize images for Pygame
         sound_dir = pathlib.Path(__file__).parent / 'media/images'
@@ -292,9 +294,9 @@ class Game:
                     pygame.display.update()
 
                     # Play powerup stinger
-                    self.sound_player.set_mode(SoundPlayer.Mode.STINGER, SoundPlayer.Stingers.SMG_POWERUP)
+                    self.sound_player.set_mode(SoundPlayer.Mode.WIN)
 
-                if time_elapsed > 10:
+                if time_elapsed > 4:
                     self.set_mode(300)
 
         # Modes 300-399 - gameplay
@@ -355,16 +357,29 @@ class Game:
                             self.grid.get_seg(j).set_rule(None)
 
                 if time_elapsed > 30:
-                    self.set_mode(400, clear=True)
+                    # Determine win/lose
+                    if self.score / self.max_score > WIN_PERCENT:
+                        self.set_mode(400, clear=True)
+                    else:
+                        self.set_mode(401, clear=True)
 
         # Modes 400-499: Final win sequence
         elif self.mode <= 499:
+            # Mode 400 - win screen
             if self.mode == 400:
                 if not self.mode_initialized:
                     pass
 
                 if time_elapsed > 9:
                     self.reset_game()
+
+            # Mode 401 - lose screen
+            elif self.mode == 401:
+                pass
+
+            # Mode 402 - one-up screen
+            elif self.mode == 402:
+                pass
 
         # If we just initialized, prevent re-initialization on next update cycles.
         if self.mode_initializing:
@@ -397,3 +412,4 @@ class Game:
         self.score = 0
         self.max_score = 0
         self.relay_key_pressed = False
+        self.lives = 1
