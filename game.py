@@ -39,6 +39,12 @@ SEG_WIDTH = 12
 WHACK_TIME = 10  # How many seconds before a tile despawns
 WIN_PERCENT = 0.7  # The percentage of tiles that must be whacked to win
 
+# Size of rectangles to blit during game phase
+RECT_START_X = 200
+RECT_START_Y = 200
+RECT_SIZE = 200
+RECT_SPACING = 50
+
 class Game:
     """
     Control all game logic. There are multiple 'modes' which
@@ -59,7 +65,7 @@ class Game:
         self.grid = grid
         self.screen = screen
         self.sound_player = SoundPlayer()
-        self.mode = 100
+        self.mode = 300
         self.mode_initialized = False
         self.mode_initializing = True
         self.start_time = time.time()
@@ -69,17 +75,19 @@ class Game:
         self.active_squares = {i: -1 for i in range(10)}
         self.score = 0
         self.max_score = 0
-        self.relay_key_pressed = False
         self.lives = 1
+        self.star_frame = 0
 
         # Initialize images for Pygame
-        sound_dir = pathlib.Path(__file__).parent / 'media/images'
-        self.image_cloud = pygame.image.load(str(sound_dir / 'lakitu.png')).convert()
+        image_dir = pathlib.Path(__file__).parent / 'media/images'
+        self.image_cloud = pygame.image.load(str(image_dir / 'lakitu.png')).convert()
         self.image_cloud = pygame.transform.scale(self.image_cloud, (800, 800))
-        self.image_toad = pygame.image.load(str(sound_dir / 'toad.png')).convert()
+        self.image_toad = pygame.image.load(str(image_dir / 'toad.png')).convert()
         self.image_toad = pygame.transform.scale(self.image_toad, (360, 400))
-        self.image_mole = pygame.image.load(str(sound_dir / 'mole.png')).convert()
-        self.image_mole = pygame.transform.scale(self.image_mole, (1000, 800))
+        self.image_star_array = {}
+        for i in range(32):
+            star_img = pygame.image.load(str(image_dir / ('star/frame_%02d_delay-0.06s.gif' % i))).convert()
+            self.image_star_array[i] = pygame.transform.scale(star_img, (RECT_SIZE, RECT_SIZE))
 
         # Initialize text for Pygame
         pygame.font.init()
@@ -91,22 +99,27 @@ class Game:
         self.toad_text5 = self.font.render("Great! Now get ready for the real game!", 1, BLACK)
 
         # Initialize miscellaneous Pygame objects
-        self.mole_text_cover = pygame.Rect(50, 50, 1000, 50)
+        self.rects = [
+            (RECT_START_X, RECT_START_Y, RECT_SIZE, RECT_SIZE),
+            (RECT_START_X, RECT_START_Y + RECT_SIZE + RECT_SPACING, RECT_SIZE, RECT_SIZE),
+            (RECT_START_X + RECT_SIZE + RECT_SPACING, RECT_START_Y, RECT_SIZE, RECT_SIZE),
+            (RECT_START_X + RECT_SIZE + RECT_SPACING, RECT_START_Y + RECT_SIZE + RECT_SPACING, RECT_SIZE, RECT_SIZE),
+            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 2, RECT_START_Y, RECT_SIZE,RECT_SIZE),
+            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 2, RECT_START_Y + RECT_SIZE + RECT_SPACING, RECT_SIZE, RECT_SIZE),
+            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 3, RECT_START_Y, RECT_SIZE,RECT_SIZE),
+            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 3, RECT_START_Y + RECT_SIZE + RECT_SPACING, RECT_SIZE, RECT_SIZE),
+            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 4, RECT_START_Y, RECT_SIZE,RECT_SIZE),
+            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 4, RECT_START_Y + RECT_SIZE + RECT_SPACING, RECT_SIZE, RECT_SIZE),
+        ]
+        self.pygame_rects = [pygame.Rect(*x) for x in self.rects]
 
     def update(self, pressed_keys):
         """
         Called every frame - update the game state, LEDs, etc. based on input and timing.
         """
         time_elapsed = time.time() - self.start_time
-        self.sound_player.update()
 
-        # Relay code
-        if pressed_keys[RELAY_KEY]:
-            if not self.relay_key_pressed:
-                self.relay_key_pressed = True
-                self.controller.flip_relay()
-        else:
-            self.relay_key_pressed = False
+        self.sound_player.update()
 
         # Mode 0-99 - testing purposes only
         if self.mode <= 99:
@@ -301,25 +314,30 @@ class Game:
 
         # Modes 300-399 - gameplay
         elif self.mode <= 399:
+
             # Wait for user input on first row
             if self.mode == 300:
                 if not self.mode_initialized:
                     # Play game music
                     self.sound_player.set_mode(SoundPlayer.Mode.PLAY)
 
-                    # Render GUI
-                    self.screen.fill(WHITE)
-                    self.screen.blit(self.image_mole, (550, 150))
-                    pygame.display.update()
-
                     # Initialize rules for side rails
                     self.grid.get_seg(0).set_rule(Rule().stripes((RED, OFF, OFF, OFF, OFF, BLUE, OFF, OFF, OFF, OFF), 3).animate(30))
                     self.grid.get_seg(1).set_rule(Rule().stripes((RED, OFF, OFF, OFF, OFF, BLUE, OFF, OFF, OFF, OFF), 3).animate(30))
 
                 # Display score
+                self.screen.fill(WHITE)
                 score_text = self.font.render("Stars collected: " + str(self.score) + " / " + str(self.max_score), 1, BLACK)
-                pygame.draw.rect(self.screen, WHITE, self.mole_text_cover)
                 self.screen.blit(score_text, (200, 50))
+
+                # Render stars
+                self.star_frame += 1
+                if (self.star_frame >= 64):
+                    self.star_frame = 0
+                for i in range(10):
+                    pygame.draw.rect(self.screen, BLACK, self.pygame_rects[i], border_radius=20)
+                    if self.active_squares[i] > 0:
+                        self.screen.blit(self.image_star_array[math.floor(self.star_frame / 2)], (self.pygame_rects[i][0], self.pygame_rects[i][1]))
                 pygame.display.update()
 
                 # Spawn more squares after some time
@@ -338,7 +356,6 @@ class Game:
                                     [RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, WHITE]
                                 ), OFF), 6).animate(20)
                             )
-
 
                 for i in range(10):
                     # Check to see if active squares have been stepped on
@@ -368,14 +385,18 @@ class Game:
             # Mode 400 - win screen
             if self.mode == 400:
                 if not self.mode_initialized:
-                    pass
+                    self.sound_player.set_mode(SoundPlayer.Mode.WIN)
 
                 if time_elapsed > 9:
                     self.reset_game()
 
             # Mode 401 - lose screen
             elif self.mode == 401:
-                pass
+                if not self.mode_initialized:
+                    pass
+
+                if time_elapsed > 5:
+                    pass
 
             # Mode 402 - one-up screen
             elif self.mode == 402:

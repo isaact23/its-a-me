@@ -29,20 +29,19 @@ class Controller:
 
         # Initialize relay
         if RPI_MODE:
-            self.relay_enabled = False
             GPIO.setmode(GPIO.BCM)  # GPIO Numbers instead of board numbers
             self.relay_pin = 17
             GPIO.setup(self.relay_pin, GPIO.OUT)  # Assign mode
 
-    def flip_relay(self):
+    def enable_relay(self):
         if RPI_MODE:
-            self.relay_enabled = not self.relay_enabled
-            if self.relay_enabled:
-                print("Relay enabled")
-                GPIO.output(self.relay_pin, GPIO.LOW)
-            else:
-                print("Relay disabled")
-                GPIO.output(self.relay_pin, GPIO.LOW)
+            print("Relay enabled")
+            GPIO.output(self.relay_pin, GPIO.LOW)
+
+    def disable_relay(self):
+        if RPI_MODE:
+            print("Relay disabled")
+            GPIO.output(self.relay_pin, GPIO.LOW)
 
     def get_strip(self, strip):
         """
