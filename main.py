@@ -3,22 +3,14 @@
 
 import fpstimer
 import sys
-
-ENABLE_EMULATOR = True
-
-import pygame
+from settings import *
 
 from controller import Controller
 from grid import Grid
 from game import Game
 if ENABLE_EMULATOR:
     from emulator import Emulator
-
-FRAMERATE = 60
-PIXEL_COUNT = 580
-
-# GUI settings
-WINDOW_SIZE = (1920, 1080)
+from settings import *
 
 
 class ItsAMe():
