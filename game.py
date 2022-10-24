@@ -28,7 +28,7 @@ class Game:
         self.grid = grid
         self.screen = screen
         self.sound_player = SoundPlayer()
-        self.mode = 401
+        self.mode = 100
         self.mode_initialized = False
         self.mode_initializing = True
         self.start_time = time.time()
@@ -48,6 +48,8 @@ class Game:
         self.image_cloud = pygame.transform.scale(self.image_cloud, (800, 800))
         self.image_toad = pygame.image.load(str(image_dir / 'toad.png')).convert()
         self.image_toad = pygame.transform.scale(self.image_toad, (360, 400))
+        self.image_game_over = pygame.image.load(str(image_dir / 'game_over.jpeg')).convert()
+        self.image_game_over = pygame.transform.scale(self.image_game_over, (1300, 600))
         self.image_star_array = {}
         for i in range(32):
             star_img = pygame.image.load(str(image_dir / ('star/frame_%02d_delay-0.06s.gif' % i))).convert()
@@ -392,10 +394,15 @@ class Game:
 
             # Mode 402 - one-up screen
             elif self.mode == 402:
-                pass
+                self.set_mode(403)
 
             # Mode 403 - game over mode
             elif self.mode == 403:
+                if not self.mode_initialized:
+                    self.sound_player.set_mode(SoundPlayer.Mode.LOSE)
+                    self.screen.fill(BLACK)
+                    self.screen.blit(self.image_game_over, (300, 100))
+                    pygame.display.update()
 
                 if time_elapsed > 5:
                     self.reset_game()
