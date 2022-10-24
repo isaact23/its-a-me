@@ -28,7 +28,7 @@ class Game:
         self.grid = grid
         self.screen = screen
         self.sound_player = SoundPlayer()
-        self.mode = 100
+        self.mode = 401
         self.mode_initialized = False
         self.mode_initializing = True
         self.start_time = time.time()
@@ -369,6 +369,8 @@ class Game:
             elif self.mode == 401:
                 if not self.mode_initialized:
                     self.sound_player.play_sound(self.sound_player.SoundEffects.BOWSER_LAUGH)
+                    for i in range(42):
+                        self.grid.get_seg(i).set_rule(Rule().fill(RED).blink(0.15, 0.15).fade_out(1, 1))
 
                 # Draw bowser
                 f = math.floor(self.bowser_frame / 2)
@@ -394,7 +396,9 @@ class Game:
 
             # Mode 403 - game over mode
             elif self.mode == 403:
-                self.reset_game()
+
+                if time_elapsed > 5:
+                    self.reset_game()
 
         # If we just initialized, prevent re-initialization on next update cycles.
         if self.mode_initializing:
