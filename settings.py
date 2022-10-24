@@ -1,6 +1,6 @@
 import pygame
 
-WINDOW_SIZE = (1920, 1080)
+WINDOW_SIZE = (800, 560)
 
 ENABLE_EMULATOR = True
 

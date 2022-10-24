@@ -41,7 +41,7 @@ class Controller:
     def disable_relay(self):
         if RPI_MODE:
             print("Relay disabled")
-            GPIO.output(self.relay_pin, GPIO.LOW)
+            GPIO.output(self.relay_pin, GPIO.HIGH)
 
     def get_strip(self, strip):
         """
