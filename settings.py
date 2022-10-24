@@ -31,7 +31,8 @@ BOX_KEYS = [pygame.K_v, pygame.K_y,
              pygame.K_a, pygame.K_z,
              pygame.K_m, pygame.K_w,
              pygame.K_x, pygame.K_t]
-RELAY_KEY = pygame.K_r
+KEY_RELAY_ENABLE = pygame.K_r
+KEY_RELAY_DISABLE = pygame.K_t
 
 # Tutorial box numbers
 TUTORIAL_BOXES = (5, 0, 8)

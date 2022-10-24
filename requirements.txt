@@ -1,0 +1,3 @@
+fpstimer==0.0.1
+pygame==2.1.2
+tk==0.1.0

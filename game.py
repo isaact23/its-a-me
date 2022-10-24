@@ -28,7 +28,7 @@ class Game:
         self.grid = grid
         self.screen = screen
         self.sound_player = SoundPlayer()
-        self.mode = 300
+        self.mode = 100
         self.mode_initialized = False
         self.mode_initializing = True
         self.start_time = time.time()
@@ -55,7 +55,8 @@ class Game:
         self.image_bowser_array = {}
         for i in range(62):
             bowser_img = pygame.image.load(str(image_dir / ('bowser/%03d.png' % i))).convert()
-            self.image_bowser_array[i] = pygame.transform.scale(bowser_img, WINDOW_SIZE)
+            bowser_img = pygame.transform.scale(bowser_img, WINDOW_SIZE)
+            self.image_bowser_array[i] = bowser_img
 
         # Initialize text for Pygame
         pygame.font.init()
@@ -88,6 +89,12 @@ class Game:
         time_elapsed = time.time() - self.start_time
 
         self.sound_player.update()
+
+        # Relay
+        if pressed_keys[KEY_RELAY_ENABLE]:
+            self.controller.enable_relay()
+        elif pressed_keys[KEY_RELAY_DISABLE]:
+            self.controller.disable_relay()
 
         # Mode 0-99 - testing purposes only
         if self.mode <= 99:
@@ -361,14 +368,33 @@ class Game:
             # Mode 401 - lose screen
             elif self.mode == 401:
                 if not self.mode_initialized:
-                    pass
+                    self.sound_player.play_sound(self.sound_player.SoundEffects.BOWSER_LAUGH)
+
+                # Draw bowser
+                f = math.floor(self.bowser_frame / 2)
+                if f > 61:
+                    f = 61
+
+                self.screen.blit(self.image_bowser_array[f], (0, 0))
+
+                pygame.display.update()
+
+                self.bowser_frame += 1
 
                 if time_elapsed > 5:
-                    pass
+                    if self.lives > 0:
+                        self.lives -= 1
+                        self.set_mode(402)
+                    else:
+                        self.set_mode(403)
 
             # Mode 402 - one-up screen
             elif self.mode == 402:
                 pass
+
+            # Mode 403 - game over mode
+            elif self.mode == 403:
+                self.reset_game()
 
         # If we just initialized, prevent re-initialization on next update cycles.
         if self.mode_initializing:

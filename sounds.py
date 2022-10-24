@@ -17,6 +17,8 @@ class SoundPlayer:
         mixer.init(44100, -16, 1, 1024)
         mixer.music.set_volume(1)
 
+        self.sound_effects = self.SoundEffects()
+
     # All possible states for the sound player to be in.
     class Mode(enum.Enum):
         NONE = 0
@@ -25,6 +27,26 @@ class SoundPlayer:
         PLAY = 3
         WIN = 4
         LOSE = 5
+
+    # Sound effects
+    class SoundEffects():
+        BOWSER_LAUGH = "bowser_laugh.ogg"
+
+        def __init__(self):
+            self.sound_files = {}
+
+        # Get the corresponding sound object from a sound name.
+        def get_sound_obj(self, sound_name):
+            sound_file = self.sound_files.get(sound_name)
+            if sound_file is None:
+                try:
+                    sound_file = mixer.Sound(SOUND_DIR / ('sfx/' + sound_name))
+                    self.sound_files[sound_name] = sound_file
+                    return sound_file
+                except Exception:
+                    print("Error loading sound file", str(sound_name))
+                    return None
+            return sound_file
 
     # Update loop. Restart songs if necessary
     def update(self):
@@ -57,11 +79,15 @@ class SoundPlayer:
             mixer.music.play()
             print("Played music", music)
         except Exception:
-            print("Error playing music", music)
+            print("Error playing music", str(music))
 
     # Play a sound file.
-    def _play_sound(self, sound):
-        pass
+    def play_sound(self, sound):
+        sound_obj = self.sound_effects.get_sound_obj(sound)
+        if sound_obj is None:
+            print("Error playing sound", str(sound))
+        else:
+            sound_obj.play()
 
     # Import sounds from directories
     def _get_sounds_from(self, dir):
