@@ -5,7 +5,7 @@ import math, pathlib, time
 
 import pygame
 
-from sounds import SoundPlayer
+from mode101 import Mode101
 from colors import *
 from controller import MultiSegment
 from rule import Rule, Mode
@@ -30,8 +30,7 @@ class Game:
         self.controller = control
         self.grid = grid
         self.screen = screen
-        self.sound_player = SoundPlayer()
-        self.mode = 100
+        self.mode = Mode101(control, grid, screen)
         self.mode_initialized = False
         self.mode_initializing = True
         self.start_time = time.time()
@@ -46,7 +45,7 @@ class Game:
         self.bowser_start_time = 0
 
         # Initialize images for Pygame
-        image_dir = pathlib.Path(__file__).parent / 'media/images'
+        image_dir = pathlib.Path(__file__).parent / '../media/images'
         self.image_cloud = pygame.image.load(str(image_dir / 'lakitu.png')).convert()
         self.image_cloud = pygame.transform.scale(self.image_cloud, (800, 800))
         self.image_toad = pygame.image.load(str(image_dir / 'toad.png')).convert()
@@ -72,21 +71,6 @@ class Game:
         self.toad_text4 = self.font.render("One square to go!", True, BLACK)
         self.toad_text5 = self.font.render("Great! Now get ready for the real game!", True, BLACK)
 
-        # Initialize miscellaneous Pygame objects
-        self.rects = [
-            (RECT_START_X, RECT_START_Y, RECT_SIZE, RECT_SIZE),
-            (RECT_START_X, RECT_START_Y + RECT_SIZE + RECT_SPACING, RECT_SIZE, RECT_SIZE),
-            (RECT_START_X + RECT_SIZE + RECT_SPACING, RECT_START_Y, RECT_SIZE, RECT_SIZE),
-            (RECT_START_X + RECT_SIZE + RECT_SPACING, RECT_START_Y + RECT_SIZE + RECT_SPACING, RECT_SIZE, RECT_SIZE),
-            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 2, RECT_START_Y, RECT_SIZE,RECT_SIZE),
-            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 2, RECT_START_Y + RECT_SIZE + RECT_SPACING, RECT_SIZE, RECT_SIZE),
-            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 3, RECT_START_Y, RECT_SIZE,RECT_SIZE),
-            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 3, RECT_START_Y + RECT_SIZE + RECT_SPACING, RECT_SIZE, RECT_SIZE),
-            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 4, RECT_START_Y, RECT_SIZE,RECT_SIZE),
-            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 4, RECT_START_Y + RECT_SIZE + RECT_SPACING, RECT_SIZE, RECT_SIZE),
-        ]
-        self.pygame_rects = [pygame.Rect(*x) for x in self.rects]
-
     def update(self, pressed_keys):
         """
         Called every frame - update the game state, LEDs, etc. based on input and timing.
@@ -95,35 +79,12 @@ class Game:
 
         self.sound_player.update()
 
-        # Relay
-        if pressed_keys[KEY_MUSHROOM_UP]:
-            self.controller.mushroom_up()
-        elif pressed_keys[KEY_MUSHROOM_DOWN]:
-            self.controller.mushroom_down()
-
-        # Mode 0-99 - testing purposes only
-        if self.mode <= 99:
-            # MultiSegment(self.grid, 12, 15, 18, 21, 24, 10, 11).set_rule(Rule().hue(60, 310, 0.1))
-            # MultiSegment(self.grid, 12, 15, 18, 21, 24, 10, 11).set_rule(Rule().fill(RED).crop(40, 990))
-            # MultiSegment(self.grid, *ALL_SEGS).set_rule(
-            #    Rule().fill(WHITE)
-            # )
-            # MultiSegment(self.grid, *ALL_SEGS).set_rule(Rule().fill(WHITE))
-            if not self.mode_initialized:
-                self.grid.get_seg(0).set_rule(
-                    Rule().stripes((RED, YELLOW), 5).animate(10)
-                )
+        self.mode = self.mode.update(pressed_keys)
 
         # Mode 100-199 - attract sequence
-        elif self.mode <= 199:
+        if self.mode <= 199:
 
-            # On space press, move to stage 2 - start the game.
-            if pressed_keys[KEY_START]:
-                print("Starting!")
-                self.set_mode(200, clear=True)
-                self.sound_player.stop()
-
-            elif self.mode == 100:
+            if self.mode == 100:
                 if not self.mode_initialized:
                     # Render cloud GUI
                     self.screen.fill(WHITE)
