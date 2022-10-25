@@ -18,7 +18,7 @@ BOX_KEYS = [pygame.K_v, pygame.K_y,
              pygame.K_m, pygame.K_w,
              pygame.K_x, pygame.K_t]
 KEY_MUSHROOM_DOWN = pygame.K_r
-KEY_MUSHROOM_UP = pygame.K_t
+KEY_MUSHROOM_UP = pygame.K_e
 
 # Tutorial box numbers
 TUTORIAL_BOXES = (5, 0, 8)
