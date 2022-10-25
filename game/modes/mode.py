@@ -3,8 +3,6 @@ from settings import *
 from sounds import SoundPlayer
 import time
 
-
-
 # Mode is the superclass for all game modes.
 class Mode:
     def __init__(self, controller, grid, screen):

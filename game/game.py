@@ -72,7 +72,7 @@ class Game:
         Called every frame - update the game state, LEDs, etc. based on input and timing.
         """
 
-        self.mode = self.mode.update(pressed_keys)
+        self.mode.update(pressed_keys)
 
         if False:
             # Mode 200-299 - tutorial mode

@@ -1,7 +1,8 @@
-from all_modes import *
+from mode100 import Mode100
 from colors import *
 from rule import Rule
 from controller import MultiSegment
+
 
 # Mode 103 - Attract sequence mode 3
 class Mode103(Mode100):

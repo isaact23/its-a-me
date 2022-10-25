@@ -1,4 +1,4 @@
-from all_modes import *
+from mode100 import Mode100
 from settings import *
 from rule import Rule
 from controller import MultiSegment

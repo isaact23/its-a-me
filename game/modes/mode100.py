@@ -1,4 +1,4 @@
-from all_modes import *
+from mode import Mode
 from colors import *
 from settings import *
 from sounds import SoundPlayer

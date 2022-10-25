@@ -1,4 +1,4 @@
-from all_modes import *
+from mode100 import Mode100
 
 
 # Mode 101 - Attract sequence mode 1

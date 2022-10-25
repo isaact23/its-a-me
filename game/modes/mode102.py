@@ -1,7 +1,8 @@
-from all_modes import *
+from mode100 import Mode100
 from colors import *
 from settings import *
 from rule import Rule
+
 
 # Mode 102 - Attract sequence mode 2
 class Mode102(Mode100):
