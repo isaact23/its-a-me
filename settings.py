@@ -1,4 +1,8 @@
+import pathlib
 import pygame
+
+# Directories
+IMAGE_DIR = pathlib.Path(__file__).parent / 'media/images'
 
 # GUI Settings
 WINDOW_SIZE = (800, 560)
