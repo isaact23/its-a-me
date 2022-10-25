@@ -3,6 +3,7 @@ import pygame
 # GUI Settings
 WINDOW_SIZE = (800, 560)
 ENABLE_EMULATOR = True
+STAR_FRAMERATE = 32
 
 # LED Strip settings
 FRAMERATE = 60

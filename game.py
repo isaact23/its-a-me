@@ -1,7 +1,7 @@
 # TODO: Use polymorphism: Create interface 'Mode' and have game.py call its methods.
 # Implement Mode as all of the different modes in separate Python files, i.e. 401, 402, etc.
 
-import math, pathlib, random, time
+import math, pathlib, time
 
 import pygame
 
@@ -42,7 +42,7 @@ class Game:
         self.score = 0
         self.max_score = 0
         self.lives = 1
-        self.star_frame = 0
+        self.star_start_time = 0
         self.bowser_frame = 0
 
         # Initialize images for Pygame
@@ -305,6 +305,8 @@ class Game:
                     self.grid.get_seg(0).set_rule(Rule().stripes((RED, OFF, OFF, OFF, OFF, BLUE, OFF, OFF, OFF, OFF), 3).animate(30))
                     self.grid.get_seg(1).set_rule(Rule().stripes((RED, OFF, OFF, OFF, OFF, BLUE, OFF, OFF, OFF, OFF), 3).animate(30))
 
+                    self.star_start_time = time.time()
+
                 # Display score
                 self.screen.fill(WHITE)
                 score_text = self.font.render("Stars collected: " + str(self.score) + " / " + str(self.max_score), True, BLACK)
@@ -312,13 +314,11 @@ class Game:
                 self.screen.blit(score_text, (100, 70))
 
                 # Render stars
-                self.star_frame += 1
-                if self.star_frame >= 64:
-                    self.star_frame = 0
+                frame = math.floor((time.time() - self.star_start_time) * STAR_FRAMERATE) % 32
                 for i in range(10):
                     pygame.draw.rect(self.screen, BLACK, self.pygame_rects[i])
                     if self.active_squares[i] > 0:
-                        self.screen.blit(self.image_star_array[math.floor(self.star_frame / 2)], (self.pygame_rects[i][0], self.pygame_rects[i][1]))
+                        self.screen.blit(self.image_star_array[frame], (self.pygame_rects[i][0], self.pygame_rects[i][1]))
                 pygame.display.update()
 
                 # Spawn more squares after some time
@@ -444,5 +444,4 @@ class Game:
         self.max_score = 0
         self.relay_key_pressed = False
         self.lives = 1
-        self.star_frame = 0
         self.bowser_frame = 0
