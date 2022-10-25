@@ -315,7 +315,7 @@ class Game:
                 if (self.star_frame >= 64):
                     self.star_frame = 0
                 for i in range(10):
-                    pygame.draw.rect(self.screen, BLACK, self.pygame_rects[i], border_radius=20)
+                    pygame.draw.rect(self.screen, BLACK, self.pygame_rects[i])
                     if self.active_squares[i] > 0:
                         self.screen.blit(self.image_star_array[math.floor(self.star_frame / 2)], (self.pygame_rects[i][0], self.pygame_rects[i][1]))
                 pygame.display.update()
