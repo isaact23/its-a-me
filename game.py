@@ -31,7 +31,7 @@ class Game:
         self.grid = grid
         self.screen = screen
         self.sound_player = SoundPlayer()
-        self.mode = 300
+        self.mode = 100
         self.mode_initialized = False
         self.mode_initializing = True
         self.start_time = time.time()
