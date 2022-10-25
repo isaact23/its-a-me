@@ -43,7 +43,7 @@ class Game:
         self.max_score = 0
         self.lives = 1
         self.star_start_time = 0
-        self.bowser_frame = 0
+        self.bowser_start_time = 0
 
         # Initialize images for Pygame
         image_dir = pathlib.Path(__file__).parent / 'media/images'
@@ -308,7 +308,7 @@ class Game:
                     self.star_start_time = time.time()
 
                 # Display score
-                self.screen.fill(WHITE)
+                self.screen.fill(BLACK)
                 score_text = self.font.render("Stars collected: " + str(self.score) + " / " + str(self.max_score), True, BLACK)
                 score_text = pygame.transform.scale(score_text, (600, 50))
                 self.screen.blit(score_text, (100, 70))
@@ -316,7 +316,6 @@ class Game:
                 # Render stars
                 frame = math.floor((time.time() - self.star_start_time) * STAR_FRAMERATE) % 32
                 for i in range(10):
-                    pygame.draw.rect(self.screen, BLACK, self.pygame_rects[i])
                     if self.active_squares[i] > 0:
                         self.screen.blit(self.image_star_array[frame], (self.pygame_rects[i][0], self.pygame_rects[i][1]))
                 pygame.display.update()
@@ -374,20 +373,22 @@ class Game:
             # Mode 401 - Bowser screen
             elif self.mode == 401:
                 if not self.mode_initialized:
+                    self.sound_player.set_mode(SoundPlayer.Mode.NONE)
                     self.sound_player.play_sound(self.sound_player.SoundEffects.BOWSER_LAUGH)
                     for i in range(42):
                         self.grid.get_seg(i).set_rule(Rule().fill(RED).blink(0.15, 0.15).fade_out(1, 1))
+                    self.bowser_start_time = time.time()
 
                 # Draw bowser
-                f = math.floor(self.bowser_frame / 2)
-                if f > 61:
-                    f = 61
+                frame = math.floor((time.time() - self.bowser_start_time) * BOWSER_FRAMERATE)
+                if frame < 0:
+                    frame = 0
+                if frame > 61:
+                    frame = 61
 
-                self.screen.blit(self.image_bowser_array[f], (0, 0))
+                self.screen.blit(self.image_bowser_array[frame], (0, 0))
 
                 pygame.display.update()
-
-                self.bowser_frame += 1
 
                 if time_elapsed > 5:
                     if self.lives > 0:
@@ -399,7 +400,8 @@ class Game:
             # Mode 402 - one-up screen
             elif self.mode == 402:
                 if not self.mode_initialized:
-                    self.screen.blit(self.image_)
+                    pass
+                    #self.screen.blit(self.image_) oneup
 
             # Mode 403 - game over mode
             elif self.mode == 403:
@@ -444,4 +446,4 @@ class Game:
         self.max_score = 0
         self.relay_key_pressed = False
         self.lives = 1
-        self.bowser_frame = 0
+        self.bowser_start_time = 0
