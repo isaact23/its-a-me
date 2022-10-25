@@ -33,15 +33,15 @@ class Controller:
             self.relay_pin = 17
             GPIO.setup(self.relay_pin, GPIO.OUT)  # Assign mode
 
-    def enable_relay(self):
+    def mushroom_up(self):
         if RPI_MODE:
             print("Relay enabled")
-            GPIO.output(self.relay_pin, GPIO.LOW)
+            GPIO.output(self.relay_pin, GPIO.HIGH)
 
-    def disable_relay(self):
+    def mushroom_down(self):
         if RPI_MODE:
             print("Relay disabled")
-            GPIO.output(self.relay_pin, GPIO.HIGH)
+            GPIO.output(self.relay_pin, GPIO.LOW)
 
     def get_strip(self, strip):
         """

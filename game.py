@@ -1,3 +1,6 @@
+# TODO: Use polymorphism: Create interface 'Mode' and have game.py call its methods.
+# Implement Mode as all of the different modes in separate Python files, i.e. 401, 402, etc.
+
 import math, pathlib, random, time
 
 import pygame
@@ -28,7 +31,7 @@ class Game:
         self.grid = grid
         self.screen = screen
         self.sound_player = SoundPlayer()
-        self.mode = 100
+        self.mode = 401
         self.mode_initialized = False
         self.mode_initializing = True
         self.start_time = time.time()
@@ -93,10 +96,10 @@ class Game:
         self.sound_player.update()
 
         # Relay
-        if pressed_keys[KEY_RELAY_ENABLE]:
-            self.controller.enable_relay()
-        elif pressed_keys[KEY_RELAY_DISABLE]:
-            self.controller.disable_relay()
+        if pressed_keys[KEY_MUSHROOM_UP]:
+            self.controller.mushroom_up()
+        elif pressed_keys[KEY_MUSHROOM_DOWN]:
+            self.controller.mushroom_down()
 
         # Mode 0-99 - testing purposes only
         if self.mode <= 99:
@@ -367,7 +370,7 @@ class Game:
                 if time_elapsed > 9:
                     self.reset_game()
 
-            # Mode 401 - lose screen
+            # Mode 401 - Bowser screen
             elif self.mode == 401:
                 if not self.mode_initialized:
                     self.sound_player.play_sound(self.sound_player.SoundEffects.BOWSER_LAUGH)
@@ -388,13 +391,14 @@ class Game:
                 if time_elapsed > 5:
                     if self.lives > 0:
                         self.lives -= 1
-                        self.set_mode(402)
+                        self.set_mode(402) # One-up screen
                     else:
-                        self.set_mode(403)
+                        self.set_mode(403) # Game over
 
             # Mode 402 - one-up screen
             elif self.mode == 402:
-                self.set_mode(403)
+                if not self.mode_initialized:
+                    self.screen.blit(self.image_)
 
             # Mode 403 - game over mode
             elif self.mode == 403:

@@ -1,13 +1,36 @@
 import pygame
 
+# GUI Settings
 WINDOW_SIZE = (800, 560)
-
 ENABLE_EMULATOR = True
 
 # LED Strip settings
 FRAMERATE = 60
 PIXEL_COUNT = 580
 SEG_WIDTH = 12
+
+# Keys
+KEY_START = pygame.K_f
+BOX_KEYS = [pygame.K_v, pygame.K_y,
+             pygame.K_d, pygame.K_j,
+             pygame.K_a, pygame.K_z,
+             pygame.K_m, pygame.K_w,
+             pygame.K_x, pygame.K_t]
+KEY_MUSHROOM_DOWN = pygame.K_r
+KEY_MUSHROOM_UP = pygame.K_t
+
+# Tutorial box numbers
+TUTORIAL_BOXES = (5, 0, 8)
+
+# Size of rectangles to blit during game phase
+RECT_START_X = 200
+RECT_START_Y = 200
+RECT_SIZE = 200
+RECT_SPACING = 50
+
+# Game settings
+WHACK_TIME = 10  # How many seconds before a tile despawns
+WIN_PERCENT = 0.7  # The percentage of tiles that must be whacked to win
 
 # Segment numbers
 BOXES = ((2, 22, 4, 23),
@@ -23,26 +46,3 @@ BOXES = ((2, 22, 4, 23),
 RAILS = (0, 1)
 GRID = tuple(i for i in range(2, 42))
 ALL_SEGS = tuple(i for i in range(42))
-
-# Keys
-KEY_START = pygame.K_f
-BOX_KEYS = [pygame.K_v, pygame.K_y,
-             pygame.K_d, pygame.K_j,
-             pygame.K_a, pygame.K_z,
-             pygame.K_m, pygame.K_w,
-             pygame.K_x, pygame.K_t]
-KEY_RELAY_ENABLE = pygame.K_r
-KEY_RELAY_DISABLE = pygame.K_t
-
-# Tutorial box numbers
-TUTORIAL_BOXES = (5, 0, 8)
-
-# Size of rectangles to blit during game phase
-RECT_START_X = 200
-RECT_START_Y = 200
-RECT_SIZE = 200
-RECT_SPACING = 50
-
-# Game settings
-WHACK_TIME = 10  # How many seconds before a tile despawns
-WIN_PERCENT = 0.7  # The percentage of tiles that must be whacked to win

@@ -31,6 +31,8 @@ class SoundPlayer:
     # Sound effects
     class SoundEffects():
         BOWSER_LAUGH = "bowser_laugh.ogg"
+        MUSHROOM_APPEAR = "mushroom_appear.ogg"
+        ONE_UP = "one_up.ogg"
 
         def __init__(self):
             self.sound_files = {}
