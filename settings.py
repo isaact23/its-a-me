@@ -23,10 +23,10 @@ KEY_MUSHROOM_UP = pygame.K_t
 TUTORIAL_BOXES = (5, 0, 8)
 
 # Size of rectangles to blit during game phase
-RECT_START_X = 200
+RECT_START_X = 100
 RECT_START_Y = 200
-RECT_SIZE = 200
-RECT_SPACING = 50
+RECT_SIZE = 100
+RECT_SPACING = 25
 
 # Game settings
 WHACK_TIME = 10  # How many seconds before a tile despawns

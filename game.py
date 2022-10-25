@@ -31,7 +31,7 @@ class Game:
         self.grid = grid
         self.screen = screen
         self.sound_player = SoundPlayer()
-        self.mode = 401
+        self.mode = 300
         self.mode_initialized = False
         self.mode_initializing = True
         self.start_time = time.time()
@@ -66,11 +66,11 @@ class Game:
         # Initialize text for Pygame
         pygame.font.init()
         self.font = pygame.font.SysFont("monospace", 50)
-        self.toad_text1 = self.font.render("Hi! I need your help to collect the power", 1, BLACK)
-        self.toad_text2 = self.font.render("stars! Step on the square to start!", 1, BLACK)
-        self.toad_text3 = self.font.render("Great! Keep it up!", 1, BLACK)
-        self.toad_text4 = self.font.render("One square to go!", 1, BLACK)
-        self.toad_text5 = self.font.render("Great! Now get ready for the real game!", 1, BLACK)
+        self.toad_text1 = self.font.render("Hi! I need your help to collect the power", True, BLACK)
+        self.toad_text2 = self.font.render("stars! Step on the square to start!", True, BLACK)
+        self.toad_text3 = self.font.render("Great! Keep it up!", True, BLACK)
+        self.toad_text4 = self.font.render("One square to go!", True, BLACK)
+        self.toad_text5 = self.font.render("Great! Now get ready for the real game!", True, BLACK)
 
         # Initialize miscellaneous Pygame objects
         self.rects = [
@@ -307,12 +307,13 @@ class Game:
 
                 # Display score
                 self.screen.fill(WHITE)
-                score_text = self.font.render("Stars collected: " + str(self.score) + " / " + str(self.max_score), 1, BLACK)
-                self.screen.blit(score_text, (200, 50))
+                score_text = self.font.render("Stars collected: " + str(self.score) + " / " + str(self.max_score), True, BLACK)
+                score_text = pygame.transform.scale(score_text, (600, 50))
+                self.screen.blit(score_text, (100, 70))
 
                 # Render stars
                 self.star_frame += 1
-                if (self.star_frame >= 64):
+                if self.star_frame >= 64:
                     self.star_frame = 0
                 for i in range(10):
                     pygame.draw.rect(self.screen, BLACK, self.pygame_rects[i])
