@@ -12,7 +12,6 @@ PIXEL_COUNT = 580
 SEG_WIDTH = 12
 
 # Keys
-KEY_START = pygame.K_f
 BOX_KEYS = [pygame.K_v, pygame.K_y,
              pygame.K_d, pygame.K_j,
              pygame.K_a, pygame.K_z,

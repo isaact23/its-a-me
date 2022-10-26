@@ -117,13 +117,15 @@ class Game:
         # Mode 100-199 - attract sequence
         elif self.mode <= 199:
 
-            # On space press, move to stage 2 - start the game.
-            if pressed_keys[KEY_START]:
-                print("Starting!")
-                self.set_mode(200, clear=True)
-                self.sound_player.stop()
+            # If any tile is pressed, start tutorial mode.
+            for key in BOX_KEYS:
+                if pressed_keys[key]:
+                    print("Starting!")
+                    self.set_mode(200, clear=True)
+                    self.sound_player.stop()
+                    break
 
-            elif self.mode == 100:
+            if self.mode == 100:
                 if not self.mode_initialized:
                     # Render cloud GUI
                     self.screen.fill(WHITE)
