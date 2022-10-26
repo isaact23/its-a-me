@@ -26,8 +26,9 @@ class Mode100(Mode):
         self.grid.get_seg(1).set_rule(Rule().stripes((RED, WHITE, BLUE), width=8).animate(10).fade_in(2, 1))
 
     def update(self, pressed_keys):
-        if pressed_keys[KEY_START]:
-            print("Starting!")
-            return 200
+        for key in BOX_KEYS:
+            if pressed_keys[key]:
+                print("Starting!")
+                return 200
 
         return super().update(pressed_keys)

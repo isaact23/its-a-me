@@ -72,10 +72,11 @@ class Game:
 
         new_mode = self.mode.update(pressed_keys)
         if new_mode is not None:
-            new_mode = get_mode(new_mode, self.controller, self.grid, self.screen)
-            if new_mode is None:
+            print("Switching to mode", new_mode)
+            self.mode = get_mode(new_mode, self.controller, self.grid, self.screen)
+            if self.mode is None:
                 print("Error switching mode")
-                new_mode = get_mode(101, self.controller, self.grid, self.screen)
+                self.mode = get_mode(101, self.controller, self.grid, self.screen)
 
         if False:
             # Mode 200-299 - tutorial mode
@@ -308,3 +309,4 @@ class Game:
         self.relay_key_pressed = False
         self.lives = 1
         self.bowser_start_time = 0
+
