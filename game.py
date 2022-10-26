@@ -37,6 +37,8 @@ class Game:
         self.start_time = time.time()
 
         # Variables changed during gameplay
+        self.animation_no = 0
+        self.animation_start_time = time.time()
         self.square_count = 0
         self.active_squares = {i: -1 for i in range(10)}
         self.score = 0
@@ -47,21 +49,31 @@ class Game:
 
         # Initialize images for Pygame
         image_dir = pathlib.Path(__file__).parent / 'media/images'
-        self.image_cloud = pygame.image.load(str(image_dir / 'lakitu.png')).convert()
-        self.image_cloud = pygame.transform.scale(self.image_cloud, (800, 800))
         self.image_toad = pygame.image.load(str(image_dir / 'toad.png')).convert()
         self.image_toad = pygame.transform.scale(self.image_toad, (360, 400))
         self.image_game_over = pygame.image.load(str(image_dir / 'game_over.jpeg')).convert()
         self.image_game_over = pygame.transform.scale(self.image_game_over, (1300, 600))
         self.image_star_array = {}
-        for i in range(32):
+        for i in range(STAR_FRAMES):
             star_img = pygame.image.load(str(image_dir / ('star/frame_%02d_delay-0.06s.gif' % i))).convert()
             self.image_star_array[i] = pygame.transform.scale(star_img, (RECT_SIZE, RECT_SIZE))
         self.image_bowser_array = {}
-        for i in range(62):
+        for i in range(BOWSER_FRAMES):
             bowser_img = pygame.image.load(str(image_dir / ('bowser/%03d.png' % i))).convert()
             bowser_img = pygame.transform.scale(bowser_img, WINDOW_SIZE)
             self.image_bowser_array[i] = bowser_img
+        self.image_cloud_array = {}
+        for i in range(CLOUD_FRAMES):
+            cloud_img = pygame.image.load(str(image_dir / ('cloud/frame_%02d_delay-0.2s.gif' % i))).convert()
+            self.image_cloud_array[i] = pygame.transform.scale(cloud_img, WINDOW_SIZE)
+        self.image_goomba_array = {}
+        for i in range(GOOMBA_FRAMES):
+            goomba_img = pygame.image.load(str(image_dir / ('goomba/frame_%01d_delay-0.2s.gif' % i))).convert()
+            self.image_goomba_array[i] = pygame.transform.scale(goomba_img, WINDOW_SIZE)
+        self.image_mario_array = {}
+        for i in range(MARIO_FRAMES):
+            mario_img = pygame.image.load(str(image_dir / ('mario/frame_%02d_delay-0.13s.gif' % i))).convert()
+            self.image_mario_array[i] = pygame.transform.scale(mario_img, WINDOW_SIZE)
 
         # Initialize text for Pygame
         pygame.font.init()
@@ -125,32 +137,48 @@ class Game:
                     self.sound_player.stop()
                     break
 
+            # Choose frame
+            animation_time_elapsed = time.time() - self.animation_start_time
+            if self.animation_no == 0:  # Cloud animation
+                frame = math.floor(animation_time_elapsed * CLOUD_FRAMERATE) % CLOUD_FRAMES
+                self.screen.blit(self.image_cloud_array[frame], (0, 0))
+                if animation_time_elapsed > CLOUD_ANIMATION_SECS:
+                    self.animation_no = 1
+                    self.animation_start_time = time.time()
+            elif self.animation_no == 1:  # Goomba animation
+                frame = math.floor(animation_time_elapsed * GOOMBA_FRAMERATE) % GOOMBA_FRAMES
+                self.screen.blit(self.image_goomba_array[frame], (0, 0))
+                if animation_time_elapsed > GOOMBA_ANIMATION_SECS:
+                    self.animation_no = 2
+                    self.animation_start_time = time.time()
+            elif self.animation_no == 2:  # Mario animation
+                frame = math.floor(animation_time_elapsed * MARIO_FRAMERATE) % MARIO_FRAMES
+                self.screen.blit(self.image_mario_array[frame], (0, 0))
+                if animation_time_elapsed > MARIO_ANIMATION_SECS:
+                    self.animation_no = 0
+                    self.animation_start_time = time.time()
+            pygame.display.update()
+
+            # Setup attract mode
             if self.mode == 100:
-                if not self.mode_initialized:
-                    # Render cloud GUI
-                    self.screen.fill(WHITE)
-                    self.screen.blit(self.image_cloud, (550, 100))
-                    pygame.display.update()
+                # Railings are red/orange moving stripes in intro
+                self.grid.get_seg(0).set_rule(Rule().stripes((RED, WHITE, BLUE), width=8).animate(10).fade_in(2, 1))
+                self.grid.get_seg(1).set_rule(Rule().stripes((RED, WHITE, BLUE), width=8).animate(10).fade_in(2, 1))
 
-                    # Play attract music
-                    self.sound_player.set_mode(SoundPlayer.Mode.ATTRACT)
+                # Initialize animation
+                self.animation_no = 0
+                self.animation_start_time = time.time()
 
-                    # Railings are red/orange moving stripes in intro
-                    self.grid.get_seg(0).set_rule(Rule().stripes((RED, WHITE, BLUE), width=8).animate(10).fade_in(2, 1))
-                    self.grid.get_seg(1).set_rule(Rule().stripes((RED, WHITE, BLUE), width=8).animate(10).fade_in(2, 1))
+                # Play attract music
+                self.sound_player.set_mode(SoundPlayer.Mode.ATTRACT)
 
-                    # multi_seg = MultiSegment(self.grid, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-                    #                         17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33,
-                    #                         34, 35, 36, 37, 38, 39, 40, 41,
-                    #                         flipped_segs=())
-                    # multi_seg = MultiSegment(self.grid, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-                    #                         flipped_segs=())
-                    # multi_seg.set_rule(Rule().fill(WHITE, 0, 1).animate(8))
-
-                if time_elapsed > 4:
-                    self.set_mode(101)
+                self.set_mode(101)
 
             elif self.mode == 101:
+                if time_elapsed > 4:
+                    self.set_mode(102)
+
+            elif self.mode == 102:
                 if not self.mode_initialized:
                     # Have 5 boxes fade in and out in an orange color
                     box_ids = 0, 3, 4, 7, 8  # [BOX0, BOX3, BOX4, BOX7, BOX8]
@@ -159,9 +187,9 @@ class Game:
                         for seg_id in BOXES[box_id]:
                             self.grid.get_seg(seg_id).set_rule(box_rule)
                 if time_elapsed > 5:
-                    self.set_mode(102)
+                    self.set_mode(103)
 
-            elif self.mode == 102:
+            elif self.mode == 103:
                 if not self.mode_initialized:
                     # Have a white light zoom around the strip
                     multi_seg = MultiSegment(self.grid, 22, 4, 27, 8, 30, 34, 38, 20, 21, 41,
@@ -169,9 +197,9 @@ class Game:
                                              flipped_segs=(8, 41, 17, 36, 33, 29, 25, 3, 2))
                     multi_seg.set_rule(Rule().fill(WHITE, -15, 0).animate(60))
                 if time_elapsed > 5:
-                    self.set_mode(103)
+                    self.set_mode(104)
 
-            elif self.mode == 103:
+            elif self.mode == 104:
                 if not self.mode_initialized:
                     multi_segs = []
                     multi_segs.append(MultiSegment(self.grid, 22, 26, 30, 34, 38, 20, 21))
@@ -208,16 +236,16 @@ class Game:
 
                         multi_seg.set_rule(rule)
                 if time_elapsed > 7:
-                    self.set_mode(104)
+                    self.set_mode(105)
 
-            elif self.mode == 104:
+            elif self.mode == 105:
                 if not self.mode_initialized:
                     MultiSegment(self.grid, 22, 26, 30, 34, 38, 20, 21, 41, 37, 33, 29, 25, 3, 2,
                                  flipped_segs=(41, 37, 33, 29, 25, 3, 2)).set_rule(
                         Rule().stripes((RED, ORANGE, YELLOW), 12).animate(30).fade_in(1, 0).fade_out(1, 5)
                     )
                 if time_elapsed > 7:
-                    self.set_mode(101)
+                    self.set_mode(102)
 
         # Mode 200-299 - tutorial mode
         elif self.mode <= 299:
@@ -442,6 +470,7 @@ class Game:
         self.set_mode(100)
 
         # Reset variables changed during gameplay
+        self.animation_start_time = time.time()
         self.square_count = 0
         self.active_squares = {i: -1 for i in range(10)}
         self.score = 0
