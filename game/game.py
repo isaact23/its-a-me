@@ -1,11 +1,9 @@
 # TODO: Use polymorphism: Create interface 'Mode' and have game.py call its methods.
 # Implement Mode as all of the different modes in separate Python files, i.e. 401, 402, etc.
 
-import math, pathlib, time
+import math, time
 
-import pygame
-
-from all_modes import *
+from all_modes import get_mode
 from colors import *
 from controller import MultiSegment
 from rule import Rule, Mode
@@ -32,7 +30,7 @@ class Game:
         self.controller = control
         self.grid = grid
         self.screen = screen
-        self.mode = Mode101(control, grid, screen)
+        self.mode = get_mode(101, control, grid, screen)
 
         # Variables changed during gameplay
         self.square_count = 0
@@ -72,7 +70,12 @@ class Game:
         Called every frame - update the game state, LEDs, etc. based on input and timing.
         """
 
-        self.mode.update(pressed_keys)
+        new_mode = self.mode.update(pressed_keys)
+        if new_mode is not None:
+            new_mode = get_mode(new_mode, self.controller, self.grid, self.screen)
+            if new_mode is None:
+                print("Error switching mode")
+                new_mode = get_mode(101, self.controller, self.grid, self.screen)
 
         if False:
             # Mode 200-299 - tutorial mode

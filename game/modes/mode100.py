@@ -28,6 +28,6 @@ class Mode100(Mode):
     def update(self, pressed_keys):
         if pressed_keys[KEY_START]:
             print("Starting!")
-            return Mode200(self.controller, self.grid, self.screen)
+            return 200
 
         return super().update(pressed_keys)

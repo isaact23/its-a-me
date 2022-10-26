@@ -3,6 +3,7 @@ from settings import *
 from sounds import SoundPlayer
 import time
 
+
 # Mode is the superclass for all game modes.
 class Mode:
     def __init__(self, controller, grid, screen):
@@ -25,5 +26,3 @@ class Mode:
             self.controller.mushroom_up()
         elif pressed_keys[KEY_MUSHROOM_DOWN]:
             self.controller.mushroom_down()
-
-        return self

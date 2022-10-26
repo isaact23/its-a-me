@@ -8,4 +8,4 @@ class Mode200(Mode):
         super().__init__(controller, grid, screen)
 
     def update(self, pressed_keys):
-        super().update(pressed_keys)
+        return super().update(pressed_keys)

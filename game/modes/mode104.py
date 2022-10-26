@@ -47,6 +47,6 @@ class Mode104(Mode100):
 
     def update(self, pressed_keys):
         if self.time_elapsed > 7:
-            return Mode105(self.controller, self.grid, self.screen)
+            return 105
 
         return super().update(pressed_keys)

@@ -3,7 +3,6 @@ from colors import *
 from settings import *
 from rule import Rule
 
-
 # Mode 102 - Attract sequence mode 2
 class Mode102(Mode100):
     def __init__(self, controller, grid, screen):
@@ -18,6 +17,6 @@ class Mode102(Mode100):
 
     def update(self, pressed_keys):
         if self.time_elapsed > 4:
-            return Mode103(self.controller, self.grid, self.screen)
+            return 103
 
         return super().update(pressed_keys)
