@@ -32,10 +32,11 @@ class Game:
         self.grid = grid
         self.screen = screen
         self.sound_player = SoundPlayer()
-        self.mode = 200
+        self.mode = 402
         self.mode_initialized = False
         self.mode_initializing = True
         self.start_time = time.time()
+        self.controller.mushroom_down()
 
         # Variables changed during gameplay
         self.animation_no = 0
@@ -54,6 +55,8 @@ class Game:
         self.image_toad = pygame.transform.scale(self.image_toad, (300, 360))
         self.image_game_over = pygame.image.load(str(image_dir / 'game_over.jpeg')).convert()
         self.image_game_over = pygame.transform.scale(self.image_game_over, (1300, 600))
+        self.image_oneup = pygame.image.load(str(image_dir / 'oneup.png')).convert()
+        self.image_oneup = pygame.transform.scale(self.image_oneup, (400, 400))
         self.image_star_array = {}
         for i in range(STAR_FRAMES):
             star_img = pygame.image.load(str(image_dir / ('star/frame_%02d_delay-0.06s.gif' % i))).convert()
@@ -489,8 +492,17 @@ class Game:
             # Mode 402 - one-up screen
             elif self.mode == 402:
                 if not self.mode_initialized:
-                    pass
-                    # self.screen.blit(self.image_) oneup
+                    self.sound_player.play_sound(SoundPlayer.SoundEffects.ONE_UP)
+                    self.screen.blit(self.image_oneup, (200, 50))
+                    pygame.display.update()
+                    self.controller.mushroom_up()
+                    life_text = self.font.render("You got a one-up! You can do it!", True, WHITE)
+                    life_text = pygame.transform.scale(life_text, (600, 50))
+                    self.screen.blit(life_text, (100, 480))
+
+                if time_elapsed > 5:
+                    self.controller.mushroom_down()
+                    self.set_mode(300)
 
             # Mode 403 - game over mode
             elif self.mode == 403:
@@ -537,3 +549,4 @@ class Game:
         self.relay_key_pressed = False
         self.lives = 1
         self.bowser_start_time = 0
+        self.controller.mushroom_down()
