@@ -508,6 +508,12 @@ class Game:
                     MultiSegment(self.grid, *ALL_SEGS).set_rule(Rule().fill(GREEN).blink(0.5, 0.5, 0))
 
                 if time_elapsed > 5:
+                    # Reset game stats
+                    self.score = 0
+                    self.max_score = 0
+                    self.square_count = 0
+                    self.active_squares = {i: -1 for i in range(10)}
+
                     self.controller.mushroom_down()
                     self.set_mode(300)
 
