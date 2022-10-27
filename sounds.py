@@ -1,5 +1,6 @@
 import enum, pathlib, random
 from pygame import mixer
+import threading
 
 SOUND_DIR = pathlib.Path(__file__).parent / 'media/sounds'
 
@@ -12,7 +13,6 @@ class SoundPlayer:
         self.play_music = self._get_sounds_from('music/play_music')
         self.win_music = self._get_sounds_from('music/win_music')
         self.lose_music = self._get_sounds_from('music/lose_music')
-        self.channels = []
 
         # Initialize pygame sound mixer
         mixer.init(44100, -16, 1, 1024)
@@ -94,8 +94,13 @@ class SoundPlayer:
         if sound_obj is None:
             print("Error playing sound", str(sound))
         else:
-            channel = sound_obj.play()
-            self.channels.append(channel)
+            print("Playing sound", str(sound))
+            t = threading.Thread(target=self._play_sound_async(sound_obj))
+            t.start()
+
+    # Play sound on a separate thread (asynchronously).
+    def _play_sound_async(self, sound):
+        sound.play()
 
     # Import sounds from directories
     def _get_sounds_from(self, dir):
