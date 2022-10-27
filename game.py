@@ -32,11 +32,12 @@ class Game:
         self.grid = grid
         self.screen = screen
         self.sound_player = SoundPlayer()
-        self.mode = 402
+        self.mode = 100
         self.mode_initialized = False
         self.mode_initializing = True
         self.start_time = time.time()
         self.controller.mushroom_down()
+        self.controller.flag_up()
 
         # Variables changed during gameplay
         self.animation_no = 0
@@ -53,6 +54,8 @@ class Game:
         image_dir = pathlib.Path(__file__).parent / 'media/images'
         self.image_toad = pygame.image.load(str(image_dir / 'toad.png')).convert()
         self.image_toad = pygame.transform.scale(self.image_toad, (300, 360))
+        self.image_toad2 = pygame.image.load(str(image_dir / 'toad2.jpeg')).convert()
+        self.image_toad2 = pygame.transform.scale(self.image_toad2, (250, 360))
         self.image_game_over = pygame.image.load(str(image_dir / 'game_over.jpeg')).convert()
         self.image_game_over = pygame.transform.scale(self.image_game_over, (1300, 600))
         self.image_oneup = pygame.image.load(str(image_dir / 'oneup.png')).convert()
@@ -203,6 +206,7 @@ class Game:
 
             elif self.mode == 104:
                 if not self.mode_initialized:
+                    self.controller.mushroom_up()
                     multi_segs = []
                     multi_segs.append(MultiSegment(self.grid, 22, 26, 30, 34, 38, 20, 21))
 
@@ -238,6 +242,7 @@ class Game:
 
                         multi_seg.set_rule(rule)
                 if time_elapsed > 7:
+                    self.controller.mushroom_down()
                     self.set_mode(105)
 
             elif self.mode == 105:
@@ -313,7 +318,6 @@ class Game:
 
                 # Print toad text letter by letter
                 toad_letter = math.floor(time_elapsed * TOAD_TEXT_FRAMERATE)
-                print(toad_letter)
                 if toad_letter > len(TOAD_TEXT4):
                     self.screen.blit(self.font.render(TOAD_TEXT4, True, BLACK), (360, 50))
                 else:
@@ -342,7 +346,6 @@ class Game:
 
                 # Print toad text letter by letter
                 toad_letter = math.floor(time_elapsed * TOAD_TEXT_FRAMERATE)
-                print(toad_letter)
                 if toad_letter > len(TOAD_TEXT5):
                     self.screen.blit(self.font.render(TOAD_TEXT5, True, BLACK), (360, 50))
                 else:
@@ -458,6 +461,19 @@ class Game:
             if self.mode == 400:
                 if not self.mode_initialized:
                     self.sound_player.set_mode(SoundPlayer.Mode.WIN)
+                    self.controller.flag_down()
+
+                    self.screen.fill(WHITE)
+                    self.screen.blit(self.image_toad2, (50, 50))
+
+                # Print toad text letter by letter
+                toad_letter = math.floor(time_elapsed * TOAD_TEXT_FRAMERATE)
+                if toad_letter > len(TOAD_TEXT7):
+                    self.screen.blit(self.font.render(TOAD_TEXT7, True, BLACK), (360, 50))
+                else:
+                    self.screen.blit(self.font.render(TOAD_TEXT7[0:toad_letter], True, BLACK), (360, 50))
+
+                pygame.display.update()
 
                 if time_elapsed > 9:
                     self.reset_game()
@@ -494,11 +510,14 @@ class Game:
                 if not self.mode_initialized:
                     self.sound_player.play_sound(SoundPlayer.SoundEffects.ONE_UP)
                     self.screen.blit(self.image_oneup, (200, 50))
-                    pygame.display.update()
-                    self.controller.mushroom_up()
                     life_text = self.font.render("You got a one-up! You can do it!", True, WHITE)
                     life_text = pygame.transform.scale(life_text, (600, 50))
                     self.screen.blit(life_text, (100, 480))
+                    pygame.display.update()
+
+                    self.controller.mushroom_up()
+
+                    MultiSegment(self.grid, *ALL_SEGS).set_rule(Rule().fill(GREEN).blink(0.5, 0.5, 0))
 
                 if time_elapsed > 5:
                     self.controller.mushroom_down()
@@ -549,4 +568,6 @@ class Game:
         self.relay_key_pressed = False
         self.lives = 1
         self.bowser_start_time = 0
+
         self.controller.mushroom_down()
+        self.controller.flag_up()

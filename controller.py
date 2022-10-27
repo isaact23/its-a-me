@@ -43,6 +43,12 @@ class Controller:
             print("Relay disabled")
             GPIO.output(self.relay_pin, GPIO.LOW)
 
+    def flag_up(self):
+        print("Flag up!")
+
+    def flag_down(self):
+        print("Flag down!")
+
     def get_strip(self, strip):
         """
         :param strip: The index of the LightStrip to access.

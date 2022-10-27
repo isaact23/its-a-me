@@ -26,6 +26,7 @@ TOAD_TEXT3 = "square to start!"
 TOAD_TEXT4 = "Great! Keep it up!"
 TOAD_TEXT5 = "One square to go!"
 TOAD_TEXT6 = "Great! Get ready!"
+TOAD_TEXT7 = "Hooray! You win!"
 
 # LED Strip settings
 FRAMERATE = 60
