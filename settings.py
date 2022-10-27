@@ -47,7 +47,7 @@ TUTORIAL_BOXES = (5, 0, 8)
 
 # Size of rectangles to blit during game phase
 RECT_START_X = 100
-RECT_START_Y = 200
+RECT_START_Y = 250
 RECT_SIZE = 100
 RECT_SPACING = 25
 

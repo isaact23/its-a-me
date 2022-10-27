@@ -32,7 +32,7 @@ class Game:
         self.grid = grid
         self.screen = screen
         self.sound_player = SoundPlayer()
-        self.mode = 200
+        self.mode = 403
         self.mode_initialized = False
         self.mode_initializing = True
         self.start_time = time.time()
@@ -59,7 +59,7 @@ class Game:
         self.image_game_over = pygame.image.load(str(image_dir / 'game_over.jpeg')).convert()
         self.image_game_over = pygame.transform.scale(self.image_game_over, (620, 400))
         self.image_oneup = pygame.image.load(str(image_dir / 'oneup.png')).convert()
-        self.image_oneup = pygame.transform.scale(self.image_oneup, (400, 400))
+        self.image_oneup = pygame.transform.scale(self.image_oneup, (300, 300))
         self.image_overlay = pygame.image.load(str(image_dir / 'overlay.png'))
         self.image_overlay = pygame.transform.scale(self.image_overlay, WINDOW_SIZE)
         self.image_star_array = {}
@@ -395,8 +395,8 @@ class Game:
                 self.screen.fill(BLACK)
                 score_text = self.font.render("Stars collected: " + str(self.score) + " / " + str(self.max_score), True,
                                               WHITE)
-                score_text = pygame.transform.scale(score_text, (600, 50))
-                self.screen.blit(score_text, (100, 70))
+                score_text = pygame.transform.scale(score_text, (380, 30))
+                self.screen.blit(score_text, (200, 220))
 
                 # Render stars
                 frame = math.floor((time.time() - self.star_start_time) * STAR_FRAMERATE) % 32
@@ -497,10 +497,11 @@ class Game:
             elif self.mode == 402:
                 if not self.mode_initialized:
                     self.sound_player.play_sound(SoundPlayer.SoundEffects.ONE_UP)
-                    self.screen.blit(self.image_oneup, (200, 50))
-                    life_text = self.font.render("You got a one-up! You can do it!", True, WHITE)
+                    self.screen.fill(WHITE)
+                    self.screen.blit(self.image_oneup, (250, 50))
+                    life_text = self.font.render("You got a one-up! You can do it!", True, BLACK)
                     life_text = pygame.transform.scale(life_text, (600, 50))
-                    self.screen.blit(life_text, (100, 480))
+                    self.screen.blit(life_text, (100, 380))
 
                     self.controller.mushroom_up()
 
@@ -515,7 +516,7 @@ class Game:
                 if not self.mode_initialized:
                     self.sound_player.set_mode(SoundPlayer.Mode.LOSE)
                     self.screen.fill(BLACK)
-                    self.screen.blit(self.image_game_over, (100, 50))
+                    self.screen.blit(self.image_game_over, (100, 120))
 
                 if time_elapsed > 8:
                     self.reset_game()
