@@ -46,7 +46,7 @@ class SoundPlayer:
         def get_sound_obj(self, sound_name):
             sound_file = self.sound_files.get(sound_name)
             if sound_file is None:
-                directory = SOUND_DIR / ('sfx/' + sound_name)
+                directory = str(SOUND_DIR / ('sfx/' + sound_name))
                 try:
                     sound_file = mixer.Sound(directory)
                     self.sound_files[sound_name] = sound_file
