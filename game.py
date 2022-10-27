@@ -11,6 +11,7 @@ from controller import MultiSegment
 from rule import Rule, Mode
 from settings import *
 
+
 class Game:
     """
     Control all game logic. There are multiple 'modes' which
@@ -31,7 +32,7 @@ class Game:
         self.grid = grid
         self.screen = screen
         self.sound_player = SoundPlayer()
-        self.mode = 100
+        self.mode = 200
         self.mode_initialized = False
         self.mode_initializing = True
         self.start_time = time.time()
@@ -50,7 +51,7 @@ class Game:
         # Initialize images for Pygame
         image_dir = pathlib.Path(__file__).parent / 'media/images'
         self.image_toad = pygame.image.load(str(image_dir / 'toad.png')).convert()
-        self.image_toad = pygame.transform.scale(self.image_toad, (360, 400))
+        self.image_toad = pygame.transform.scale(self.image_toad, (300, 360))
         self.image_game_over = pygame.image.load(str(image_dir / 'game_over.jpeg')).convert()
         self.image_game_over = pygame.transform.scale(self.image_game_over, (1300, 600))
         self.image_star_array = {}
@@ -77,12 +78,7 @@ class Game:
 
         # Initialize text for Pygame
         pygame.font.init()
-        self.font = pygame.font.SysFont("monospace", 50)
-        self.toad_text1 = self.font.render("Hi! I need your help to collect the power", True, BLACK)
-        self.toad_text2 = self.font.render("stars! Step on the square to start!", True, BLACK)
-        self.toad_text3 = self.font.render("Great! Keep it up!", True, BLACK)
-        self.toad_text4 = self.font.render("One square to go!", True, BLACK)
-        self.toad_text5 = self.font.render("Great! Now get ready for the real game!", True, BLACK)
+        self.font = pygame.font.SysFont("monospace-bold", 45)
 
         # Initialize miscellaneous Pygame objects
         self.rects = [
@@ -90,12 +86,15 @@ class Game:
             (RECT_START_X, RECT_START_Y + RECT_SIZE + RECT_SPACING, RECT_SIZE, RECT_SIZE),
             (RECT_START_X + RECT_SIZE + RECT_SPACING, RECT_START_Y, RECT_SIZE, RECT_SIZE),
             (RECT_START_X + RECT_SIZE + RECT_SPACING, RECT_START_Y + RECT_SIZE + RECT_SPACING, RECT_SIZE, RECT_SIZE),
-            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 2, RECT_START_Y, RECT_SIZE,RECT_SIZE),
-            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 2, RECT_START_Y + RECT_SIZE + RECT_SPACING, RECT_SIZE, RECT_SIZE),
-            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 3, RECT_START_Y, RECT_SIZE,RECT_SIZE),
-            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 3, RECT_START_Y + RECT_SIZE + RECT_SPACING, RECT_SIZE, RECT_SIZE),
-            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 4, RECT_START_Y, RECT_SIZE,RECT_SIZE),
-            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 4, RECT_START_Y + RECT_SIZE + RECT_SPACING, RECT_SIZE, RECT_SIZE),
+            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 2, RECT_START_Y, RECT_SIZE, RECT_SIZE),
+            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 2, RECT_START_Y + RECT_SIZE + RECT_SPACING, RECT_SIZE,
+             RECT_SIZE),
+            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 3, RECT_START_Y, RECT_SIZE, RECT_SIZE),
+            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 3, RECT_START_Y + RECT_SIZE + RECT_SPACING, RECT_SIZE,
+             RECT_SIZE),
+            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 4, RECT_START_Y, RECT_SIZE, RECT_SIZE),
+            (RECT_START_X + (RECT_SIZE + RECT_SPACING) * 4, RECT_START_Y + RECT_SIZE + RECT_SPACING, RECT_SIZE,
+             RECT_SIZE),
         ]
         self.pygame_rects = [pygame.Rect(*x) for x in self.rects]
 
@@ -255,13 +254,13 @@ class Game:
                 if not self.mode_initialized:
                     # Render toad GUI
                     self.screen.fill(WHITE)
-                    self.screen.blit(self.image_toad, (100, 50))
-                    self.screen.blit(self.toad_text1, (500, 50))
-                    self.screen.blit(self.toad_text2, (500, 100))
-                    pygame.display.update()
+                    self.screen.blit(self.image_toad, (50, 50))
 
                     # Play tutorial music
                     self.sound_player.set_mode(SoundPlayer.Mode.TUTORIAL)
+
+                    # Play toad sound
+                    self.sound_player.play_sound(SoundPlayer.SoundEffects.TOAD1)
 
                     # Start light strip pattern
                     box = BOXES[box_no]
@@ -271,20 +270,53 @@ class Game:
                 if pressed_keys[BOX_KEYS[box_no]]:
                     self.set_mode(201, clear=True)
 
+                # Print toad text letter by letter
+                toad_letter = math.floor(time_elapsed * TOAD_TEXT_FRAMERATE)
+                if toad_letter > len(TOAD_TEXT1):
+                    self.screen.blit(self.font.render(TOAD_TEXT1, True, BLACK), (360, 50))
+                    if toad_letter > len(TOAD_TEXT1) + len(TOAD_TEXT2):
+                        self.screen.blit(self.font.render(TOAD_TEXT2, True, BLACK),
+                                         (360, 100))
+                        if toad_letter > len(TOAD_TEXT1) + len(TOAD_TEXT2) + len(TOAD_TEXT3):
+                            self.screen.blit(
+                                self.font.render(TOAD_TEXT3, True,
+                                                 BLACK), (360, 150))
+                        else:
+                            self.screen.blit(self.font.render(TOAD_TEXT3[0:(toad_letter - len(TOAD_TEXT1) - len(TOAD_TEXT2))], True, BLACK), (360, 150))
+                    else:
+                        self.screen.blit(self.font.render(TOAD_TEXT2[0:(toad_letter - len(TOAD_TEXT1))], True, BLACK), (360, 100))
+                    #
+                    #
+                else:
+                    self.screen.blit(self.font.render(TOAD_TEXT1[0:toad_letter], True, BLACK), (360, 50))
+
+                pygame.display.update()
+
             elif self.mode == 201:
                 box_no = TUTORIAL_BOXES[1]
 
                 if not self.mode_initialized:
                     # Render toad GUI
                     self.screen.fill(WHITE)
-                    self.screen.blit(self.image_toad, (100, 50))
-                    self.screen.blit(self.toad_text3, (500, 50))
-                    pygame.display.update()
+                    self.screen.blit(self.image_toad, (50, 50))
+
+                    # Play toad sound
+                    self.sound_player.play_sound(SoundPlayer.SoundEffects.TOAD2)
 
                     # Start light strip pattern
                     box = BOXES[box_no]
                     multiseg = MultiSegment(self.grid, box[0], box[1], box[2], box[3], flipped_segs=(box[0], box[3]))
                     multiseg.set_rule(Rule().stripes((WHITE, OFF), 6).animate(16))
+
+                # Print toad text letter by letter
+                toad_letter = math.floor(time_elapsed * TOAD_TEXT_FRAMERATE)
+                print(toad_letter)
+                if toad_letter > len(TOAD_TEXT4):
+                    self.screen.blit(self.font.render(TOAD_TEXT4, True, BLACK), (360, 50))
+                else:
+                    self.screen.blit(self.font.render(TOAD_TEXT4[0:toad_letter], True, BLACK), (360, 50))
+
+                pygame.display.update()
 
                 if pressed_keys[BOX_KEYS[box_no]]:
                     self.set_mode(202, clear=True)
@@ -295,14 +327,25 @@ class Game:
                 if not self.mode_initialized:
                     # Render toad GUI
                     self.screen.fill(WHITE)
-                    self.screen.blit(self.image_toad, (100, 50))
-                    self.screen.blit(self.toad_text4, (500, 50))
-                    pygame.display.update()
+                    self.screen.blit(self.image_toad, (50, 50))
+
+                    # Play toad sound
+                    self.sound_player.play_sound(SoundPlayer.SoundEffects.TOAD3)
 
                     # Start light strip pattern
                     box = BOXES[box_no]
                     multiseg = MultiSegment(self.grid, box[0], box[1], box[2], box[3], flipped_segs=(box[0], box[3]))
                     multiseg.set_rule(Rule().stripes((WHITE, OFF), 6).animate(16))
+
+                # Print toad text letter by letter
+                toad_letter = math.floor(time_elapsed * TOAD_TEXT_FRAMERATE)
+                print(toad_letter)
+                if toad_letter > len(TOAD_TEXT5):
+                    self.screen.blit(self.font.render(TOAD_TEXT5, True, BLACK), (360, 50))
+                else:
+                    self.screen.blit(self.font.render(TOAD_TEXT5[0:toad_letter], True, BLACK), (360, 50))
+
+                pygame.display.update()
 
                 if pressed_keys[BOX_KEYS[box_no]]:
                     self.set_mode(203, clear=True)
@@ -312,12 +355,22 @@ class Game:
                 if not self.mode_initialized:
                     # Render toad GUI
                     self.screen.fill(WHITE)
-                    self.screen.blit(self.image_toad, (100, 50))
-                    self.screen.blit(self.toad_text5, (500, 50))
-                    pygame.display.update()
+                    self.screen.blit(self.image_toad, (50, 50))
+
+                    # Play toad sound
+                    self.sound_player.play_sound(SoundPlayer.SoundEffects.TOAD4)
 
                     # Play powerup stinger
                     self.sound_player.set_mode(SoundPlayer.Mode.WIN)
+
+                # Print toad text letter by letter
+                toad_letter = math.floor(time_elapsed * TOAD_TEXT_FRAMERATE)
+                if toad_letter > len(TOAD_TEXT6):
+                    self.screen.blit(self.font.render(TOAD_TEXT6, True, BLACK), (360, 50))
+                else:
+                    self.screen.blit(self.font.render(TOAD_TEXT6[0:toad_letter], True, BLACK), (360, 50))
+
+                pygame.display.update()
 
                 if time_elapsed > 4:
                     self.set_mode(300)
@@ -332,14 +385,17 @@ class Game:
                     self.sound_player.set_mode(SoundPlayer.Mode.PLAY)
 
                     # Initialize rules for side rails
-                    self.grid.get_seg(0).set_rule(Rule().stripes((RED, OFF, OFF, OFF, OFF, BLUE, OFF, OFF, OFF, OFF), 3).animate(30))
-                    self.grid.get_seg(1).set_rule(Rule().stripes((RED, OFF, OFF, OFF, OFF, BLUE, OFF, OFF, OFF, OFF), 3).animate(30))
+                    self.grid.get_seg(0).set_rule(
+                        Rule().stripes((RED, OFF, OFF, OFF, OFF, BLUE, OFF, OFF, OFF, OFF), 3).animate(30))
+                    self.grid.get_seg(1).set_rule(
+                        Rule().stripes((RED, OFF, OFF, OFF, OFF, BLUE, OFF, OFF, OFF, OFF), 3).animate(30))
 
                     self.star_start_time = time.time()
 
                 # Display score
                 self.screen.fill(BLACK)
-                score_text = self.font.render("Stars collected: " + str(self.score) + " / " + str(self.max_score), True, BLACK)
+                score_text = self.font.render("Stars collected: " + str(self.score) + " / " + str(self.max_score), True,
+                                              WHITE)
                 score_text = pygame.transform.scale(score_text, (600, 50))
                 self.screen.blit(score_text, (100, 70))
 
@@ -347,7 +403,8 @@ class Game:
                 frame = math.floor((time.time() - self.star_start_time) * STAR_FRAMERATE) % 32
                 for i in range(10):
                     if self.active_squares[i] > 0:
-                        self.screen.blit(self.image_star_array[frame], (self.pygame_rects[i][0], self.pygame_rects[i][1]))
+                        self.screen.blit(self.image_star_array[frame],
+                                         (self.pygame_rects[i][0], self.pygame_rects[i][1]))
                 pygame.display.update()
 
                 # Spawn more squares after some time
@@ -360,7 +417,9 @@ class Game:
                         if len(available_squares) > 0:
                             chosen_square = random.choice(available_squares)
                             self.active_squares[chosen_square] = time.time()
-                            multi_segment = MultiSegment(self.grid, *BOXES[chosen_square], flipped_segs=[BOXES[chosen_square][0], BOXES[chosen_square][3]])
+                            multi_segment = MultiSegment(self.grid, *BOXES[chosen_square],
+                                                         flipped_segs=[BOXES[chosen_square][0],
+                                                                       BOXES[chosen_square][3]])
                             multi_segment.set_rule(
                                 Rule().stripes((random.choice(
                                     [RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, WHITE]
@@ -423,15 +482,15 @@ class Game:
                 if time_elapsed > 5:
                     if self.lives > 0:
                         self.lives -= 1
-                        self.set_mode(402) # One-up screen
+                        self.set_mode(402)  # One-up screen
                     else:
-                        self.set_mode(403) # Game over
+                        self.set_mode(403)  # Game over
 
             # Mode 402 - one-up screen
             elif self.mode == 402:
                 if not self.mode_initialized:
                     pass
-                    #self.screen.blit(self.image_) oneup
+                    # self.screen.blit(self.image_) oneup
 
             # Mode 403 - game over mode
             elif self.mode == 403:

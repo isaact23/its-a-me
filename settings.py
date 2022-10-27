@@ -1,8 +1,10 @@
 import pygame
+from colors import *
 
 # GUI Settings
 WINDOW_SIZE = (800, 560)
 ENABLE_EMULATOR = True
+
 STAR_FRAMERATE = 32
 STAR_FRAMES = 32
 BOWSER_FRAMERATE = 30
@@ -16,6 +18,14 @@ GOOMBA_FRAMES = 2
 MARIO_FRAMERATE = 5
 MARIO_ANIMATION_SECS = 7
 MARIO_FRAMES = 11
+TOAD_TEXT_FRAMERATE = 12
+
+TOAD_TEXT1 = "Hi! I need your help to collect"
+TOAD_TEXT2 = "the power stars! Step on the"
+TOAD_TEXT3 = "square to start!"
+TOAD_TEXT4 = "Great! Keep it up!"
+TOAD_TEXT5 = "One square to go!"
+TOAD_TEXT6 = "Great! Get ready!"
 
 # LED Strip settings
 FRAMERATE = 60

@@ -33,6 +33,10 @@ class SoundPlayer:
         BOWSER_LAUGH = "bowser_laugh.ogg"
         MUSHROOM_APPEAR = "mushroom_appear.ogg"
         ONE_UP = "one_up.ogg"
+        TOAD1 = "toad/toad1.ogg"
+        TOAD2 = "toad/toad2.ogg"
+        TOAD3 = "toad/toad3.ogg"
+        TOAD4 = "toad/toad4.ogg"
 
         def __init__(self):
             self.sound_files = {}
