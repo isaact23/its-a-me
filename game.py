@@ -82,7 +82,7 @@ class Game:
         self.image_mario_array = {}
         for i in range(MARIO_FRAMES):
             mario_img = pygame.image.load(str(image_dir / ('mario/frame_%02d_delay-0.13s.gif' % i))).convert()
-            self.image_mario_array[i] = pygame.transform.scale(mario_img, (WINDOW_SIZE[0] * 0.7, WINDOW_SIZE[1] * 0.7))
+            self.image_mario_array[i] = pygame.transform.scale(mario_img, (round(WINDOW_SIZE[0] * 0.7), round(WINDOW_SIZE[1] * 0.7)))
 
         # Initialize text for Pygame
         pygame.font.init()
