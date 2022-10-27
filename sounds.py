@@ -46,12 +46,14 @@ class SoundPlayer:
         def get_sound_obj(self, sound_name):
             sound_file = self.sound_files.get(sound_name)
             if sound_file is None:
+                directory = SOUND_DIR / ('sfx/' + sound_name)
                 try:
-                    sound_file = mixer.Sound(SOUND_DIR / ('sfx/' + sound_name))
+                    sound_file = mixer.Sound(directory)
                     self.sound_files[sound_name] = sound_file
-                    return sound_file
-                except Exception:
+                except Exception as e:
                     print("Error loading sound file", str(sound_name))
+                    print("in directory", directory)
+                    print("Error message:", e)
                     return None
             return sound_file
 
@@ -100,6 +102,7 @@ class SoundPlayer:
 
     # Play sound on a separate thread (asynchronously).
     def _play_sound_async(self, sound):
+        print("Function called!")
         sound.play()
 
     # Import sounds from directories
