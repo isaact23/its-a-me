@@ -1,6 +1,5 @@
 import enum, pathlib, random
 from pygame import mixer
-import threading
 
 SOUND_DIR = pathlib.Path(__file__).parent / 'media/sounds'
 
@@ -97,8 +96,7 @@ class SoundPlayer:
             print("Error playing sound", str(sound))
         else:
             print("Playing sound", str(sound))
-            t = threading.Thread(target=self._play_sound_async(sound_obj))
-            t.start()
+            sound.play()
 
     # Play sound on a separate thread (asynchronously).
     def _play_sound_async(self, sound):
