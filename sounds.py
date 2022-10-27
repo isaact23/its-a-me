@@ -12,6 +12,7 @@ class SoundPlayer:
         self.play_music = self._get_sounds_from('music/play_music')
         self.win_music = self._get_sounds_from('music/win_music')
         self.lose_music = self._get_sounds_from('music/lose_music')
+        self.channels = []
 
         # Initialize pygame sound mixer
         mixer.init(44100, -16, 1, 1024)
@@ -93,7 +94,8 @@ class SoundPlayer:
         if sound_obj is None:
             print("Error playing sound", str(sound))
         else:
-            sound_obj.play()
+            channel = sound_obj.play()
+            self.channels.append(channel)
 
     # Import sounds from directories
     def _get_sounds_from(self, dir):
