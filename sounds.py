@@ -93,10 +93,10 @@ class SoundPlayer:
     def play_sound(self, sound):
         sound_obj = self.sound_effects.get_sound_obj(sound)
         if sound_obj is None:
-            print("Error playing sound", str(sound))
+            print("Error playing sound", sound)
         else:
-            print("Playing sound", str(sound))
-            sound.play()
+            print("Playing sound", sound)
+            sound_obj.play()
 
     # Play sound on a separate thread (asynchronously).
     def _play_sound_async(self, sound):
