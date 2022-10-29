@@ -86,7 +86,7 @@ class Game:
 
         # Initialize text for Pygame
         pygame.font.init()
-        self.font = pygame.font.SysFont("monospace", 20)
+        self.font = pygame.font.SysFont("monospace", 26)
 
         # Initialize miscellaneous Pygame objects
         self.rects = [
@@ -456,14 +456,14 @@ class Game:
                     self.controller.flag_down()
 
                     self.screen.fill(WHITE)
-                    self.screen.blit(self.image_toad2, (50, 50))
+                    self.screen.blit(self.image_toad2, (100, 180))
 
                 # Print toad text letter by letter
                 toad_letter = math.floor(time_elapsed * TOAD_TEXT_FRAMERATE)
                 if toad_letter > len(TOAD_TEXT7):
-                    self.screen.blit(self.font.render(TOAD_TEXT7, True, BLACK), (360, 50))
+                    self.screen.blit(self.font.render(TOAD_TEXT7, True, BLACK), (380, 300))
                 else:
-                    self.screen.blit(self.font.render(TOAD_TEXT7[0:toad_letter], True, BLACK), (360, 50))
+                    self.screen.blit(self.font.render(TOAD_TEXT7[0:toad_letter], True, BLACK), (380, 300))
 
                 if time_elapsed > 9:
                     self.reset_game()
