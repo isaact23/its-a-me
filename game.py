@@ -32,7 +32,7 @@ class Game:
         self.grid = grid
         self.screen = screen
         self.sound_player = SoundPlayer()
-        self.mode = 100
+        self.mode = 200
         self.mode_initialized = False
         self.mode_initializing = True
         self.start_time = time.time()
@@ -86,7 +86,7 @@ class Game:
 
         # Initialize text for Pygame
         pygame.font.init()
-        self.font = pygame.font.SysFont("monospace", 26)
+        self.font = pygame.font.SysFont("dejavusans", 32)
 
         # Initialize miscellaneous Pygame objects
         self.rects = [
@@ -142,6 +142,7 @@ class Game:
                     print("Starting!")
                     self.set_mode(200, clear=True)
                     self.sound_player.stop()
+                    self.controller.mushroom_down()
                     break
 
             # Choose frame
@@ -263,7 +264,7 @@ class Game:
                 if not self.mode_initialized:
                     # Render toad GUI
                     self.screen.fill(WHITE)
-                    self.screen.blit(self.image_toad, (100, 200))
+                    self.screen.blit(self.image_toad, (60, 200))
 
                     # Play tutorial music
                     self.sound_player.set_mode(SoundPlayer.Mode.TUTORIAL)
@@ -282,22 +283,22 @@ class Game:
                 # Print toad text letter by letter
                 toad_letter = math.floor(time_elapsed * TOAD_TEXT_FRAMERATE)
                 if toad_letter > len(TOAD_TEXT1):
-                    self.screen.blit(self.font.render(TOAD_TEXT1, True, BLACK), (340, 250))
+                    self.screen.blit(self.font.render(TOAD_TEXT1, True, BLACK), (280, 250))
                     if toad_letter > len(TOAD_TEXT1) + len(TOAD_TEXT2):
                         self.screen.blit(self.font.render(TOAD_TEXT2, True, BLACK),
-                                         (340, 280))
+                                         (280, 280))
                         if toad_letter > len(TOAD_TEXT1) + len(TOAD_TEXT2) + len(TOAD_TEXT3):
                             self.screen.blit(
                                 self.font.render(TOAD_TEXT3, True,
-                                                 BLACK), (340, 310))
+                                                 BLACK), (280, 310))
                         else:
-                            self.screen.blit(self.font.render(TOAD_TEXT3[0:(toad_letter - len(TOAD_TEXT1) - len(TOAD_TEXT2))], True, BLACK), (340, 310))
+                            self.screen.blit(self.font.render(TOAD_TEXT3[0:(toad_letter - len(TOAD_TEXT1) - len(TOAD_TEXT2))], True, BLACK), (280, 310))
                     else:
-                        self.screen.blit(self.font.render(TOAD_TEXT2[0:(toad_letter - len(TOAD_TEXT1))], True, BLACK), (340, 280))
+                        self.screen.blit(self.font.render(TOAD_TEXT2[0:(toad_letter - len(TOAD_TEXT1))], True, BLACK), (280, 280))
                     #
                     #
                 else:
-                    self.screen.blit(self.font.render(TOAD_TEXT1[0:toad_letter], True, BLACK), (340, 250))
+                    self.screen.blit(self.font.render(TOAD_TEXT1[0:toad_letter], True, BLACK), (280, 250))
 
             elif self.mode == 201:
                 box_no = TUTORIAL_BOXES[1]
@@ -305,7 +306,7 @@ class Game:
                 if not self.mode_initialized:
                     # Render toad GUI
                     self.screen.fill(WHITE)
-                    self.screen.blit(self.image_toad, (100, 200))
+                    self.screen.blit(self.image_toad, (60, 200))
 
                     # Play toad sound
                     self.sound_player.play_sound(SoundPlayer.SoundEffects.TOAD2)
@@ -318,9 +319,9 @@ class Game:
                 # Print toad text letter by letter
                 toad_letter = math.floor(time_elapsed * TOAD_TEXT_FRAMERATE)
                 if toad_letter > len(TOAD_TEXT4):
-                    self.screen.blit(self.font.render(TOAD_TEXT4, True, BLACK), (340, 250))
+                    self.screen.blit(self.font.render(TOAD_TEXT4, True, BLACK), (280, 250))
                 else:
-                    self.screen.blit(self.font.render(TOAD_TEXT4[0:toad_letter], True, BLACK), (340, 250))
+                    self.screen.blit(self.font.render(TOAD_TEXT4[0:toad_letter], True, BLACK), (280, 250))
 
                 if pressed_keys[BOX_KEYS[box_no]]:
                     self.set_mode(202, clear=True)
@@ -331,7 +332,7 @@ class Game:
                 if not self.mode_initialized:
                     # Render toad GUI
                     self.screen.fill(WHITE)
-                    self.screen.blit(self.image_toad, (100, 200))
+                    self.screen.blit(self.image_toad, (60, 200))
 
                     # Play toad sound
                     self.sound_player.play_sound(SoundPlayer.SoundEffects.TOAD3)
@@ -344,9 +345,9 @@ class Game:
                 # Print toad text letter by letter
                 toad_letter = math.floor(time_elapsed * TOAD_TEXT_FRAMERATE)
                 if toad_letter > len(TOAD_TEXT5):
-                    self.screen.blit(self.font.render(TOAD_TEXT5, True, BLACK), (340, 250))
+                    self.screen.blit(self.font.render(TOAD_TEXT5, True, BLACK), (280, 250))
                 else:
-                    self.screen.blit(self.font.render(TOAD_TEXT5[0:toad_letter], True, BLACK), (340, 250))
+                    self.screen.blit(self.font.render(TOAD_TEXT5[0:toad_letter], True, BLACK), (280, 250))
 
                 if pressed_keys[BOX_KEYS[box_no]]:
                     self.set_mode(203, clear=True)
@@ -356,7 +357,7 @@ class Game:
                 if not self.mode_initialized:
                     # Render toad GUI
                     self.screen.fill(WHITE)
-                    self.screen.blit(self.image_toad, (100, 200))
+                    self.screen.blit(self.image_toad, (60, 200))
 
                     # Play toad sound
                     self.sound_player.play_sound(SoundPlayer.SoundEffects.TOAD4)
@@ -367,9 +368,9 @@ class Game:
                 # Print toad text letter by letter
                 toad_letter = math.floor(time_elapsed * TOAD_TEXT_FRAMERATE)
                 if toad_letter > len(TOAD_TEXT6):
-                    self.screen.blit(self.font.render(TOAD_TEXT6, True, BLACK), (340, 250))
+                    self.screen.blit(self.font.render(TOAD_TEXT6, True, BLACK), (280, 250))
                 else:
-                    self.screen.blit(self.font.render(TOAD_TEXT6[0:toad_letter], True, BLACK), (340, 250))
+                    self.screen.blit(self.font.render(TOAD_TEXT6[0:toad_letter], True, BLACK), (280, 250))
 
                 if time_elapsed > 4:
                     self.set_mode(300)
