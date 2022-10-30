@@ -8,7 +8,7 @@ import pygame
 from sounds import SoundPlayer
 from colors import *
 from controller import MultiSegment
-from rule import Rule, Mode
+from rule import Rule
 from settings import *
 
 
@@ -120,21 +120,8 @@ class Game:
         elif pressed_keys[KEY_MUSHROOM_DOWN]:
             self.controller.mushroom_down()
 
-        # Mode 0-99 - testing purposes only
-        if self.mode <= 99:
-            # MultiSegment(self.grid, 12, 15, 18, 21, 24, 10, 11).set_rule(Rule().hue(60, 310, 0.1))
-            # MultiSegment(self.grid, 12, 15, 18, 21, 24, 10, 11).set_rule(Rule().fill(RED).crop(40, 990))
-            # MultiSegment(self.grid, *ALL_SEGS).set_rule(
-            #    Rule().fill(WHITE)
-            # )
-            # MultiSegment(self.grid, *ALL_SEGS).set_rule(Rule().fill(WHITE))
-            if not self.mode_initialized:
-                self.grid.get_seg(0).set_rule(
-                    Rule().stripes((RED, YELLOW), 5).animate(10)
-                )
-
         # Mode 100-199 - attract sequence
-        elif self.mode <= 199:
+        if self.mode <= 199:
 
             # If any tile is pressed, start tutorial mode.
             for key in BOX_KEYS:
@@ -174,6 +161,11 @@ class Game:
                 # Railings are red/orange moving stripes in intro
                 self.grid.get_seg(0).set_rule(Rule().stripes((RED, WHITE, BLUE), width=8).animate(10).fade_in(2, 1))
                 self.grid.get_seg(1).set_rule(Rule().stripes((RED, WHITE, BLUE), width=8).animate(10).fade_in(2, 1))
+
+                # Pumpkins
+                self.grid.get_seg(42).set_rule(Rule().stripes((WHITE, OFF), width=1).animate(2).fade_in(2, 1))  # Toad
+                self.grid.get_seg(43).set_rule(Rule().hue_wave(0, 50, 1, Rule.Mode.PIXEL).animate(4))  # Mario
+                self.grid.get_seg(44).set_rule(Rule().hue_wave(70, 170, 1, Rule.Mode.PIXEL).animate(4))  # Luigi
 
                 # Initialize animation
                 self.animation_no = 2

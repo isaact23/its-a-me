@@ -1,4 +1,5 @@
-SEG_COUNT = 42
+from settings import *
+
 BOX_SEGS = [
     (5, 4),
     (4, 3),
@@ -58,10 +59,10 @@ class Grid:
         # Box segments
         for seg in BOX_SEGS:
             self.segments.append(strip.get_segment(100 + seg[0] * 12, 100 + seg[1] * 12))
-        # Grid
-        #for i in range(40):
-        #    self.segments.append(strip.get_segment(100 + i * 12, 99 + (i + 1) * 12))
 
+        # Pumpkins
+        for i in range(3):
+            self.segments.append(strip.get_segment(580 + (i * PUMPKIN_LIGHT_COUNT), 580 + ((i + 1) * PUMPKIN_LIGHT_COUNT)))
 
     def get_seg(self, segment):
         """

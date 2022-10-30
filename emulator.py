@@ -1,16 +1,14 @@
 import math
 import tkinter as tk
 import sys
-from time import perf_counter
-
-# Set constants
-import grid
+from settings import *
 
 BOX_WIDTH = 80  # Width of each of the squares
 MARGIN = 75  # Distance between outside of game and edge of window
 RAILING_DIST = 75  # Distance between railing and tiles
 BOX_SPACING = 20  # Distance between squares
 CIRCLE_MARGIN = 0  # Distance between coordinates and first circle of each Segment=
+PUMPKIN_SPACING = 40
 
 LINE_WIDTH = 2
 CIRCLE_SIZE = 7
@@ -18,7 +16,7 @@ RAIL_CIRCLE_SIZE = 9
 
 # Determine window size
 WINDOW_WIDTH = MARGIN * 2 + RAILING_DIST * 2 + BOX_WIDTH * 2 + BOX_SPACING
-WINDOW_HEIGHT = MARGIN * 2 + BOX_WIDTH * 5 + BOX_SPACING * 4
+WINDOW_HEIGHT = MARGIN * 2 + BOX_WIDTH * 5 + BOX_SPACING * 4 + PUMPKIN_SPACING * 3
 
 # Generate railing coordinates
 TL = (MARGIN, MARGIN)
@@ -112,12 +110,22 @@ class Emulator:
                     circles.append(self.draw_circle(pixel_x, pixel_y, size=CIRCLE_SIZE))
                 self.circles[seg_id] = circles
 
+        # Pumpkins
+        for y in range(3):
+            seg_id = 42 + y
+            circles = []
+            for x in range(PUMPKIN_LIGHT_COUNT):
+                seg = self.grid.get_seg(seg_id)
+                pixel_y = MARGIN + BOX_WIDTH * 5 + BOX_SPACING * 4 + PUMPKIN_SPACING * (y + 1)
+                pixel_x = MARGIN + ((RAILING_DIST * 2 + BOX_WIDTH * 2 + BOX_SPACING) / (PUMPKIN_LIGHT_COUNT - 1)) * x
+                circles.append(self.draw_circle(pixel_x, pixel_y, size=CIRCLE_SIZE))
+            self.circles[seg_id] = circles
 
     def update(self):
         """
         Update the grid on-screen based on the Grid object.
         """
-        for s in range(grid.SEG_COUNT):
+        for s in range(SEG_COUNT):
             circle_array = self.circles[s]
             seg = self.grid.get_seg(s)
             color_array = seg.get_pixels()
@@ -132,7 +140,6 @@ class Emulator:
                 else:
                     hex_color = f'#{r:02x}{g:02x}{b:02x}'
                     self.canvas.itemconfig(circle_array[l], fill=hex_color)
-
 
         self.root.update()
 

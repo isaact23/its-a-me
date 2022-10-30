@@ -1,5 +1,6 @@
 import enum, time, math, colorsys
 
+
 def zero_to_one(num):
     """
     Ensure a number is between 0 and 1 by adding or subtracting 1.
@@ -13,17 +14,17 @@ def zero_to_one(num):
     return num
 
 
-class Mode(enum.Enum):
-    """
-    Different modes for color functions - determines whether colors change based on pixels or time.
-    """
-    PIXEL = 'pixel'
-    TIME = 'time'
-
 class Rule:
     """
     Class passable to Segments and LightStrips that determines LED colors at runtime.
     """
+
+    class Mode(enum.Enum):
+        """
+        Different modes for color functions - determines whether colors change based on pixels or time.
+        """
+        PIXEL = 'pixel'
+        TIME = 'time'
 
     def __init__(self):
         self.func_chain = []  # Every time a new function is generated, append it here.
@@ -58,7 +59,7 @@ class Rule:
 
     def hue_linear(self, frequency=1, mode=Mode.PIXEL):
         """
-        Fill pixels with color hue increasing with every pixel.
+        Fill pixels with color hue increasing with pixels or time.
         :param frequency: How fast hue should increase.
         :param mode: Color determination mode - either pixel or time.
         """
@@ -67,9 +68,9 @@ class Rule:
         def f(**kwargs):
             # Based on mode, determine the independent variable (i.e. what changes the color).
             var = 0
-            if mode == Mode.PIXEL:
+            if mode == Rule.Mode.PIXEL:
                 var = kwargs['pixel']
-            elif mode == Mode.TIME:
+            elif mode == Rule.Mode.TIME:
                 var = time.time() - start_time
             else:
                 raise RuntimeError("Mode", mode, "is invalid for Rule hue_linear().")
@@ -96,9 +97,9 @@ class Rule:
         def f(**kwargs):
             # Based on mode, determine the independent variable (i.e. what changes the color).
             var = 0
-            if mode == Mode.PIXEL:
+            if mode == Rule.Mode.PIXEL:
                 var = kwargs['pixel']
-            elif mode == Mode.TIME:
+            elif mode == Rule.Mode.TIME:
                 var = time.time() - start_time
             else:
                 raise RuntimeError("Mode", mode, "is invalid for Rule hue_wave().")

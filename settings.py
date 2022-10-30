@@ -29,9 +29,11 @@ TOAD_TEXT6 = "Great! Get ready!"
 TOAD_TEXT7 = "Hooray! You win!"
 
 # LED Strip settings
-FRAMERATE = 60
-PIXEL_COUNT = 580
+SEG_COUNT = 45
 SEG_WIDTH = 12
+PIXEL_COUNT = 598
+PUMPKIN_LIGHT_COUNT = 6
+FRAMERATE = 60
 
 # Keys
 BOX_KEYS = [pygame.K_v, pygame.K_y,
