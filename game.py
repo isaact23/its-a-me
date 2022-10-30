@@ -32,7 +32,7 @@ class Game:
         self.grid = grid
         self.screen = screen
         self.sound_player = SoundPlayer()
-        self.mode = 200
+        self.mode = 100
         self.mode_initialized = False
         self.mode_initializing = True
         self.start_time = time.time()
@@ -149,19 +149,22 @@ class Game:
             animation_time_elapsed = time.time() - self.animation_start_time
             if self.animation_no == 0:  # Cloud animation
                 frame = math.floor(animation_time_elapsed * CLOUD_FRAMERATE) % CLOUD_FRAMES
+                self.screen.fill(BLACK)
                 self.screen.blit(self.image_cloud_array[frame], (-20, -20))
                 if animation_time_elapsed > CLOUD_ANIMATION_SECS:
                     self.animation_no = 1
                     self.animation_start_time = time.time()
             elif self.animation_no == 1:  # Goomba animation
                 frame = math.floor(animation_time_elapsed * GOOMBA_FRAMERATE) % GOOMBA_FRAMES
+                self.screen.fill(BLACK)
                 self.screen.blit(self.image_goomba_array[frame], (-20, -20))
                 if animation_time_elapsed > GOOMBA_ANIMATION_SECS:
                     self.animation_no = 2
                     self.animation_start_time = time.time()
             elif self.animation_no == 2:  # Mario animation
                 frame = math.floor(animation_time_elapsed * MARIO_FRAMERATE) % MARIO_FRAMES
-                self.screen.blit(self.image_mario_array[frame], (100, 100))
+                self.screen.fill(WHITE)
+                self.screen.blit(self.image_mario_array[frame], (100, 140))
                 if animation_time_elapsed > MARIO_ANIMATION_SECS:
                     self.animation_no = 0
                     self.animation_start_time = time.time()
@@ -173,7 +176,7 @@ class Game:
                 self.grid.get_seg(1).set_rule(Rule().stripes((RED, WHITE, BLUE), width=8).animate(10).fade_in(2, 1))
 
                 # Initialize animation
-                self.animation_no = 0
+                self.animation_no = 2
                 self.animation_start_time = time.time()
 
                 # Play attract music
